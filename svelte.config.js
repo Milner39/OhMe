@@ -3,7 +3,7 @@ import adapter from "@sveltejs/adapter-auto"
 // Required to use scss instead of css for styling
 import sveltePreprocess from "svelte-preprocess"
 
-/** @type {import('@sveltejs/kit').Config} */
+/** @type {import("@sveltejs/kit").Config} */
 const config = {
 	preprocess: sveltePreprocess(),
 	kit: {
