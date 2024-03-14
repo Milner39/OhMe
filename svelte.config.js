@@ -1,4 +1,5 @@
-import adapter from "@sveltejs/adapter-auto"
+// Changed the adapter to one used for node servers so the site can be hosted with node
+import adapter from "@sveltejs/adapter-node"
 
 // Required to use scss instead of css for styling
 import sveltePreprocess from "svelte-preprocess"
@@ -9,7 +10,7 @@ const config = {
 	kit: {
 		adapter: adapter({
 			// Controlls the prefix of the enviroment variables used in deployment
-			envPrefix: "SERVER_"
+			envPrefix: "NODE_SERVER_"
 		}),
 		env: {
 			// Controlls the prefix of the enviroment variables used in runtime
