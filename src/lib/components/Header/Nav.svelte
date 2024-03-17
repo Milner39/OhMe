@@ -205,11 +205,14 @@
                 font-size: 1rem;
 
                 >.navLink {
-                    padding: 1rem;
-
                     transition: background-color 200ms ease-in-out;
                     &:hover {
                         background-color: var(--bg-4);
+                    }
+
+                    >a {
+                        display: block;
+                        padding: 1rem;
                     }
                 }
             }
