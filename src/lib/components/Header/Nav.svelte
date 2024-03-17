@@ -223,7 +223,7 @@
                 :global(button) {
                     background-color: var(--sc-1);
                     color: var(--br-4);
-                    padding: 0.75em 1.25em;
+                    padding: 0.5em 1em;
                     border-radius: 1000px;
 
                     transition: background-color 200ms ease-in-out;
