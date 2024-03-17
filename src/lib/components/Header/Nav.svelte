@@ -19,6 +19,7 @@
         let spacingWidth = gapSize * (navItems.length -1)   
         let staticDifference = (dropdownButtonSize) * collapsed
         collapsed = (contentWidth + spacingWidth > containerWidth + staticDifference)
+        dropdown = collapsed ? dropdown : false
     }
 
     const toggleDropdown = () => {
