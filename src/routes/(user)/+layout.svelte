@@ -34,13 +34,13 @@
         <svelte:fragment slot="brand">
             <h1>OhMe</h1>
         </svelte:fragment>
-        <button>Login</button>
+        <button class="button-slim" type="button"><h2>Login</h2></button>
         <svelte:fragment slot="static">
-            <button>Join</button>
+            <button class="button-pill" type="button"><h2>Join Now</h2></button>
         </svelte:fragment>
     </Nav>
     <Notice>
-        <h1>Alert Here</h1>
+        <h3>Hello! Welcome To My Website... Lorem ipsum dolor sit amet consectetur adipisicing elit.</h3>
     </Notice>
 </Header>
 <slot/>
