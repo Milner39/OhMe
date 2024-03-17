@@ -16,7 +16,7 @@
         right: 0;
         z-index: 1000;
 
-        box-shadow: var(--br-3) 0 5px 30px 10px;
+        box-shadow: #000000 0 4px 30px;
 
         > :global(*) {
             padding: 0 0.75rem;
