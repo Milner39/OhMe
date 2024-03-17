@@ -67,6 +67,7 @@
         >.message {
             font-size: 1rem;
             text-wrap: nowrap;
+            white-space: nowrap;
             overflow: hidden;
         }
     }
