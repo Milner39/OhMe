@@ -12,10 +12,15 @@
     --tx-4: #707070;
 
     // main brand color: #355691
-    --br-1: #273F68;
-    --br-2: #355691;
-    --br-3: #426BB3;
-    --br-4: #5B81C2;
+    --br-1: #00348F;
+    --br-2: #0049C7;
+    --br-3: #005AF5;
+    --br-4: #1F71FF;
+
+    --sc-1: #23385C;
+    --sc-2: #304E81;
+    --sc-3: #3B609F;
+    --sc-4: #4570BA;
 
     --green: #5A9367;
     --red: #AA4465;
@@ -42,6 +47,13 @@ body {
     margin: 0;
 }
 
+svg {
+    height: 1.5rem;
+    & path.fill {
+        fill: currentColor;
+    }
+}
+
 a { 
     color: inherit;
     text-decoration: none;
@@ -49,4 +61,44 @@ a {
 
 li {
     list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+button {
+    border: none;
+    color: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+
+    text-wrap: nowrap;
+    white-space: nowrap;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.button-slim {
+    background: none;
+    border-radius: 0;
+
+    transition: color 200ms ease-in-out;
+    &:hover {
+        color: var(--br-3);
+    }
+}
+
+.button-pill {
+    background-color: var(--br-3);
+    padding: 0.75em 1.25em;
+    border-radius: 1000px;
+
+    transition: background-color 200ms ease-in-out;
+    &:hover {
+        background-color: var(--br-4);
+    }
 }
