@@ -31,4 +31,11 @@
         background-color: var(--bg-3);
         color: var(--tx-1);
     }
+
+    h1 {
+        font-size: 2rem;
+    }
+    h2 {
+        font-size: 1.5rem;
+    }
 </style>
