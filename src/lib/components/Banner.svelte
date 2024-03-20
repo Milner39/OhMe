@@ -54,16 +54,19 @@
         }
 
         >.text {
+            display: grid;
+
             text-wrap: nowrap;
             white-space: nowrap;
 
             :global(h1) {
-                font-size: 1.75rem;
+                font-size: 2rem;
                 font-weight: 600;
             }
             :global(h2) {
+                color: var(--tx-3);
                 font-size: 1rem;
-                font-weight: 500;
+                font-weight: 400;
             }
         }
     }
