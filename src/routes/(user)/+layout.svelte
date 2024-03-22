@@ -1,6 +1,8 @@
 <script>
     import "$lib/styles/global.scss";
 
+    import { goto } from "$app/navigation"
+
     import Header from "$lib/components/Header/Header.svelte"
 </script>
 
@@ -34,7 +36,7 @@
         <svelte:fragment slot="brand">
             <h1>OhMe</h1>
         </svelte:fragment>
-        <button class="button-slim" type="button"><h2>Login</h2></button>
+        <button class="button-slim" type="button" on:click={() => goto("/login")}><h2>Login</h2></button>
         <svelte:fragment slot="static">
             <button class="button-pill" type="button"><h2>Join Now</h2></button>
         </svelte:fragment>
