@@ -122,11 +122,10 @@
         >.collapse {
             overflow: hidden;
 
-            flex-grow: 1;
+            flex: 1 1 auto;
 
             display: flex;
             align-items: center;
-            flex-basis: auto;
             gap: 1rem;
 
             &.collapsed {
@@ -156,8 +155,6 @@
             }
 
             >.extra {
-                display: flex;
-
                 >:global(button) {
                     font-size: 1rem;
                 }
