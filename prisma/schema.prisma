@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./database.sqlite"
+}
+
+
+model User {
+  id           String     @id @unique @default(uuid())
+  username     String     @unique
+  email        String     @unique
+  password     String     
+
+  web3Wallet   String
+
+  authSession  Session[]
+}
+
+model Session {
+  id              String  @id @unique @default(uuid())
+  userId          String
+  expiresAt       DateTime
+  fresh           Boolean
+
+  user            User    @relation(references: [id], fields: [userId], onDelete: Cascade)
+}
