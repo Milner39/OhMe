@@ -7,8 +7,8 @@
 
     onMount(() => {
         setTimeout(() => {
-        goto("/")
-    }, 3000)
+            goto("/")
+        }, 3000)
     })
 
 </script>
