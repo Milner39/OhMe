@@ -27,18 +27,14 @@
         {
             text: "Lorem",
             href: "/"
-        },
-        {
-            text: "Settings",
-            href: "/settings"
-        },
+        }
     ]}>
         <svelte:fragment slot="brand">
             <h1>OhMe</h1>
         </svelte:fragment>
-        <button class="button-slim" type="button" on:click={() => goto("/login")}><h2>Login</h2></button>
+        <button class="button-slim" type="button" on:click={() => goto("/settings")}><h2>Settings</h2></button>
         <svelte:fragment slot="static">
-            <button class="button-pill" type="button"><h2>Join Now</h2></button>
+            <button class="button-pill" type="button" on:click={() => goto("/login")}><h2>Log In</h2></button>
         </svelte:fragment>
     </Nav>
     <Notice>

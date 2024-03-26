@@ -16,7 +16,7 @@
 
 <div class="page">
     <div class="pageContent">
-        <div class="Cashflow block">
+        <div class="block">
             <h1>Cash Flow</h1>
             <BarChart
                 bars={[
@@ -32,7 +32,7 @@
                     }
                 ]}
             />
-            <h1>Total Debts: <span class="deptNumber">-£241</span></h1>
+            <h1>Total Cashflow: <span class="deptNumber">£241</span></h1>
         </div>
     </div>
 </div>
@@ -44,35 +44,7 @@
         font-weight: 600;
     }
 
-    .page {
-        color: var(--tx-1);
-        background-color: var(--bg-2);
-    }
-
-    .pageContent {
-        max-width: var(--page-max-width);
-        margin-inline: auto;
-
-        padding: 1rem;
-
-        height: 200vh;
-    }
-
     .block {
-        padding: 1rem;
-
-        background-color: var(--bg-3);
-
-        border: solid 1px var(--bg-4);
-        border-radius: 0.5rem;
-
-        box-shadow: var(--box-shadow-1);
-    }
-
-    .Cashflow {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
 
         h1 {
             font-size: 1rem;
