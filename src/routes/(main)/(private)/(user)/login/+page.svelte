@@ -109,6 +109,7 @@
                 background: none;
                 border-width: 0 0 1px 0 !important;
                 border: solid var(--tx-4);
+                border-radius: 0;
 
                 font-size: inherit;
                 color: inherit;
