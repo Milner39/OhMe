@@ -1,29 +1,44 @@
+// Define client for interacting with database with js
 generator client {
   provider = "prisma-client-js"
 }
 
+// Define database provider and url.
+// This project uses a file based database,
+// apposed to one hosted on the cloud
 datasource db {
   provider = "sqlite"
   url      = "file:./database.sqlite"
 }
 
 
+
+// Custom model section
+
+// Define User model
 model User {
-  id           String     @id @unique @default(uuid())
-  username     String     @unique
-  email        String     @unique
-  password     String     
+  // Generates a unique string when a user is created that will be used as the key
+  id                   String     @id @unique @default(uuid())
 
-  web3Wallet   String
+ // User credentials
+  username             String     @unique
+  email                String     @unique
+  hashedPassword       String     
 
-  authSession  Session[]
+  emailVerified        Boolean
+  web3Wallet           String
+
+  sessions         Session[]
 }
 
 model Session {
-  id              String  @id @unique @default(uuid())
-  userId          String
-  expiresAt       DateTime
-  fresh           Boolean
+  // Generates a unique string when a session is created that will be used as the key
+  id         String  @id @unique @default(uuid())
 
-  user            User    @relation(references: [id], fields: [userId], onDelete: Cascade)
+  // Indicates when a session expires 
+  expiresAt  DateTime
+
+  // Used to reference which user is linked to this session
+  userId     String
+  user       User    @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
