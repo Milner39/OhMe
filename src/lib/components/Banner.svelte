@@ -1,20 +1,30 @@
 <script>
+    // Import functions to handle lifecycle events
     import { onMount } from "svelte"
 
+    // The html element containing banner text
     let text
+
+    // The height of the div containing text
     let textHeight = 0
 
+    // When component is mounted, get inital text height
     onMount(() => {
+        // Use the "text" reference to access the div's height
         textHeight = text.clientHeight
-        window.addEventListener("resize", () => {textHeight = text.clientHeight})
     })
 </script>
 
+<!-- Add an event listener to update text height on resize -->
+<svelte:window on:resize={()=>{textHeight = text.clientHeight}}/>
+
 <div class="banner">
     <div class="bannerContent">
+        <!-- Set height and width of icon so it matches height of banner text -->
         <div class="icon" style="height: {textHeight}px; width: {textHeight}px;">
             <slot name="svg"/>
         </div>
+        <!-- Bind div to the "text" variable so it can be accesed in script -->
         <div class="text" bind:this={text}>
             <slot/>
         </div>

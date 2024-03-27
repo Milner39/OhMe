@@ -1,39 +1,70 @@
 <script>
-    export let links
-
+    // Import svgs
     import Close from "$lib/assets/svgs/Close.svelte"
     import Menu from "$lib/assets/svgs/Menu.svelte";
+
+    // Import functions to handle lifecycle events
     import { onMount } from "svelte"
 
+    // Let links be passed to component as prop
+    export let links
+
+    // The html element containing collapsible content
     let collapsible
+
+    // The html element that toggles the dropdown
+    let dropdownButton
+
+    // Variables indicating collapsible and dropdown state
     let collapsed = true
     let dropdown = false
 
+    // Define function to be ran on mount and resize
     const onResize = () => {
-        let gapSize = 16
-        let dropdownButtonSize = 22
-
+        // Get width of the collapsible container
         let containerWidth = collapsible.clientWidth
-        let navItems = [...collapsible.getElementsByTagName("h2")]
-        let contentWidth = navItems.reduce((total, item) => total + item.clientWidth, 0)
-        let spacingWidth = gapSize * (navItems.length -1)   
-        let staticDifference = (dropdownButtonSize) * collapsed
-        collapsed = (contentWidth + spacingWidth > containerWidth + staticDifference)
+
+        // Get width of dropdown toggle button
+        let dropdownButtonWidth = dropdownButton.clientWidth
+
+        // Get all items in collapsible container
+        let collapsibleItems = [...collapsible.getElementsByTagName("h2")]
+        
+        // Calculate total width of all items in "collapsibleItems"
+        let totalItemWidth = collapsibleItems.reduce((total, item) => total + item.clientWidth, 0)
+
+        // Get gap between items in "collapsible"
+        let collapsibleGap = Number(window.getComputedStyle(collapsible).columnGap.slice(0,-2))
+
+        // Calculate the extra spacing required to fit all items in "collapsibleItems"
+        let spacingWidth = collapsibleGap * (collapsibleItems.length -1)   
+
+        // Calcualte the extra width taken up by elements that only appear when "collapsed == true"
+        // "collapsed" will be [ true or flase ] therefore static difference will be [ 0 or {dropdownButtonWidth} ]
+        let staticDifference = (dropdownButtonWidth) * collapsed
+
+        // Set boolean to control "collapsible" is collapsed
+        collapsed = (containerWidth + staticDifference < totalItemWidth + spacingWidth)
+
+        // "dropdown" = it's current value if collapsed is true or false if collapsed is false
+        // This logic closes the dropdown if there is enough space for collaspible div,
+        // meaning the dropdown is no longer necessary
         dropdown = collapsed ? dropdown : false
     }
 
+    // Define function to toggle "dropdown"
     const toggleDropdown = () => {
         dropdown = !dropdown
     }
 
+    // When component is mounted, get inital value for "collapsed"
     onMount(() => {
         onResize()
-        window.addEventListener("resize", onResize)
     })
-
-
-
 </script>
+
+<!-- Add an event listener to call "onResize" function -->
+<svelte:window on:resize={onResize}/>
 
 <nav>
     {#if $$slots.brand}
@@ -61,17 +92,18 @@
         {#if $$slots.static}
             <slot name="static"/>
         {/if}
-        {#if collapsed}
-            <button class="dropdown-button button-slim" type="button" on:click={toggleDropdown}
-                title={dropdown? "close dropdown":"open dropdown"}
-            >
-            {#if dropdown}
-                <Close/>
-            {:else}
-                <Menu/>
-            {/if}
-            </button>
+        <button class="dropdown-button button-slim" class:collapsed={!collapsed} type="button" 
+            title={dropdown ? "close dropdown":"open dropdown"}
+            on:click={toggleDropdown}
+            bind:this={dropdownButton}
+        >
+        {#if dropdown}
+            <Close/>
+        {:else}
+            <Menu/>
         {/if}
+        </button>
+        
     </div>
     {#if collapsed && dropdown}
         <div class="dropdown">
@@ -126,7 +158,7 @@
 
             display: flex;
             align-items: center;
-            gap: 1rem;
+            column-gap: 1rem;
 
             &.collapsed {
                 >* {
@@ -175,6 +207,13 @@
 
             >.dropdown-button {
                 height: 1.5rem;
+
+                &.collapsed {
+                    visibility: hidden;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                }
 
                 >:global(svg) {
                     height: 100%;
