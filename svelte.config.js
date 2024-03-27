@@ -1,10 +1,10 @@
-// Changed the adapter to one used for node servers so the site can be hosted with node
+// Import the correct adapter for node servers
 import adapter from "@sveltejs/adapter-node"
 
 // Required to use scss instead of css for styling
 import sveltePreprocess from "svelte-preprocess"
 
-/** @type {import("@sveltejs/kit").Config} */
+// Define svelte config
 const config = {
 	preprocess: sveltePreprocess(),
 	kit: {

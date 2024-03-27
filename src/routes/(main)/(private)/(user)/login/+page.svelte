@@ -1,9 +1,12 @@
 <script>
+    // Import svgs
+    import LogIn from "$lib/assets/svgs/LogIn.svelte"
+
+    // Import components
     import Banner from "$lib/components/Banner.svelte"
     import AutoScroll from "$lib/components/AutoScroll.svelte"
 
-    import LogIn from "$lib/assets/svgs/LogIn.svelte"
-
+    // Variables indicating which form to show
     let mode = "login"
 </script>
 

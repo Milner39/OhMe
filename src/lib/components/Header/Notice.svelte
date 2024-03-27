@@ -1,17 +1,22 @@
 <script>
-    import AutoScroll from "$lib/components//AutoScroll.svelte"
+    // Import svgs
     import Close from "$lib/assets/svgs/Close.svelte"
 
+    // Import components
+    import AutoScroll from "$lib/components//AutoScroll.svelte"
+
+    // Variable indicating notice state
     let show = true
 
+    // Define function to close notice
     const close = () => {
         show = false
     }
-
 </script>
 
 {#if show}
     <div class="notice">
+        <!-- Button to close notice -->
         <button title="close notice" class="button-slim" type="button" on:click={close}><Close/></button>
         <AutoScroll>
             <slot/>

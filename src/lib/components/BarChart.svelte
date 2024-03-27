@@ -1,12 +1,16 @@
 <script>
+    // Let bars be passed to component as prop
     export let bars
-    let max = bars.reduce((max, bar) => max = Math.max(max, bar.value), 0)
 
+    // Get the largest value by checking all bar values
+    let maxValue = bars.reduce((max, bar) => max = Math.max(max, bar.value), 0)
 </script>
 
 <div class="barChart">
+    <!-- Create bar and label for every item in "bars" -->
     {#each bars as bar}
-        <div class="bar" style="width: {Math.ceil(100*(bar.value / max))}%; background-color: {bar.bgColor};"/>
+        <!-- Set width as a percentage of "maxValue", 100% filling all availible space -->
+        <div class="bar" style="width: {Math.ceil(100*(bar.value / maxValue))}%; background-color: {bar.bgColor};"/>
         <h2>{bar.label}</h2>
     {/each}
 </div>

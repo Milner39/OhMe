@@ -1,11 +1,15 @@
 <script>
+    // Import styles
     import "$lib/styles/global.scss";
 
+    // Import function to redirect user
     import { goto } from "$app/navigation"
 
+    // Import components
     import Header from "$lib/components/Header/Header.svelte"
 </script>
 
+<!-- Make child components usable -->
 <Header let:Nav let:Notice>
     <Nav links={[
         {

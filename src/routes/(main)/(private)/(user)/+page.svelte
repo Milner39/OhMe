@@ -1,9 +1,11 @@
 <script>
+    // Import svgs
+    import Wallet from "$lib/assets/svgs/Wallet.svelte"
+
+    // Import components
     import Banner from "$lib/components/Banner.svelte"
     import AutoScroll from "$lib/components/AutoScroll.svelte"
     import BarChart from "$lib/components/BarChart.svelte"
-
-    import Wallet from "$lib/assets/svgs/Wallet.svelte"
 </script>
 
 <Banner>

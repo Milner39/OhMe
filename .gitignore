@@ -1,20 +1,31 @@
+# gitignore defaults
 .DS_Store
-node_modules
-/build
-/.svelte-kit
 /package
+
+# Installed dependencies
+node_modules
+
+# The folder that "npm run build" outputs to
+/build
+
+# The folder that "npm run dev" outputs to
+/.svelte-kit
+
+# Enviromental variables but not the "env.example" file
 .env
 .env.*
 !.env.example
+
+# Vite temp files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Ignore vscode settings
+# vscode settings
 /.vscode
 
-# Ignore database files
+# Database files
 *.sqlite
 
-# Ignore media files
+# Media files
 *.png
 *.mp4

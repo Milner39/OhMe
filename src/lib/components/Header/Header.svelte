@@ -1,9 +1,11 @@
 <script>
+    // Import components used in Header for cleaner imports
     import Nav from "./Nav.svelte"
     import Notice from "./Notice.svelte"
 </script>
 
 <header>
+    <!-- Allow parent components/pages to use child components -->
     <slot {Nav}{Notice}/>
 </header>
 
