@@ -117,8 +117,10 @@
 
                 text-align: center;
 
+                transition: border-color 200ms ease-in-out;
                 &:focus {
                     outline: none;
+                    border-color: var(--br-3);
                 }
             }
         }
