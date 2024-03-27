@@ -61,6 +61,16 @@ body {
     flex-direction: column;
 }
 
+// For safari
+// vh does not take the bottom menu on safari in to account
+// svh is the "true" vh value for safari
+@supports (height: 100svh) {
+    body {
+        min-height: 100svh;
+    }
+}
+
+
 svg {
     height: 1.5rem;
     & path.fill {
