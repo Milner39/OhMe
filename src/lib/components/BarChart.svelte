@@ -3,7 +3,7 @@
     export let bars
 
     // Get the largest value by checking all bar values
-    let maxValue = bars.reduce((max, bar) => max = Math.max(max, bar.value), 0)
+    const maxValue = bars.reduce((max, bar) => max = Math.max(max, bar.value), 0)
 </script>
 
 <div class="barChart">

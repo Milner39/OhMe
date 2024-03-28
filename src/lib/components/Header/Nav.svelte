@@ -22,26 +22,26 @@
     // Define function to be ran on mount and resize
     const onResize = () => {
         // Get width of the collapsible container
-        let containerWidth = collapsible.clientWidth
+        const containerWidth = collapsible.clientWidth
 
         // Get width of dropdown toggle button
-        let dropdownButtonWidth = dropdownButton.clientWidth
+        const dropdownButtonWidth = dropdownButton.clientWidth
 
         // Get all items in collapsible container
-        let collapsibleItems = [...collapsible.getElementsByTagName("h2")]
+        const collapsibleItems = [...collapsible.getElementsByTagName("h2")]
         
         // Calculate total width of all items in "collapsibleItems"
-        let totalItemWidth = collapsibleItems.reduce((total, item) => total + item.clientWidth, 0)
+        const totalItemWidth = collapsibleItems.reduce((total, item) => total + item.clientWidth, 0)
 
         // Get gap between items in "collapsible"
-        let collapsibleGap = Number(window.getComputedStyle(collapsible).columnGap.slice(0,-2))
+        const collapsibleGap = Number(window.getComputedStyle(collapsible).columnGap.slice(0,-2))
 
         // Calculate the extra spacing required to fit all items in "collapsibleItems"
-        let spacingWidth = collapsibleGap * (collapsibleItems.length -1)   
+        const spacingWidth = collapsibleGap * (collapsibleItems.length -1)   
 
         // Calcualte the extra width taken up by elements that only appear when "collapsed == true"
         // "collapsed" will be [ true or flase ] therefore static difference will be [ 0 or {dropdownButtonWidth} ]
-        let staticDifference = (dropdownButtonWidth) * collapsed
+        const staticDifference = (dropdownButtonWidth) * collapsed
 
         // Set boolean to control "collapsible" is collapsed
         collapsed = (containerWidth + staticDifference < totalItemWidth + spacingWidth)
