@@ -18,15 +18,15 @@ datasource db {
 // Define User model
 model User {
   // Generates a unique string when a user is created that will be used as the key
-  id                   String     @id @unique @default(uuid())
+  id                   String   @id @unique @default(uuid())
 
  // User credentials
-  username             String     @unique
-  email                String     @unique
+  username             String   @unique
+  email                String   @unique
   hashedPassword       String     
 
-  emailVerified        Boolean
-  web3Wallet           String
+  emailVerified        Boolean  @default(false)
+  web3Wallet           String?
 
   sessions         Session[]
 }
