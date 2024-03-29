@@ -9,18 +9,19 @@ import { client as prismaClient } from "$lib/server/prisma"
 
 // Create lucia client and pass in session and user models
 const client = new Lucia(new PrismaAdapter(prismaClient.Session, prismaClient.User), {
-	// Configure which feilds from the database should be returned when getting user
+	// Configure which feilds from the database should be returned when getting user and session data from lucia
 	getUserAttributes: (attributes) => {
 		return {
-			username: attributes.username
+			id: attributes.id,
+			username: attributes.username,
+			email: attributes.email
 		}
 	},
-
-	// Configure which feilds from the database should be returned when getting session
 	getSessionAttributes: (attributes) => {
 		return {
-			userId: attributes.userId,
-			expiresAt: attributes.expiresAt
+			id: attributes.id,
+			expiresAt: attributes.expiresAt,
+			userId: attributes.userId
 		}
 	},
 
@@ -33,11 +34,9 @@ const client = new Lucia(new PrismaAdapter(prismaClient.Session, prismaClient.Us
 
 		// Expires true removes alot of customization from the session expirey and extending functionality
 		// For most projects it is usefull, but it wont be used here
-		expires: "false",
+		expires: false,
 
 		attributes: {
-			secure: process.env.NODE_ENV === "production",
-
 			// Session cookie cannot be shared between sites
 			sameSite: "strict"
 		}
