@@ -10,7 +10,7 @@ const luciaHandle = async ({ event, resolve }) => {
     // By default it is "auth_session"
     const sessionId = event.cookies.get(luciaClient.sessionCookieName)
 
-    // If no session cookie, set locals.[user,session] to null and return
+    // If no session cookie
     if (!sessionId) {
         event.locals.user = null
         event.locals.session = null
@@ -20,31 +20,17 @@ const luciaHandle = async ({ event, resolve }) => {
     // Validate the session id and get the session and user objects
     const { session, user } = await luciaClient.validateSession(sessionId)
 
-
-    //TODO: Figure out what this actually does 
-
-    // If session exists and it is fresh
-    if (session && session.fresh) {
-        const sessionCookie = luciaClient.createSessionCookie(sessionId)
-        event.cookies.set(sessionCookie.name, sessionCookie.value, {
-            path: ".",
-            ...sessionCookie.attributes
-        })
-    }
-
-    // If session does not exist
+    // If session with session id does not exist
     if (!session) {
-        const sessionCookie = luciaClient.createBlankSessionCookie()
-        event.cookie.set(sessionCookie.name, sessionCookie.value, {
-            path: ".",
-            ...sessionCookie.attributes
-        })
+        await event.cookies.delete(luciaClient.sessionCookieName, {path: "."})
     }
+
+    // If session exists
     event.locals.user = user
     event.locals.session = session
     return resolve(event)
 
-    //
+    // TODO: Extending session expirery
 }
 
 // Export handle to be run
