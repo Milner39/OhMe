@@ -38,7 +38,10 @@ const client = new Lucia(new PrismaAdapter(prismaClient.Session, prismaClient.Us
 
 		attributes: {
 			// Session cookie cannot be shared between sites
-			sameSite: "strict"
+			sameSite: "strict",
+
+			// Running server on http, not https
+			secure: false
 		}
 	}
 })
