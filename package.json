@@ -6,7 +6,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"host": "node -r dotenv/config build"
+		"host": "set NODE_ENV=production&& node -r dotenv/config build"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "^5.0.1",
