@@ -23,6 +23,9 @@ const luciaHandle = async ({ event, resolve }) => {
     // If session with session id does not exist
     if (!session) {
         await event.cookies.delete(luciaClient.sessionCookieName, {path: "."})
+        event.locals.user = null
+        event.locals.session = null
+        return resolve(event)
     }
 
     // If session exists
