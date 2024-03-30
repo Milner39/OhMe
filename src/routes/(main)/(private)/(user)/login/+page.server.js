@@ -56,6 +56,42 @@ export const actions = {
 
         // Login or register user based on what form they submited
         if (mode === "login") {
+            // TODO: Login throttling
+
+
+            // Check database for user with matching credentials
+            let user
+            try {
+                user = await prismaClient.User.findUnique({
+                    where: {
+                       email: formData.email
+                    }
+                })
+            } catch (err) {
+                console.log(err)
+                return {
+                    status: 500,
+                    errors: {server: "Unable to login user"}
+                }
+            }
+            // If user with matching credentials does not exist, null will be returned
+            // in which case instead of checking "user.hashedPassword" an empty string is used,
+            // therefore "validPassword" will always be false
+
+            // Check if password is correct
+            let validPassword
+            try {
+                validPassword = await new stringHasher().verify(user ? user.hashedPassword : "", formData.password)
+            } catch {
+                validPassword = false
+            }
+
+            // if password incorrect
+            if (!validPassword) {
+                errors.email = "Email or password incrorrect"
+                errors.password = "Email or password incrorrect"
+            }
+
             // Return errors if any 
             if (formHasErrors()) {
                 return {
@@ -64,10 +100,15 @@ export const actions = {
                 }
             }
 
-            // TODO: handle logins
+            // Create and assign user a session cookie so login persists refreshes
+            const session = await luciaClient.createSession(user.id, {id: crypto.randomUUID()})
+            const sessionCookie = luciaClient.createSessionCookie(session.id)
+            cookies.set(sessionCookie.name, sessionCookie.value, {
+                path: ".",
+                ...sessionCookie.attributes
+            })
 
-            console.log("login details: ")
-            console.log(formData)
+
         }
         else if (mode === "register") {
             // Sanitize username input
