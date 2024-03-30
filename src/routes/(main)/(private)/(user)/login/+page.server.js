@@ -36,8 +36,17 @@ export const actions = {
         // Example: case email.length > 50 { error.email = "Email too long"}
         // If no cases are hit, no errors
 
+        // Sanitize username input
+        if ( mode === "register" && (
+            typeof formData.username !== "string" ||
+            formData.username.length > 25 ||
+            ! /[A-Za-z0-9 !?%^&*_:;@#~,.=+-]/.test(formData.username)
+        )) {
+            errors.username = "Invalid username"
+        }
+
         // Sanitize email input
-        if (
+        if ( 
             typeof formData.email !== "string" ||
             formData.email.length > 50 ||
             ! /[A-Za-z0-9._%+-]+@[A-Za-z0-9._%+-]+[.][A-Za-z]{2,}$/.test(formData.email)
@@ -54,10 +63,17 @@ export const actions = {
             errors.password = "Invalid password"
         }
 
+        // Return errors if any 
+        if (formHasErrors()) {
+            return {
+                status: 422,
+                errors
+            }
+        }
+
         // Login or register user based on what form they submited
         if (mode === "login") {
             // TODO: Login throttling
-
 
             // Check database for user with matching credentials
             let user
@@ -78,6 +94,10 @@ export const actions = {
             // in which case instead of checking "user.hashedPassword" an empty string is used,
             // therefore "validPassword" will always be false
 
+            // Returning immediately allows malicious users to figure out valid usernames from response times,
+			// allowing them to only focus on guessing passwords in brute-force attacks.
+			// As a preventive measure, hash passwords even for invalid users           
+
             // Check if password is correct
             let validPassword
             try {
@@ -95,7 +115,7 @@ export const actions = {
             // Return errors if any 
             if (formHasErrors()) {
                 return {
-                    status: 422,
+                    status: 403,
                     errors
                 }
             }
@@ -108,18 +128,11 @@ export const actions = {
                 ...sessionCookie.attributes
             })
 
-
+            return {
+                status: 200
+            }
         }
         else if (mode === "register") {
-            // Sanitize username input
-            if (
-                typeof formData.username !== "string" ||
-                formData.username.length > 25 ||
-                ! /[A-Za-z0-9 !?%^&*_:;@#~,.=+-]/.test(formData.username)
-            ) {
-                errors.username = "Invalid username"
-            }
-
             // Check database for users with matching values unique feilds
             const existingUsers = await prismaClient.User.findMany({
                 where: {
@@ -147,7 +160,7 @@ export const actions = {
             // Return errors if any
             if (formHasErrors()) {
                 return {
-                    status: 422,
+                    status: 409,
                     errors
                 }
             }
@@ -180,6 +193,10 @@ export const actions = {
             })
 
             // TODO: Redirect home and add notice to verify email
+
+            return {
+                status: 200
+            }
         }
     }
 }
