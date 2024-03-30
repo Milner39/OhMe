@@ -37,6 +37,7 @@ export const actions = {
         // If no cases are hit, no errors
 
         // Sanitize username input
+        // TODO: Dont allow input to start and end with whitespace
         if ( mode === "register" && (
             typeof formData.username !== "string" ||
             formData.username.length > 25 ||
