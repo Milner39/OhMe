@@ -17,6 +17,9 @@
 
     // Allows access to data returned from server action events
     export let form
+
+    // Reactive variable to control what form to show
+    $: mode = $page.data.mode
 </script>
 
 <Banner>
@@ -32,20 +35,20 @@
         <div class="block">
             <div class="tabs">
                 <button class="button-slim" type="button"
-                    class:active={($page.data.mode || "login") === "login"}
+                    class:active={(mode || "login") === "login"}
                     on:click={() => {goto("?mode=login")}}
                 >
                     <h2>Login</h2>
                 </button>
                 <button class="button-slim" type="button"
-                    class:active={($page.data.mode || "login") === "register"}
+                    class:active={(mode || "login") === "register"}
                     on:click={() => {goto("?mode=register")}}
                 >
                     <h2>Register</h2>
                 </button>
             </div>
             <div class="centered">
-                {#if ($page.data.mode || "login") === "login"}
+                {#if (mode || "login") === "login"}
                     <form method="POST" 
                         use:enhance={({ formData }) => { formData.append("mode","login") }}
                     >
@@ -66,7 +69,7 @@
                         </div>
                         <button class="button-pill" type="submit"><h2>Login</h2></button>
                     </form>
-                {:else if ($page.data.mode || "login") === "register"}
+                {:else if (mode || "login") === "register"}
                     <form method="POST"
                         use:enhance={({ formData }) => { formData.append("mode","register") }}
                     >
