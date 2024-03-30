@@ -130,7 +130,8 @@ export const actions = {
             })
 
             return {
-                status: 200
+                status: 200,
+                errors
             }
         }
         else if (mode === "register") {
@@ -196,7 +197,8 @@ export const actions = {
             // TODO: Redirect home and add notice to verify email
 
             return {
-                status: 200
+                status: 200,
+                errors
             }
         }
     }
