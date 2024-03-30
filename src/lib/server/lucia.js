@@ -14,7 +14,9 @@ const client = new Lucia(new PrismaAdapter(prismaClient.Session, prismaClient.Us
 		return {
 			id: attributes.id,
 			username: attributes.username,
-			email: attributes.email
+			email: attributes.email,
+			emailVerified: attributes.emailVerified,
+			web3Wallet: attributes.web3Wallet
 		}
 	},
 	getSessionAttributes: (attributes) => {
