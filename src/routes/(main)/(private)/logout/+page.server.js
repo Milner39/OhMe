@@ -5,7 +5,7 @@ import { client as luciaClient } from "$lib/server/lucia"
 import { redirect } from '@sveltejs/kit'
 
 export const actions = {
-    default: async ({ locals, cookies }) => {
+    default: async ({ locals }) => {
         // Get session from locals
         const { session } = locals
 
@@ -14,9 +14,8 @@ export const actions = {
             redirect(302, "/")
         }
 
-        // If user has session, invalidate session and delete cookie
+        // Delete session from database
         await luciaClient.invalidateSession(session.id)
-        await cookies.delete(luciaClient.sessionCookieName, {path: "."})
 
         // Redirect to "/"
         redirect(302, "/")
