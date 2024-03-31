@@ -25,6 +25,7 @@ vite.config.ts.timestamp-*
 
 # Database files
 *.sqlite
+*.sqlite-journal
 
 # Media files
 *.png
