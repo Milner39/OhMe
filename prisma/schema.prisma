@@ -18,27 +18,27 @@ datasource db {
 // Define User model
 model User {
   // Generates a unique string when a user is created that will be used as the key
-  id                   String   @id @unique @default(uuid())
+  id                String     @id @unique @default(uuid())
 
  // User credentials
-  username             String   @unique
-  email                String   @unique
-  hashedPassword       String     
+  username          String     @unique
+  email             String     @unique
+  hashedPassword    String     
 
-  emailVerified        Boolean  @default(false)
-  web3Wallet           String?
+  emailVerified     Boolean    @default(false)
+  web3Wallet        String?
 
-  sessions         Session[]
+  sessions          Session[]
 }
 
 model Session {
   // Generates a unique string when a session is created that will be used as the key
-  id         String  @id @unique @default(uuid())
+  id           String    @id @unique @default(uuid())
 
   // Indicates when a session expires 
-  expiresAt  DateTime
+  expiresAt    DateTime
 
   // Used to reference which user is linked to this session
-  userId     String
-  user       User    @relation(references: [id], fields: [userId], onDelete: Cascade)
+  userId       String
+  user         User      @relation(references: [id], fields: [userId], onDelete: Cascade)
 }
