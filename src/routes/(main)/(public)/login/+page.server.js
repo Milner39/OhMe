@@ -40,11 +40,15 @@ export const actions = {
         // If no cases are hit, no errors
 
         // Sanitize username input
-        // TODO: Dont allow input to start and end with whitespace
         if ( mode === "register" && (
             typeof formData.username !== "string" ||
             formData.username.length > 25 ||
-            ! /[A-Za-z0-9 !?%^&*_:;@#~,.=+-]/.test(formData.username)
+            // ^                                         Start string
+            // [A-Za-z0-9!?%&_:;()@#~,.=+-]              String starts with 1 of these chars
+            // (?:[A-Za-z0-9 !?%&_:;()@#~,.=+-]*...)?    If string contains more of these chars...
+            // [A-Za-z0-9!?%&_:;()@#~,.=+-]              it must end with one of these chars
+            // $                                         End string
+            ! /^[A-Za-z0-9!?%&_:;()@#~,.=+-](?:[A-Za-z0-9 !?%&_:;()@#~,.=+-]*[A-Za-z0-9!?%&_:;()@#~,.=+-])?$/.test(formData.username)
         )) {
             errors.username = "Invalid username"
         }
@@ -53,7 +57,12 @@ export const actions = {
         if ( 
             typeof formData.email !== "string" ||
             formData.email.length > 50 ||
-            ! /[A-Za-z0-9._%+-]+@[A-Za-z0-9._%+-]+[.][A-Za-z]{2,}$/.test(formData.email)
+            // ^[A-Za-z0-9!?%&_:;()@#~,.=+-]+    String must start with 1 or more of these chars
+            // @                                 Single "@" must follow
+            // [A-Za-z0-9!?%&_:;()@#~,=+-]+      1 or more of these chars must follow
+            // [.]                               Single "." must follow
+            // [A-Za-z-]{2,}$                    String must end with 2 or more of these chars must follow
+            ! /^[A-Za-z0-9!?%&_:;()@#~,.=+-]+@[A-Za-z0-9!?%&_:;()@#~,=+-]+[.][A-Za-z-]{2,}$/.test(formData.email)
         ) {
             errors.email = "Invalid email"
         }
@@ -62,7 +71,12 @@ export const actions = {
         if (
             typeof formData.password !== "string" ||
             formData.password.length > 50 ||
-            ! /[A-Za-z0-9 !?%^&*_:;@#~,.=+-]{1,}/.test(formData.password)
+            // ^                                         Start string
+            // [A-Za-z0-9!?%&_:;()@#~,.=+-]              String starts with 1 of these chars
+            // (?:[A-Za-z0-9 !?%&_:;()@#~,.=+-]*...)?    If string contains more of these chars...
+            // [A-Za-z0-9!?%&_:;()@#~,.=+-]              it must end with one of these chars
+            // $                                         End string
+            ! /^[A-Za-z0-9!?%&_:;()@#~,.=+-](?:[A-Za-z0-9 !?%&_:;()@#~,.=+-]*[A-Za-z0-9!?%&_:;()@#~,.=+-])?$/.test(formData.password)
         ) {
             errors.password = "Invalid password"
         }
