@@ -33,72 +33,85 @@
 <div class="page">
     <div class="pageContent">
         <div class="block">
-            <div class="tabs">
-                <button class="button-slim" type="button"
-                    class:active={(mode || "login") === "login"}
-                    on:click={() => {goto("?mode=login")}}
-                >
-                    <h2>Login</h2>
-                </button>
-                <button class="button-slim" type="button"
-                    class:active={(mode || "login") === "register"}
-                    on:click={() => {goto("?mode=register")}}
-                >
-                    <h2>Register</h2>
-                </button>
-            </div>
-            <div class="centered">
-                {#if (mode || "login") === "login"}
-                    <form method="POST" 
-                        use:enhance={({ formData }) => { formData.append("mode","login") }}
+            {#if $page.data.session}
+                <div class="loggedIn">
+                    {#if form}
+                        <h1>You have been logged in</h1>
+                    {:else}
+                        <h1>You are already logged in</h1>
+                        <form method="POST">
+                            <button class="button-pill" type="submit" formaction="/logout"><h2>Log Out</h2></button>
+                        </form>
+                    {/if}
+                </div>
+            {:else}
+                <div class="tabs">
+                    <button class="button-slim" type="button"
+                        class:active={(mode || "login") === "login"}
+                        on:click={() => {goto("?mode=login")}}
                     >
-                        <h1>Log In To Your Account</h1>
-                        <div>
-                            <label for="email"><h3>Email Address*</h3></label>
-                            <input name="email" id="email" required autocomplete="email"
-                                class:invalid={form?.errors.email}
-                                placeholder={form?.errors.email}
-                            >
-                        </div>
-                        <div>
-                            <label for="password"><h3>Password*</h3></label>
-                            <input name="password" id="password" required autocomplete="current-password"
-                                class:invalid={form?.errors.password}
-                                placeholder={form?.errors.password}
-                            >
-                        </div>
-                        <button class="button-pill" type="submit"><h2>Login</h2></button>
-                    </form>
-                {:else if (mode || "login") === "register"}
-                    <form method="POST"
-                        use:enhance={({ formData }) => { formData.append("mode","register") }}
+                        <h2>Login</h2>
+                    </button>
+                    <button class="button-slim" type="button"
+                        class:active={(mode || "login") === "register"}
+                        on:click={() => {goto("?mode=register")}}
                     >
-                        <h1>Create A New Account</h1>
-                        <div>
-                            <label for="username"><h3>Username*</h3></label>
-                            <input name="username" id="username" required autocomplete="username"
-                                class:invalid={form?.errors.username}
-                                placeholder={form?.errors.username}
-                            >
-                        </div>
-                        <div>
-                            <label for="email"><h3>Email Address*</h3></label>
-                            <input name="email" id="email" required autocomplete="email"
-                                class:invalid={form?.errors.email}
-                                placeholder={form?.errors.email}
-                            >
-                        </div>
-                        <div>
-                            <label for="password"><h3>Password*</h3></label>
-                            <input name="password" id="password" required autocomplete="new-password"
-                                class:invalid={form?.errors.password}
-                                placeholder={form?.errors.password}
-                            >
-                        </div>
-                        <button class="button-pill" type="submit"><h2>Register</h2></button>
-                    </form>
-                {/if}
-            </div>
+                        <h2>Register</h2>
+                    </button>
+                </div>
+                <div class="centered">
+                    {#if (mode || "login") === "login"}
+                        <form class="form" method="POST" 
+                            use:enhance={({ formData }) => { formData.append("mode","login") }}
+                        >
+                            <h1>Log In To Your Account</h1>
+                            <div>
+                                <label for="email"><h3>Email Address*</h3></label>
+                                <input name="email" id="email" required autocomplete="email"
+                                    class:invalid={form?.errors.email}
+                                    placeholder={form?.errors.email}
+                                >
+                            </div>
+                            <div>
+                                <label for="password"><h3>Password*</h3></label>
+                                <input name="password" id="password" required autocomplete="current-password"
+                                    class:invalid={form?.errors.password}
+                                    placeholder={form?.errors.password}
+                                >
+                            </div>
+                            <button class="button-pill" type="submit"><h2>Login</h2></button>
+                        </form>
+                    {:else if (mode || "login") === "register"}
+                        <form class="form" method="POST"
+                            use:enhance={({ formData }) => { formData.append("mode","register") }}
+                        >
+                            <h1>Create A New Account</h1>
+                            <div>
+                                <label for="username"><h3>Username*</h3></label>
+                                <input name="username" id="username" required autocomplete="username"
+                                    class:invalid={form?.errors.username}
+                                    placeholder={form?.errors.username}
+                                >
+                            </div>
+                            <div>
+                                <label for="email"><h3>Email Address*</h3></label>
+                                <input name="email" id="email" required autocomplete="email"
+                                    class:invalid={form?.errors.email}
+                                    placeholder={form?.errors.email}
+                                >
+                            </div>
+                            <div>
+                                <label for="password"><h3>Password*</h3></label>
+                                <input name="password" id="password" required autocomplete="new-password"
+                                    class:invalid={form?.errors.password}
+                                    placeholder={form?.errors.password}
+                                >
+                            </div>
+                            <button class="button-pill" type="submit"><h2>Register</h2></button>
+                        </form>
+                    {/if}
+                </div>
+            {/if}
         </div>
     </div>
 </div>
@@ -126,7 +139,7 @@
             gap: 1rem;
         }
 
-        form {
+        .form {
             display: grid;
             grid-auto-flow: row;
             gap: 1rem;
@@ -185,6 +198,22 @@
         }
     }
 
+    .loggedIn {
+        display: grid;
+        gap: 1rem;
+        justify-content: center;
+
+        text-align: center;
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        form {
+            display: grid;
+        }
+    }
 
     .centered {
         width: 75%;
