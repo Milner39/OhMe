@@ -12,7 +12,10 @@ export const load = async ({ url }) => {
 
 // Import the prisma client to interact with database
 import { client as prismaClient } from "$lib/server/prisma"
+// Import a hashing function to store hashed passwords in database
+// and to unhash stored values to validate password user input
 import { Argon2id as stringHasher } from "oslo/password"
+// Import the lucia client to manage sessions
 import { client as luciaClient } from "$lib/server/lucia"
 
 // Define actions 
