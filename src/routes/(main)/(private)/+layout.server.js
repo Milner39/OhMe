@@ -11,7 +11,7 @@ export const load = async (event) => {
     if (event.url.pathname === loginPage) { return }
 
     // If user has no session, redirect to login page
-    // if (!event.locals.session) {
-    //     redirect(302, loginPage)
-    // }
+    if (!event.locals.session) {
+        redirect(302, loginPage)
+    }
 }
