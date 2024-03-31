@@ -2,6 +2,9 @@
     // Import styles
     import "$lib/styles/global.scss";
 
+    // Import page to get data from load functions
+    import { page } from "$app/stores"
+
     // Import function to redirect user
     import { goto } from "$app/navigation"
 
@@ -38,7 +41,13 @@
         </svelte:fragment>
         <button class="button-slim" type="button" on:click={() => goto("/settings")}><h2>Settings</h2></button>
         <svelte:fragment slot="static">
-            <button class="button-pill" type="button" on:click={() => goto("/login")}><h2>Log In</h2></button>
+            {#if $page.data.session}
+                <form method="POST">
+                    <button class="button-pill" type="submit" formaction="/logout"><h2>Log Out</h2></button>
+                </form>
+            {:else}
+                <button class="button-pill" type="button" on:click={() => goto("/login")}><h2>Log In</h2></button>
+            {/if}
         </svelte:fragment>
     </Nav>
     <Notice>
