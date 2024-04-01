@@ -167,10 +167,9 @@
             }
 
             >.navLinks {
-                margin-left: auto;
-                margin-right: auto;
-                
+                flex: 1;
                 display: flex;
+                justify-content: center;
                 gap: 1rem;
 
                 font-size: 1rem;
