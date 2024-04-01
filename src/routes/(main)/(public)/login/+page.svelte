@@ -160,7 +160,9 @@
                 color: inherit;
                 font-weight: 400;
 
-                text-align: center;
+                text-align: left;
+                // Or center?
+                // What looks better?
 
                 transition: border-color 200ms ease-in-out;
                 &.invalid {
