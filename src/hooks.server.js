@@ -4,14 +4,9 @@ import { sequence } from "@sveltejs/kit/hooks"
 // Import prisma client
 import { client as prismaClient } from "$lib/server/prisma"
 
-// Import lucia client
-import { client as luciaClient } from "$lib/server/lucia"
-
-const luciaHandle = async ({ event, resolve }) => {
+const authHandle = async ({ event, resolve }) => {
     // Get session id from event cookies
-    // "luciaClient.sessionCookieName" is defined in the initialization of the lucia client
-    // By default it is "auth_session"
-    const sessionId = event.cookies.get(luciaClient.sessionCookieName)
+    const sessionId = event.cookies.get("session")
 
     // If no session cookie
     if (!sessionId) {
@@ -20,12 +15,55 @@ const luciaHandle = async ({ event, resolve }) => {
         return resolve(event)
     }
 
-    // Validate the session id and get the session and user objects
-    const { session, user } = await luciaClient.validateSession(sessionId)
+    // Check if session with matching id exists in db
+    try {
+        // Get session and user from db query
+        var { user, ...session } = await prismaClient.Session.findUnique({
+            // Set conditions
+            where: {
+                id: sessionId
+            },
+            // Set which feilds to retrieve from db
+            select: {
+                id: true,
+                expiresAt: true,
+                userId: true,
+                // Include user feilds
+                user: {
+                    select: {
+                        // NOTE: DO NOT return hashedPassword
+                        // Never EVER make hashed passwords visible client-side
+                        id: true,
+                        username: true,
+                        email: true,
+                        emailVerified: true,
+                        web3Wallet: true,
+                        // Get the ids of all other user sessions too
+                        sessions: {
+                            select: {
+                                id: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    } catch {
+        session = null
+        user = null
+    }
 
     // If session with session id does not exist
     if (!session) {
-        await event.cookies.delete(luciaClient.sessionCookieName, {path: "."})
+        await event.cookies.delete("session", {path: "."})
+        event.locals.user = null
+        event.locals.session = null
+        return resolve(event)
+    }
+
+    // If session expired
+    if (session.expiresAt < new Date()) {
+        await event.cookies.delete("session", {path: "."})
         event.locals.user = null
         event.locals.session = null
         return resolve(event)
@@ -42,7 +80,7 @@ const luciaHandle = async ({ event, resolve }) => {
         expiryDate.setDate(expiryDate.getDate() +21)
         // Make changes to session in the database
         try {
-            await prismaClient.Session.update({
+            session = await prismaClient.Session.update({
                 where: {
                     id: sessionId
                 },
@@ -50,7 +88,7 @@ const luciaHandle = async ({ event, resolve }) => {
                     expiresAt: expiryDate
                 }
             })
-        } catch(err) {
+        } catch (err) {
             console.log(err)
         }
     }
@@ -61,4 +99,4 @@ const luciaHandle = async ({ event, resolve }) => {
 }
 
 // Export handle to be run
-export const handle = sequence(luciaHandle)
+export const handle = sequence(authHandle)

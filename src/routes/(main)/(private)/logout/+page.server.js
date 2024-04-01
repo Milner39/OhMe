@@ -1,5 +1,5 @@
-// Import the lucia client to manage sessions
-import { client as luciaClient } from "$lib/server/lucia"
+// Import prisma client
+import { client as prismaClient } from "$lib/server/prisma"
 
 // Import function to redirect user
 import { redirect } from '@sveltejs/kit'
@@ -9,15 +9,22 @@ export const actions = {
         // Get session from locals
         const { session } = locals
 
-        // If user has no session, redirect to "/"
+        // If user has no session
         if (!session) {
             redirect(302, "/")
         }
 
         // Delete session from database
-        await luciaClient.invalidateSession(session.id)
+        try {
+            await prismaClient.Session.delete({
+                where: {
+                    id: session.id
+                }
+            })
+        } catch (err) {
+            console.log(err)
+        }
 
-        // Redirect to "/"
         redirect(302, "/")
     }
 }

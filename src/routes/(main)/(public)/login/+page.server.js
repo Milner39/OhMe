@@ -10,13 +10,13 @@ export const load = async ({ url }) => {
     }
 }
 
+
+
 // Import the prisma client to interact with database
 import { client as prismaClient } from "$lib/server/prisma"
 // Import a hashing function to store hashed passwords in database
 // and to unhash stored values to validate password user input
 import { Argon2id as stringHasher } from "oslo/password"
-// Import the lucia client to manage sessions
-import { client as luciaClient } from "$lib/server/lucia"
 
 // Define actions 
 export const actions = {
@@ -35,6 +35,7 @@ export const actions = {
             }
         }
 
+        
         // IMPROVE: Use switch case statement to check for more specific error messages
         // Example: case email.length > 50 { error.email = "Email too long"}
         // If no cases are hit, no errors
@@ -89,14 +90,14 @@ export const actions = {
             }
         }
 
+
         // Login or register user based on what form they submited
         if (mode === "login") {
             // TODO: Login throttling
 
             // Check database for user with matching credentials
-            let user
             try {
-                user = await prismaClient.User.findUnique({
+                var user = await prismaClient.User.findUnique({
                     where: {
                        email: formData.email
                     }
@@ -117,9 +118,8 @@ export const actions = {
 			// As a preventive measure, hash passwords even for invalid users           
 
             // Check if password is correct
-            let validPassword
             try {
-                validPassword = await new stringHasher().verify(user ? user.hashedPassword : "", formData.password)
+                var validPassword = await new stringHasher().verify(user ? user.hashedPassword : "", formData.password)
             } catch {
                 validPassword = false
             }
@@ -138,12 +138,53 @@ export const actions = {
                 }
             }
 
-            // Create and assign user a session cookie so login persists refreshes
-            const session = await luciaClient.createSession(user.id, {id: crypto.randomUUID()})
-            const sessionCookie = luciaClient.createSessionCookie(session.id)
-            cookies.set(sessionCookie.name, sessionCookie.value, {
+            // Create new expiry date 21 days from now
+            const expireyDate = new Date()
+            expireyDate.setDate(expireyDate.getDate() +21)
+
+            // Create new session
+            try {
+                // Get the ids of the user's sessions
+                const dbResponse = await prismaClient.User.update({
+                    // Set conditions
+                    where: {
+                        id: user.id
+                    },
+                    data: {
+                        // Create new session linked to user
+                        sessions: {
+                            create: {
+                                // Set the expires at field
+                                expiresAt: expireyDate
+                            }
+                        }
+                    },
+                    // Set which feilds to retrieve from db
+                    select: {
+                        sessions: {
+                            select: {
+                                id: true
+                            }
+                        }
+                    }
+                })
+                // Get the id of the newest session
+                // which appears last in the array of sessions
+                var session = dbResponse.sessions.at(-1)
+            } catch (err) {
+                console.log(err)
+                return {
+                    status: 500,
+                    errors: {server: "Unable to login user"}
+                }
+            }
+
+            // Create cookie so login persists refreshes
+            cookies.set("session", session.id, {
                 path: ".",
-                ...sessionCookie.attributes
+                maxAge: 100 * 24 * 60 * 60,    // 100 days
+                sameSite: "strict",
+                secure: false
             })
 
             return {
@@ -151,7 +192,10 @@ export const actions = {
                 errors
             }
         }
+
+
         else if (mode === "register") {
+
             // Check database for users with matching values unique feilds
             const existingUsers = await prismaClient.User.findMany({
                 where: {
@@ -163,6 +207,10 @@ export const actions = {
                             email: formData.email
                         }
                     ]
+                },
+                select: {
+                    username: true,
+                    email: true
                 }
             })
 
@@ -184,31 +232,53 @@ export const actions = {
                 }
             }
 
-            // Try to create user and get userId
-            let user
+            // Create new expiry date 21 days from now
+            const expireyDate = new Date()
+            expireyDate.setDate(expireyDate.getDate() +21)
+
+            // Create new user and session
             try {
-                user = await prismaClient.User.create({
+                // Get the ids of the user's sessions
+                const dbResponse = await prismaClient.User.create({
+                    // Set user fields
                     data: {
                         username: formData.username,
                         email: formData.email,
-                        hashedPassword: await new stringHasher().hash(formData.password)
+                        hashedPassword: await new stringHasher().hash(formData.password),
+                        // Create new session linked to user
+                        sessions: {
+                            create: {
+                                // Set the expires at field
+                                expiresAt: expireyDate
+                            }
+                        }
+                    },
+                    // Set which feilds to retrieve from db
+                    select: {
+                        sessions: {
+                            select: {
+                                id: true
+                            }
+                        }
                     }
                 })
-            // Return errors if user cannot be created
+                // Get the id of the newest session
+                // which appears last in the array of sessions
+                var session = dbResponse.sessions.at(-1)
             } catch (err) {
                 console.log(err)
                 return {
                     status: 500,
-                    errors: {server: "Unable to register user"}
+                    errors: {server: "Unable to login user"}
                 }
             }
 
-            // Create and assign user a session cookie so login persists refreshes
-            const session = await luciaClient.createSession(user.id, {id: crypto.randomUUID()})
-            const sessionCookie = luciaClient.createSessionCookie(session.id)
-            cookies.set(sessionCookie.name, sessionCookie.value, {
+            // Create cookie so login persists refreshes
+            cookies.set("session", session.id, {
                 path: ".",
-                ...sessionCookie.attributes
+                maxAge: 100 * 24 * 60 * 60,    // 100 days
+                sameSite: "strict",
+                secure: false
             })
 
             // TODO: Redirect home and add notice to verify email
