@@ -5,7 +5,8 @@
     // Import goto to change url params
     import { goto } from "$app/navigation"
 
-    // Import enhance to add extra data to form submission
+    // Import enhance to prevent hard refeshes after form submitions
+    // and to add extra data to forms
     import { enhance } from "$app/forms"
 
     // Import svgs

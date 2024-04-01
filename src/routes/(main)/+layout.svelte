@@ -8,6 +8,9 @@
     // Import function to redirect user
     import { goto } from "$app/navigation"
 
+    // Import enhance to prevent hard refeshes after form submitions
+    import { enhance } from "$app/forms"
+
     // Import components
     import Header from "$lib/components/Header/Header.svelte"
 </script>
@@ -42,7 +45,7 @@
         <button class="button-slim" type="button" on:click={() => goto("/settings")}><h2>Settings</h2></button>
         <svelte:fragment slot="static">
             {#if $page.data.session}
-                <form method="POST">
+                <form method="POST" use:enhance>
                     <button class="button-pill" type="submit" formaction="/logout"><h2>Log Out</h2></button>
                 </form>
             {:else}
