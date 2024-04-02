@@ -4,6 +4,11 @@ import { sequence } from "@sveltejs/kit/hooks"
 // Import prisma client
 import { client as prismaClient } from "$lib/server/prisma"
 
+// ISSUE: clients can set their own cookies.
+// This means if a client were to brute force session ids,
+// they could get a match and sign into a user.
+// Session cookies need to be made more secure,
+// possibly by using a second uuid as a password.
 const authHandle = async ({ event, resolve }) => {
     // Get session id from event cookies
     const sessionId = event.cookies.get("session")
