@@ -28,7 +28,8 @@
         const dropdownButtonWidth = dropdownButton.clientWidth
 
         // Get all items in collapsible container
-        const collapsibleItems = [...collapsible.getElementsByTagName("h2")]
+        // IMPROVE: Get elements by class name so tag does not matter
+        const collapsibleItems = [...collapsible.getElementsByTagName("h6")]
         
         // Calculate total width of all items in "collapsibleItems"
         const totalItemWidth = collapsibleItems.reduce((total, item) => total + item.clientWidth, 0)
@@ -77,7 +78,7 @@
             {#each links as link}
                 <li class="navLink">
                     <a href={link.href}>
-                        <h2>{link.text}</h2>
+                        <h6>{link.text}</h6>
                     </a>
                 </li>
             {/each}
@@ -111,7 +112,7 @@
                 {#each links as link}
                     <li class="navLink">
                         <a href={link.href}>
-                            <h2>{link.text}</h2>
+                            <h6>{link.text}</h6>
                         </a>
                     </li>
                 {/each}
@@ -138,7 +139,6 @@
         padding-bottom: 0.75rem;
 
         background-color: var(--bg-3);
-        color: var(--tx-1);
 
         >.brand {
             margin-right: 1rem;
@@ -147,8 +147,7 @@
             align-items: center;
 
             color: var(--br-3);
-            font-size: 2rem;
-            font-weight: 100;
+            font-weight: 300;
         }
 
         >.collapse {
@@ -172,9 +171,6 @@
                 justify-content: center;
                 gap: 1rem;
 
-                font-size: 1rem;
-                font-weight: 400;
-
                 >.navLink {
                     padding: 0;
 
@@ -182,12 +178,6 @@
                     &:hover {
                         color: var(--br-3);
                     }
-                }
-            }
-
-            >.extra {
-                >:global(button) {
-                    font-size: 1rem;
                 }
             }
         }
@@ -218,10 +208,6 @@
                     height: 100%;
                 }
             }
-
-            >:global(button) {
-                font-size: 1rem;
-            }
         }
 
         >.dropdown {
@@ -231,13 +217,11 @@
             right: 0;
 
             background-color: var(--bg-3);
-            color: var(--tx-1);
 
             border: solid var(--bg-4);
             border-width: 1px 0 0 0;
 
             >.navLinks {
-                font-size: 1rem;
 
                 >.navLink {
                     transition: background-color 200ms ease-in-out;

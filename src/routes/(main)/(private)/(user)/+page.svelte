@@ -10,16 +10,16 @@
 
 <Banner>
     <Wallet slot="svg"/>
-    <h1>Dashboard</h1>
+    <h4>Dashboard</h4>
     <AutoScroll>
-        <h2>Get General Information About Your Account Here</h2>
+        <h6>Get General Information About Your Account Here</h6>
     </AutoScroll>
 </Banner>
 
 <div class="page">
     <div class="pageContent">
         <div class="block">
-            <h1>Cash Flow</h1>
+            <h6>Cash Flow</h6>
             <BarChart
                 bars={[
                     {
@@ -34,7 +34,7 @@
                     }
                 ]}
             />
-            <h1>Total Cashflow: <span class="deptNumber">£241</span></h1>
+            <h6>Total Cashflow: <span class="deptNumber">£241</span></h6>
         </div>
     </div>
 </div>
@@ -44,14 +44,6 @@
     .deptNumber {
         color: var(--green);
         font-weight: 600;
-    }
-
-    .block {
-
-        h1 {
-            font-size: 1rem;
-            font-weight: 500;
-        }
     }
 
 </style>

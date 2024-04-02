@@ -40,21 +40,21 @@
         }
     ]}>
         <svelte:fragment slot="brand">
-            <h1>OhMe</h1>
+            <h2>OhMe</h2>
         </svelte:fragment>
-        <button class="button-slim" type="button" on:click={() => goto("/settings")}><h2>Settings</h2></button>
+        <button class="button-slim" type="button" on:click={() => goto("/settings")}><h6>Settings</h6></button>
         <svelte:fragment slot="static">
             {#if $page.data.session}
                 <form method="POST" use:enhance>
-                    <button class="button-pill" type="submit" formaction="/logout"><h2>Log Out</h2></button>
+                    <button class="button-pill" type="submit" formaction="/logout"><h6>Log Out</h6></button>
                 </form>
             {:else}
-                <button class="button-pill" type="button" on:click={() => goto("/login")}><h2>Log In</h2></button>
+                <button class="button-pill" type="button" on:click={() => goto("/login")}><h6>Log In</h6></button>
             {/if}
         </svelte:fragment>
     </Nav>
     <Notice>
-        <h3>Hello! Welcome To My Website... Lorem ipsum dolor sit amet consectetur adipisicing elit.</h3>
+        <h6>Hello! Welcome To My Website... Lorem ipsum dolor sit amet consectetur adipisicing elit.</h6>
     </Notice>
 </Header>
 <slot/>

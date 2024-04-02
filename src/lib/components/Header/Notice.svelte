@@ -35,7 +35,6 @@
 
         background-color: var(--bg-3);
         color: var(--tx-4);
-        font-size: 1rem;
 
         border: solid var(--bg-4);
         border-width: 1px 0 0 0;

@@ -22,8 +22,8 @@
 
 <div>
     <!-- Show error information -->
-    <h1>{$page.status}: {$page.error.message}</h1>
-    <h2>Returning you home...</h2>
+    <h2>{$page.status}: {$page.error.message}</h2>
+    <h3>Returning you home...</h3>
 </div>
 
 <style lang="scss">
@@ -37,13 +37,5 @@
         justify-content: center;
         
         background-color: var(--bg-3);
-        color: var(--tx-1);
-    }
-
-    h1 {
-        font-size: 2rem;
-    }
-    h2 {
-        font-size: 1.5rem;
     }
 </style>
