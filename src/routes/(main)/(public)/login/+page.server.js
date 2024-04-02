@@ -18,6 +18,8 @@ import { client as prismaClient } from "$lib/server/prisma"
 // and to unhash stored values to validate password user input
 import { Argon2id as stringHasher } from "oslo/password"
 
+// IMPROVE: Use named actions instead of default actions and added "mode"
+
 // Define actions 
 export const actions = {
     // Define default function to handle form submitions
