@@ -231,7 +231,7 @@
             background-color: var(--bg-3);
 
             border: solid var(--bg-4);
-            border-width: 1px 0 0 0;
+            border-width: 1px 0 1px 0;
 
             box-shadow: var(--box-shadow-1);
 
