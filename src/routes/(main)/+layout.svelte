@@ -19,12 +19,12 @@
 <Header let:Nav let:Notice>
     <Nav links={[
         {
-            text: "Friends",
-            href: "/friends"
+            text: "Home",
+            href: "/"
         },
         {
-            text: "Lorem",
-            href: "/"
+            text: "Friends",
+            href: "/friends"
         },
         {
             text: "Lorem",
