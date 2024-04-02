@@ -68,47 +68,14 @@
 <!-- Add an event listener to call "onResize" function -->
 <svelte:window on:resize={onResize}/>
 
-<nav>
-    {#if $$slots.brand}
-        <a class="brand" href="/">
-            <slot name="brand"/>
-        </a>
-    {/if}
-    <div class="collapse" class:collapsed={collapsed} bind:this={collapsible}>
-        <ul class="navLinks">
-            {#each links as link}
-                <li class="navLink">
-                    <a href={link.href}>
-                        <h6>{link.text}</h6>
-                    </a>
-                </li>
-            {/each}
-        </ul>
-        {#if $$slots.default}
-            <div class="extra">
-                <slot/>
-            </div>
+<div class="zIndex">
+    <nav>
+        {#if $$slots.brand}
+            <a class="brand" href="/">
+                <slot name="brand"/>
+            </a>
         {/if}
-    </div>
-    <div class="static" class:collapsed={collapsed}>
-        {#if $$slots.static}
-            <slot name="static"/>
-        {/if}
-        <button class="dropdown-button button-slim" class:collapsed={!collapsed} type="button" 
-            title={dropdown ? "close dropdown":"open dropdown"}
-            on:click={toggleDropdown}
-            bind:this={dropdownButton}
-        >
-        {#if dropdown}
-            <Close/>
-        {:else}
-            <Menu/>
-        {/if}
-        </button>
-        
-    </div>
-    {#if collapsed && dropdown}
-        <div class="dropdown">
+        <div class="collapse" class:collapsed={collapsed} bind:this={collapsible}>
             <ul class="navLinks">
                 {#each links as link}
                     <li class="navLink">
@@ -124,13 +91,54 @@
                 </div>
             {/if}
         </div>
+        <div class="static" class:collapsed={collapsed}>
+            {#if $$slots.static}
+                <slot name="static"/>
+            {/if}
+            <button class="dropdown-button button-slim" class:collapsed={!collapsed} type="button" 
+                title={dropdown ? "close dropdown":"open dropdown"}
+                on:click={toggleDropdown}
+                bind:this={dropdownButton}
+            >
+            {#if dropdown}
+                <Close/>
+            {:else}
+                <Menu/>
+            {/if}
+            </button>
+            
+        </div>
+    </nav>
+    {#if collapsed && dropdown}
+    <div class="dropdown">
+        <ul class="navLinks">
+            {#each links as link}
+                <li class="navLink">
+                    <a href={link.href}>
+                        <h6>{link.text}</h6>
+                    </a>
+                </li>
+            {/each}
+        </ul>
+        {#if $$slots.default}
+            <div class="extra">
+                <slot/>
+            </div>
+        {/if}
+    </div>
     {/if}
-</nav>
+</div>
 
 <style lang="scss">
 
+    .zIndex {
+        position: relative;
+        z-index: 1;
+    }
+
     nav {
         position: relative;
+        padding: 0 0.75rem;
 
         display: flex;
         align-items: center;
@@ -210,9 +218,12 @@
                 }
             }
         }
+    }
 
-        >.dropdown {
+    .dropdown {
             position: absolute;
+            z-index: -1;
+
             top: 100%;
             left: 0;
             right: 0;
@@ -221,6 +232,8 @@
 
             border: solid var(--bg-4);
             border-width: 1px 0 0 0;
+
+            box-shadow: var(--box-shadow-1);
 
             >.navLinks {
 
@@ -257,6 +270,5 @@
                 }
             }
         }
-    }
 
 </style>

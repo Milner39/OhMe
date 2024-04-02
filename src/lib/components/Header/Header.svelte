@@ -16,13 +16,11 @@
         top: 0;
         left: 0;
         right: 0;
-        z-index: 1000;
+        z-index: 100;
 
+        border: solid var(--bg-4);
+        border-width: 0 0 1px 0;
         box-shadow: var(--box-shadow-1);
-
-        > :global(*) {
-            padding: 0 0.75rem;
-        }
     }
 
 </style>
