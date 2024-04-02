@@ -17,6 +17,7 @@
 
     // Variables indicating collapsible and dropdown state
     let collapsed = true
+    // TODO: Close drop down on navigate
     let dropdown = false
 
     // Define function to be ran on mount and resize
