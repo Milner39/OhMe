@@ -99,7 +99,7 @@ export const actions = {
             try {
                 var user = await prismaClient.User.findUnique({
                     where: {
-                       email: formData.email
+                       email: formData.email.toLowerCase()
                     }
                 })
             } catch (err) {
@@ -204,7 +204,7 @@ export const actions = {
                             username: formData.username
                         },
                         {
-                            email: formData.email
+                            email: formData.email.toLowerCase()
                         }
                     ]
                 },
@@ -219,7 +219,7 @@ export const actions = {
                 if (user.username === formData.username) {
                     errors.username = "Username taken"
                 }
-                if (user.email === formData.email) {
+                if (user.email === formData.email.toLowerCase()) {
                     errors.email = "Email taken"
                 }
             }
@@ -243,7 +243,7 @@ export const actions = {
                     // Set user fields
                     data: {
                         username: formData.username,
-                        email: formData.email,
+                        email: formData.email.toLowerCase(),
                         hashedPassword: await new stringHasher().hash(formData.password),
                         // Create new session linked to user
                         sessions: {
