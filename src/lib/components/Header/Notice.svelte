@@ -17,7 +17,7 @@
 {#if show}
     <div class="notice">
         <!-- Button to close notice -->
-        <button title="close notice" class="button-slim" type="button" on:click={close}><Close/></button>
+        <button title="Close notice" class="button-slim" type="button" on:click={close}><Close/></button>
         <AutoScroll>
             <slot/>
         </AutoScroll>

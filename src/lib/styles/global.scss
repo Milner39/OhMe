@@ -89,7 +89,7 @@ li {
     list-style: none;
 }
 
-h1, h2, h3, h4, h5, h6, p {
+h1, h2, h3, h4, h5, h6, p, small {
     font-size: inherit;
     font-weight: inherit;
 }
@@ -112,6 +112,9 @@ h5 {
 h6 {
     font-size: 1rem;
 }
+small {
+    font-size: 0.85rem;
+}
 
 input {
     padding-top: 2px;
@@ -130,6 +133,10 @@ input {
     text-align: left;
     // Or center?
     // What looks better?
+
+    &::placeholder {
+        color: var(--tx-4);
+    }
 
     transition: border-color 200ms ease-in-out;
     &.invalid {

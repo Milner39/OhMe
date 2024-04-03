@@ -11,7 +11,7 @@ export const actions = {
 
         // If user has no session
         if (!session) {
-            redirect(302, "/")
+            return
         }
 
         // Delete session from database
@@ -24,7 +24,5 @@ export const actions = {
         } catch (err) {
             console.log(err)
         }
-
-        redirect(302, "/")
     }
 }

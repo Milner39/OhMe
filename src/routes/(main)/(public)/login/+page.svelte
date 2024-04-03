@@ -67,14 +67,14 @@
                         >
                             <h5>Log In To Your Account</h5>
                             <div>
-                                <label for="email"><h6>Email Address*</h6></label>
+                                <label for="email"><small>Email Address*</small></label>
                                 <input name="email" id="email" required autocomplete="email"
                                     class:invalid={form?.errors.email}
                                     placeholder={form?.errors.email}
                                 >
                             </div>
                             <div>
-                                <label for="password"><h6>Password*</h6></label>
+                                <label for="password"><small>Password*</small></label>
                                 <input name="password" id="password" required autocomplete="current-password"
                                     class:invalid={form?.errors.password}
                                     placeholder={form?.errors.password}
@@ -88,21 +88,21 @@
                         >
                             <h5>Create A New Account</h5>
                             <div>
-                                <label for="username"><h6>Username*</h6></label>
+                                <label for="username"><small>Username*</small></label>
                                 <input name="username" id="username" required autocomplete="username"
                                     class:invalid={form?.errors.username}
                                     placeholder={form?.errors.username}
                                 >
                             </div>
                             <div>
-                                <label for="email"><h6>Email Address*</h6></label>
+                                <label for="email"><small>Email Address*</small></label>
                                 <input name="email" id="email" required autocomplete="email"
                                     class:invalid={form?.errors.email}
                                     placeholder={form?.errors.email}
                                 >
                             </div>
                             <div>
-                                <label for="password"><h6>Password*</h6></label>
+                                <label for="password"><small>Password*</small></label>
                                 <input name="password" id="password" required autocomplete="new-password"
                                     class:invalid={form?.errors.password}
                                     placeholder={form?.errors.password}

@@ -96,7 +96,7 @@
                 <slot name="static"/>
             {/if}
             <button class="dropdown-button button-slim" class:collapsed={!collapsed} type="button" 
-                title={dropdown ? "close dropdown":"open dropdown"}
+                title={dropdown ? "Close dropdown":"Open dropdown"}
                 on:click={toggleDropdown}
                 bind:this={dropdownButton}
             >
