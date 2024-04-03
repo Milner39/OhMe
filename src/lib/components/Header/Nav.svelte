@@ -3,8 +3,11 @@
     import Close from "$lib/assets/svgs/Close.svelte"
     import Menu from "$lib/assets/svgs/Menu.svelte";
 
-    // Import functions to handle lifecycle events
+    // Import function to handle lifecycle events
     import { onMount } from "svelte"
+
+    // Import function to handle navigation events
+    import { onNavigate } from "$app/navigation"
 
     // Let links be passed to component as prop
     export let links
@@ -17,7 +20,6 @@
 
     // Variables indicating collapsible and dropdown state
     let collapsed = true
-    // TODO: Close drop down on navigate
     let dropdown = false
 
     // Define function to be ran on mount and resize
@@ -62,6 +64,10 @@
     // When component is mounted, get inital value for "collapsed"
     onMount(() => {
         onResize()
+    })
+
+    onNavigate(() => {
+        dropdown = false
     })
 </script>
 
