@@ -44,7 +44,7 @@
         </svelte:fragment>
         <button class="button-slim" type="button" on:click={() => goto("/settings")}><h6>Settings</h6></button>
         <svelte:fragment slot="static">
-            {#if $page.data.session}
+            {#if $page.data.user}
                 <form method="POST" use:enhance>
                     <button class="button-pill" type="submit" formaction="/logout"><h6>Log Out</h6></button>
                 </form>

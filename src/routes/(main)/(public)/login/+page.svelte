@@ -34,7 +34,7 @@
 <div class="page">
     <div class="pageContent">
         <div class="block">
-            {#if $page.data.session}
+            {#if $page.data.user}
                 <div class="loggedIn">
                     {#if form}
                         <h4>You have been logged in</h4>
