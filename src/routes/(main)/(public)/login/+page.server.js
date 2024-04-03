@@ -16,7 +16,7 @@ import { sanitizer } from "$lib/server/sanitize.js"
 import { client as prismaClient } from "$lib/server/prisma"
 // Import a hashing function to store hashed passwords in database
 // and to unhash stored values to validate password user input
-import { Argon2id as stringHasher } from "oslo/password"
+import { stringHasher } from "$lib/server/argon"
 
 // IMPROVE: Use named actions instead of default actions and added "mode"
 
@@ -92,7 +92,7 @@ export const actions = {
 
             // Check if password is correct
             try {
-                var validPassword = await new stringHasher().verify(user ? user.hashedPassword : "", formData.password)
+                var validPassword = await stringHasher.verify(user ? user.hashedPassword : "", formData.password)
             } catch {
                 validPassword = false
             }
@@ -217,7 +217,7 @@ export const actions = {
                     data: {
                         username: formData.username,
                         email: formData.email.toLowerCase(),
-                        hashedPassword: await new stringHasher().hash(formData.password),
+                        hashedPassword: await stringHasher.hash(formData.password),
                         // Create new session linked to user
                         sessions: {
                             create: {
