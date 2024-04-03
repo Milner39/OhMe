@@ -12,6 +12,8 @@
     const close = () => {
         show = false
     }
+
+    // TODO: Use a store to let notice be updated from anywhere in the app
 </script>
 
 {#if show}
