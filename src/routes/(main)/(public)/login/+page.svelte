@@ -21,6 +21,8 @@
 
     // Reactive variable to control what form to show
     $: mode = $page.data.mode
+
+    // TODO: "forgot password?" option when email verification is done
 </script>
 
 <Banner>
