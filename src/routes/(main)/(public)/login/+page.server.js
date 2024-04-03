@@ -20,6 +20,9 @@ import { Argon2id as stringHasher } from "oslo/password"
 
 // IMPROVE: Use named actions instead of default actions and added "mode"
 
+// IMPROVE: Reduce number of db queries and use prisma error codes to set errors
+// instead of making multiple requests to db to check unique containts etc
+
 // Define actions 
 export const actions = {
     // Define default function to handle form submitions
