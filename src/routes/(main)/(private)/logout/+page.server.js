@@ -1,9 +1,6 @@
 // Import prisma client
 import { client as prismaClient } from "$lib/server/prisma"
 
-// Import function to redirect user
-import { redirect } from '@sveltejs/kit'
-
 export const actions = {
     default: async ({ locals }) => {
         // Get session from locals
