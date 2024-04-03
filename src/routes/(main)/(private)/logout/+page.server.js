@@ -6,7 +6,7 @@ export const actions = {
         // Get session from locals
         const { session } = locals
 
-        // If user has no session
+        // If no session
         if (!session) {
             return
         }
