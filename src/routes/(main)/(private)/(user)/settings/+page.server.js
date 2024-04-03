@@ -123,7 +123,8 @@ export const actions = {
                 },
                 // Set update feilds
                 data: {
-                    email: formData.email.toLowerCase()
+                    email: formData.email.toLowerCase(),
+                    emailVerified: false
                 }
             })
         } catch (err) {
@@ -227,6 +228,18 @@ export const actions = {
         }
 
         // Return if password is incorrect
+        if (formHasErrors(errors)) {
+            return {
+                status: 422,
+                errors
+            }
+        }
+
+        if (formData.password === formData.newPassword) {
+            errors.newPassword = "Passwords are the same"
+        }
+
+        // Return if passwords are the same
         if (formHasErrors(errors)) {
             return {
                 status: 422,
