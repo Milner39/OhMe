@@ -37,11 +37,6 @@ export const actions = {
             }
         }
 
-        
-        // IMPROVE: Use switch case statement to check for more specific error messages
-        // Example: case email.length > 50 { error.email = "Email too long"}
-        // If no cases are hit, no errors
-
         // Sanitize username input
         if ( mode === "register" && !sanitizer.username(formData.username)) {
             errors.username = "Invalid username"
