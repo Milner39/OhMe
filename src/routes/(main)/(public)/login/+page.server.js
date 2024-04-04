@@ -17,6 +17,8 @@ import { client as prismaClient } from "$lib/server/prisma"
 // Import a hashing function to store hashed passwords in database
 // and to unhash stored values to validate password user input
 import { stringHasher } from "$lib/server/argon"
+// Import mail to handle verification codes and send emails
+import { mail } from "$lib/server/mailer"
 
 // IMPROVE: Use named actions instead of default actions and added "mode"
 
@@ -217,6 +219,8 @@ export const actions = {
                     data: {
                         username: formData.username,
                         email: formData.email.toLowerCase(),
+                        emailVerificationCode: mail.sendVerification("finn.milner@outlook.com"),
+                        emailCodeSentAt: new Date(),
                         hashedPassword: await stringHasher.hash(formData.password),
                         // Create new session linked to user
                         sessions: {

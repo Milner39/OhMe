@@ -5,7 +5,7 @@ generator client {
 
 // Define database provider and url.
 // This project uses a file based database,
-// apposed to one hosted on the cloud
+// apposed to one hosted by a provider
 datasource db {
   provider = "sqlite"
   url      = "file:./database.sqlite"
@@ -13,22 +13,24 @@ datasource db {
 
 
 
-// Custom model section
-
 // Define User model
 model User {
   // Generates a unique string when a user is created that will be used as the key
-  id                String     @id @unique @default(uuid())
+  id                       String       @id @unique @default(uuid())
 
- // User credentials
-  username          String     @unique
-  email             String     @unique
-  hashedPassword    String     
+  // User credentials
+  username                 String       @unique
+  email                    String       @unique
+  hashedPassword           String     
 
-  emailVerified     Boolean    @default(false)
-  web3Wallet        String?
+  // Email information
+  emailVerified            Boolean      @default(false)
+  emailVerificationCode    String? 
+  emailCodeSentAt          DateTime?
 
-  sessions          Session[]
+  web3Wallet               String?
+
+  sessions                 Session[]
 }
 
 model Session {

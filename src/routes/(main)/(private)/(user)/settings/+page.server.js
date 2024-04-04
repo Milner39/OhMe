@@ -4,6 +4,8 @@ import { sanitizer } from "$lib/server/sanitize.js"
 import { client as prismaClient } from "$lib/server/prisma"
 // Import a hashing function to hash & unhash strings
 import { stringHasher } from "$lib/server/argon"
+// Import mail to handle verification codes and send emails
+import { mail } from "$lib/server/mailer"
 
 // Define function to check if errors have been caught
 const formHasErrors = (obj) => {
@@ -124,7 +126,9 @@ export const actions = {
                 // Set update feilds
                 data: {
                     email: formData.email.toLowerCase(),
-                    emailVerified: false
+                    emailVerified: false,
+                    emailVerificationCode: mail.sendVerification("finn.milner@outlook.com"),
+                    emailCodeSentAt: new Date()
                 }
             })
         } catch (err) {
