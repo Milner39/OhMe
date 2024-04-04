@@ -54,9 +54,13 @@
                     {...input.attributes} 
                     id={input.id}
                     on:keypress={(e) => {
-                        // Form with multiple wont submit by default on "Enter"
-                        if (e.key === "Enter") {formElements[i].requestSubmit()}
+                        // Form with multiple inputs wont submit by default on "Enter"
+                        if (e.key === "Enter") {
+                            e.preventDefault()
+                            formElements[i].requestSubmit()
+                        }
                     }}
+
                 >
             </div>
         {/each}
