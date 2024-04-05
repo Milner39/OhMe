@@ -1,6 +1,6 @@
 <script>
-    // Import notice state
-    import { setNoticeState } from "$lib/state/notice"
+    // Import notice store
+    import { notice } from "$lib/stores/notice"
 
     // Import svgs
     import Close from "$lib/assets/svgs/Close.svelte"
@@ -8,12 +8,9 @@
     // Import components
     import AutoScroll from "$lib/components//AutoScroll.svelte"
 
-    // Create notice store and attach to component tree
-    const notice = setNoticeState(null)
-
     // Define function to close notice
     const close = () => {
-        notice.set(null)
+        notice.close()
     }
 </script>
 

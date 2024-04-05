@@ -1,24 +1,14 @@
-// Import functions to manage context
-import { getContext, setContext } from "svelte"
 // Import function to create a store
 import { writable } from "svelte/store"
 
-const NOTICE_CTX = "NOTICE_CTX"
+const createNoticeStore = (initalValue) => {
+    const { subscribe, set, update } = writable(initalValue)
 
-// Function to create the notice store
-// and attach it to the component tree
-const setNoticeState = (value) => {
-    const noticeState = writable(value)
-    setContext(NOTICE_CTX, noticeState)
-    return noticeState
+    const close = () => {
+        set(null)
+    }
+
+    return { subscribe, set, update, close}
 }
 
-// Function to subscribe to the notice store
-const getNoticeState = () => {
-    return getContext(NOTICE_CTX)
-}
-
-export {
-    setNoticeState,
-    getNoticeState
-}
+export const notice = createNoticeStore(null)
