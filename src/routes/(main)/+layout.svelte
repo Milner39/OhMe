@@ -42,7 +42,7 @@
         <svelte:fragment slot="brand">
             <h2>OhMe</h2>
         </svelte:fragment>
-        <button class="button-slim" type="button" on:click={() => goto("/settings")}><h6 class="collapsibleItem">Settings</h6></button>
+        <button class="button-slim" type="button" on:click={() => goto("/settings")}><h6 class="collapsibleTarget">Settings</h6></button>
         <svelte:fragment slot="static">
             {#if $page.data.user}
                 <form method="POST" use:enhance>
