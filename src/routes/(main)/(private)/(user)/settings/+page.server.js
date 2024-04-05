@@ -47,6 +47,14 @@ export const actions = {
             }
         }
 
+        // Return if no change was made
+        if (user.username === formData.username) {
+            return {
+                status: 200,
+                errors
+            }
+        }
+
         // Update User entry in db
         try {
             await prismaClient.User.update({
@@ -112,6 +120,14 @@ export const actions = {
         if (formHasErrors(errors)) {
             return {
                 status: 422,
+                errors
+            }
+        }
+
+        // Return if no change was made
+        if (user.username === formData.username) {
+            return {
+                status: 200,
                 errors
             }
         }
@@ -252,6 +268,7 @@ export const actions = {
         }
 
         if (formData.password === formData.newPassword) {
+            errors.password = "Passwords are the same"
             errors.newPassword = "Passwords are the same"
         }
 
