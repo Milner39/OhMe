@@ -53,8 +53,6 @@
             {/if}
         </svelte:fragment>
     </Nav>
-    <Notice>
-        <h6>Hello! Welcome To My Website... Lorem ipsum dolor sit amet consectetur adipisicing elit.</h6>
-    </Notice>
+    <Notice/>
 </Header>
 <slot/>
