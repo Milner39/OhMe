@@ -27,7 +27,8 @@ export const actions = {
         if (!user) {
             return {
                 status: 403,
-                errors: {server: "Client not logged in"}
+                errors: {server: "Client not logged in"},
+                notice: "Login to access that page"
             }
         }
 
@@ -82,7 +83,8 @@ export const actions = {
         if (formHasErrors(errors)) {
             return {
                 status: 503,
-                errors
+                errors,
+                notice: "We couldn't update your username, try again later..."
             }
         }
 
@@ -104,7 +106,8 @@ export const actions = {
         if (!user) {
             return {
                 status: 403,
-                errors: {server: "Client not logged in"}
+                errors: {server: "Client not logged in"},
+                notice: "Login to access that page"
             }
         }
 
@@ -170,7 +173,8 @@ export const actions = {
         if (formHasErrors(errors)) {
             return {
                 status: 503,
-                errors
+                errors,
+                notice: "We couldn't update your email address, try again later..."
             }
         }
 
@@ -192,7 +196,8 @@ export const actions = {
         if (!user) {
             return {
                 status: 403,
-                errors: {server: "Client not logged in"}
+                errors: {server: "Client not logged in"},
+                notice: "Login to access that page"
             }
         }
 
@@ -246,7 +251,8 @@ export const actions = {
         if (formHasErrors(errors)) {
             return {
                 status: 503,
-                errors
+                errors,
+                notice: "We couldn't update your username, try again later..."
             }
         }
 
@@ -305,14 +311,16 @@ export const actions = {
         if (formHasErrors(errors)) {
             return {
                 status: 503,
-                errors
+                errors,
+                notice: "We couldn't update your username, try again later..."
             }
         }
 
         // Return if no errors
         return {
             status: 200,
-            errors
+            errors,
+            notice: "Successfully updated your password!"
         }
     }
 }

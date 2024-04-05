@@ -10,7 +10,8 @@ export const actions = {
         if (!session) {
             return {
                 status: 403,
-                errors: {server: "Client not logged in"}
+                errors: {server: "Client not logged in"},
+                notice: "Login to access that page"
             }
         }
 
@@ -24,14 +25,16 @@ export const actions = {
         } catch (err) {
             return {
                 status: 503,
-                errors: {sever: "Could not logout client"}
+                errors: {sever: "Could not logout client"},
+                notice: "We couldn't log you out, try again later..."
             }
         }
 
         // Return if no errors
         return {
             status: 200,
-            errors: {}
+            errors: {},
+            notice: "Successfully loged out!"
         }
     }
 }

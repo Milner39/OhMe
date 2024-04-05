@@ -83,7 +83,8 @@ export const actions = {
         if (formHasErrors(errors)) {
             return {
                 status: 503,
-                errors
+                errors,
+                notice: "We couldn't log you in, try again later..."
             }
         }
 
@@ -150,7 +151,8 @@ export const actions = {
         if (formHasErrors(errors)) {
             return {
                 status: 503,
-                errors
+                errors,
+                notice: "We couldn't log you in, try again later..."
             }
         }
 
@@ -165,7 +167,8 @@ export const actions = {
         // Return if no errors
         return {
             status: 200,
-            errors
+            errors,
+            notice: "Successfully logged in!"
         }
     },
 
@@ -291,7 +294,8 @@ export const actions = {
         if (formHasErrors(errors)) {
             return {
                 status: 503,
-                errors
+                errors,
+                notice: "We couldn't register your account, try again later..."
             }
         }
 
@@ -306,7 +310,8 @@ export const actions = {
         // Return if no errors
         return {
             status: 200,
-            errors
+            errors,
+            notice: "Successfully registered your account! Check your inbox for a verification link"
         }
     }
 }
