@@ -27,7 +27,7 @@ export const actions = {
         if (!user) {
             return {
                 status: 403,
-                errors: {server: "User not signed in"}
+                errors: {server: "Client not logged in"}
             }
         }
 
@@ -96,7 +96,7 @@ export const actions = {
         if (!user) {
             return {
                 status: 403,
-                errors: {server: "User not signed in"}
+                errors: {server: "Client not logged in"}
             }
         }
 
@@ -135,6 +135,7 @@ export const actions = {
                     emailVerificationCode: true
                 }
             })
+            // Send verification email
             let verificationCode = dbResponse.emailVerificationCode
             mail.sendVerification("finn.milner@outlook.com", verificationCode)
         } catch (err) {
@@ -175,7 +176,7 @@ export const actions = {
         if (!user) {
             return {
                 status: 403,
-                errors: {server: "User not signed in"}
+                errors: {server: "Client not logged in"}
             }
         }
 

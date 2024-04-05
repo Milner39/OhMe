@@ -8,7 +8,10 @@ export const actions = {
 
         // If no session
         if (!session) {
-            return
+            return {
+                status: 403,
+                errors: {server: "Client not logged in"}
+            }
         }
 
         // Delete session from database
@@ -19,7 +22,16 @@ export const actions = {
                 }
             })
         } catch (err) {
-            console.log(err)
+            return {
+                status: 422,
+                errors: {sever: "Could not logout client"}
+            }
+        }
+
+        // Return if no errors
+        return {
+            status: 200,
+            errors
         }
     }
 }

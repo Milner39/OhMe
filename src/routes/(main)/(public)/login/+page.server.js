@@ -66,7 +66,7 @@ export const actions = {
                     hashedPassword: true
                 }
             })
-            // If user with matching credentials does not exist, null will be returned
+            // If User with matching credentials does not exist, null will be returned
             // in which case instead of verifing "User.hashedPassword" a hashed empty string is used,
             // therefore "validPassword" will always be false
             var hashedPassword = dbResponse ? 
@@ -75,7 +75,7 @@ export const actions = {
         } catch (err) {
             switch (err.code) {
                 default:
-                    errors.server = "Unable to login user"
+                    errors.server = "Unable to login client"
             }
         }
 
@@ -87,9 +87,9 @@ export const actions = {
             }
         }
 
-        // Returning immediately allows malicious users to figure out valid usernames from response times,
+        // Returning immediately allows malicious clients to figure out valid usernames from response times,
 		// allowing them to only focus on guessing passwords in brute-force attacks.
-		// As a preventive measure, verifiy passwords even for non-existing users  
+		// As a preventive measure, verifiy passwords even for non-existing Users  
         const correctPassword = await stringHasher.verify(hashedPassword, formData.password)
 
         // if password incorrect
@@ -202,6 +202,7 @@ export const actions = {
         // Check username or email is taken
         try {
             let dbResponse = await prismaClient.User.findMany({
+                // Set filter feilds
                 where: {
                     OR: [
                         {
@@ -212,6 +213,7 @@ export const actions = {
                         }
                     ]
                 },
+                // Set return feilds
                 select: {
                     username: true,
                     email: true
@@ -270,6 +272,7 @@ export const actions = {
                     }
                 }
             })
+            // Send verification email
             let verificationCode = dbResponse.emailVerificationCode
             mail.sendVerification("finn.milner@outlook.com", verificationCode)
             // Get the id of the newest session
