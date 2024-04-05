@@ -54,7 +54,7 @@ export const actions = {
             }
         }
 
-        // Get hashedPassword of User entry to be logged into
+        // Get hashed password of User entry to be logged into
         try {
             let dbResponse = await prismaClient.User.findUnique({
                 // Set filter feilds
@@ -82,7 +82,7 @@ export const actions = {
         // Return if cannot get hashed password
         if (formHasErrors(errors)) {
             return {
-                status: 403,
+                status: 503,
                 errors
             }
         }
@@ -149,7 +149,7 @@ export const actions = {
         // Return if session cannot be created
         if (formHasErrors(errors)) {
             return {
-                status: 422,
+                status: 503,
                 errors
             }
         }
@@ -239,7 +239,7 @@ export const actions = {
         // Return if username or email taken
         if (formHasErrors(errors)) {
             return {
-                status: 422,
+                status: 409,
                 errors
             }
         }
@@ -290,7 +290,7 @@ export const actions = {
         // Return if user cannot be created
         if (formHasErrors(errors)) {
             return {
-                status: 422,
+                status: 503,
                 errors
             }
         }

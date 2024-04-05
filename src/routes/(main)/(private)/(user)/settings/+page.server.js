@@ -73,7 +73,7 @@ export const actions = {
         // Return if entry cannot be updated
         if (formHasErrors(errors)) {
             return {
-                status: 422,
+                status: 503,
                 errors
             }
         }
@@ -153,7 +153,7 @@ export const actions = {
         // Return if entry cannot be updated
         if (formHasErrors(errors)) {
             return {
-                status: 422,
+                status: 503,
                 errors
             }
         }
@@ -199,7 +199,7 @@ export const actions = {
             }
         }
 
-        // Get hashedPassword of User entry to be updated
+        // Get hashed password of User entry to be updated
         try {
             let dbResponse = await prismaClient.User.findUnique({
                 // Set filter feilds
@@ -226,10 +226,10 @@ export const actions = {
             }
         }
 
-        // Return if entry cannot get hashed password
+        // Return if cannot get hashed password
         if (formHasErrors(errors)) {
             return {
-                status: 422,
+                status: 503,
                 errors
             }
         }
@@ -287,7 +287,7 @@ export const actions = {
         // Return if entry cannot be updated
         if (formHasErrors(errors)) {
             return {
-                status: 422,
+                status: 503,
                 errors
             }
         }

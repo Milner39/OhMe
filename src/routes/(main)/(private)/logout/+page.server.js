@@ -23,7 +23,7 @@ export const actions = {
             })
         } catch (err) {
             return {
-                status: 422,
+                status: 503,
                 errors: {sever: "Could not logout client"}
             }
         }
