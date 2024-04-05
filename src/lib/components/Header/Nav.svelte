@@ -31,8 +31,7 @@
         const dropdownButtonWidth = dropdownButton.clientWidth
 
         // Get all items in collapsible container
-        // IMPROVE: Get elements by class name so tag does not matter
-        const collapsibleItems = [...collapsible.getElementsByTagName("h6")]
+        const collapsibleItems = [...collapsible.getElementsByClassName("collapsibleItem")]
         
         // Calculate total width of all items in "collapsibleItems"
         const totalItemWidth = collapsibleItems.reduce((total, item) => total + item.clientWidth, 0)
@@ -86,7 +85,7 @@
                 {#each links as link}
                     <li class="navLink">
                         <a href={link.href}>
-                            <h6>{link.text}</h6>
+                            <h6 class="collapsibleItem">{link.text}</h6>
                         </a>
                     </li>
                 {/each}
