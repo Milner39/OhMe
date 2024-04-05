@@ -31,7 +31,7 @@ export const actions = {
         // Return if no errors
         return {
             status: 200,
-            errors
+            errors: {}
         }
     }
 }
