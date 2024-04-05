@@ -42,8 +42,8 @@
                         <h4>You have been logged in</h4>
                     {:else}
                         <h4>You are already logged in</h4>
-                        <form method="POST" use:enhance>
-                            <button class="button-pill" type="submit" formaction="/logout"><h6>Log Out</h6></button>
+                        <form method="POST" action="/logout" use:enhance>
+                            <button class="button-pill" type="submit"><h6>Log Out</h6></button>
                         </form>
                     {/if}
                 </div>
@@ -64,9 +64,7 @@
                 </div>
                 <div class="centered">
                     {#if (mode || "login") === "login"}
-                        <form class="form" method="POST" 
-                            use:enhance={({ formData }) => { formData.append("mode","login") }}
-                        >
+                        <form class="form" method="POST" action="?/login" use:enhance>
                             <h5>Log In To Your Account</h5>
                             <div>
                                 <label for="email"><small>Email Address*</small></label>
@@ -85,9 +83,7 @@
                             <button class="button-pill" type="submit"><h6>Login</h6></button>
                         </form>
                     {:else if (mode || "login") === "register"}
-                        <form class="form" method="POST"
-                            use:enhance={({ formData }) => { formData.append("mode","register") }}
-                        >
+                        <form class="form" method="POST" action="?/register" use:enhance>
                             <h5>Create A New Account</h5>
                             <div>
                                 <label for="username"><small>Username*</small></label>

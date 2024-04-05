@@ -16,17 +16,17 @@ datasource db {
 // Define User model
 model User {
   // Generates a unique string when a user is created that will be used as the key
-  id                       String       @id @unique @default(uuid())
+  id                       String      @id @unique @default(uuid())
 
   // User credentials
-  username                 String       @unique
-  email                    String       @unique
+  username                 String      @unique
+  email                    String      @unique
   hashedPassword           String     
 
   // Email information
-  emailVerified            Boolean      @default(false)
-  emailVerificationCode    String? 
-  emailCodeSentAt          DateTime?
+  emailVerified            Boolean     @default(false)
+  emailVerificationCode    String      @unique @default(uuid())
+  emailCodeSentAt          DateTime    @default(now())
 
   web3Wallet               String?
 

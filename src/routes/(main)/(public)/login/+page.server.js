@@ -16,34 +16,171 @@ import { sanitizer } from "$lib/server/sanitize.js"
 import { client as prismaClient } from "$lib/server/prisma"
 // Import a hashing function to store hashed passwords in database
 // and to unhash stored values to validate password user input
-import { stringHasher } from "$lib/server/argon"
+import { stringHasher, failHash } from "$lib/server/argon"
 // Import mail to handle verification codes and send emails
 import { mail } from "$lib/server/mailer"
-
-// IMPROVE: Use named actions instead of default actions and added "mode"
 
 // IMPROVE: Reduce number of db queries and use prisma error codes to set errors
 // instead of making multiple requests to db to check unique containts etc
 
+// Define function to check if errors have been caught
+const formHasErrors = (obj) => {
+    if (Object.keys(obj).length > 0) {
+        return true
+    }
+}
+
 // Define actions 
 export const actions = {
-    // Define default function to handle form submitions
-    default: async ({ request, cookies }) => {
-        // Get mode and other formData
-        const { mode, ...formData } = Object.fromEntries(await request.formData())
-
-        // Variable to hold error information for return statement
+    login: async ({ request, cookies }) => {
+        // Variable to hold error information
         let errors = {}
 
-        // Define function to return error data to page
-        const formHasErrors = () => {
-            if (Object.keys(errors).length > 0) {
-                return true
+        // Get form data
+        const formData = Object.fromEntries(await request.formData())
+
+        // Sanitize email input
+        if (!sanitizer.email(formData.email)) {
+            errors.email = "Invalid email"
+        }
+
+        // Sanitize password input
+        if (!sanitizer.password(formData.password)) {
+            errors.password = "Invalid password"
+        }
+
+        // Return if inputs not valid
+        if (formHasErrors(errors)) {
+            return {
+                status: 422,
+                errors
             }
         }
 
+        // Get hashedPassword of User entry to be logged into
+        try {
+            let dbResponse = await prismaClient.User.findUnique({
+                // Set filter feilds
+                where: {
+                    email: formData.email.toLowerCase()
+                },
+                // Set return feilds
+                select: {
+                    hashedPassword: true
+                }
+            })
+            // If user with matching credentials does not exist, null will be returned
+            // in which case instead of verifing "User.hashedPassword" a hashed empty string is used,
+            // therefore "validPassword" will always be false
+            var hashedPassword = dbResponse ? 
+            dbResponse.hashedPassword : 
+            failHash
+        } catch (err) {
+            switch (err.code) {
+                default:
+                    errors.server = "Unable to login user"
+            }
+        }
+
+        // Return if cannot get hashed password
+        if (formHasErrors(errors)) {
+            return {
+                status: 403,
+                errors
+            }
+        }
+
+        // Returning immediately allows malicious users to figure out valid usernames from response times,
+		// allowing them to only focus on guessing passwords in brute-force attacks.
+		// As a preventive measure, verifiy passwords even for non-existing users  
+        const correctPassword = await stringHasher.verify(hashedPassword, formData.password)
+
+        // if password incorrect
+        if (!correctPassword) {
+            errors.email = "Email or password incrorrect"
+            errors.password = "Email or password incrorrect"
+        }
+
+        // Return if password incorrect
+        if (formHasErrors(errors)) {
+            return {
+                status: 403,
+                errors
+            }
+        }
+
+        // Create date 21 days from now
+        const expireyDate = new Date()
+        expireyDate.setDate(expireyDate.getDate() +21)
+
+        // Create Session entry in db, linked to User entry
+        try {
+            let dbResponse = await prismaClient.User.update({
+                // Set filter feilds
+                where: {
+                    email: formData.email.toLowerCase()
+                },
+                // Set update feilds
+                data: {
+                    sessions: {
+                        create: {
+                            expiresAt: expireyDate
+                        }
+                    }
+                },
+                // Set return feilds
+                select: {
+                    sessions: {
+                        select: {
+                            id: true
+                        }
+                    }
+                }
+            })
+            // Get the id of the newest session
+            // which appears last in the array of sessions
+            var session = dbResponse.sessions.at(-1)
+        } catch (err) {
+            // Catch error, match error code to
+            // appropriate error message
+            switch (err.code) {
+                default:
+                    errors.server = "Unable to login user"
+            }
+        }
+
+        // Return if session cannot be created
+        if (formHasErrors(errors)) {
+            return {
+                status: 422,
+                errors
+            }
+        }
+
+        // Create cookie so login persists refreshes
+        cookies.set("session", session.id, {
+            path: ".",
+            maxAge: 100 * 24 * 60 * 60,    // 100 days
+            sameSite: "strict",
+            secure: false
+        })
+
+        // Return if no errors
+        return {
+            status: 200,
+            errors
+        }
+    },
+
+    register: async ({ request, cookies }) => {
+        // Variable to hold error information
+        let errors = {}
+
+        // Get form data
+        const formData = Object.fromEntries(await request.formData())
+
         // Sanitize username input
-        if ( mode === "register" && !sanitizer.username(formData.username)) {
+        if (!sanitizer.username(formData.username)) {
             errors.username = "Invalid username"
         }
 
@@ -57,213 +194,86 @@ export const actions = {
             errors.password = "Invalid password"
         }
 
-        // Return errors if any 
-        if (formHasErrors()) {
+        // Return if inputs not valid
+        if (formHasErrors(errors)) {
             return {
                 status: 422,
                 errors
             }
         }
 
+        // Create date 21 days from now
+        const expireyDate = new Date()
+        expireyDate.setDate(expireyDate.getDate() +21)
 
-        // Login or register user based on what form they submited
-        if (mode === "login") {
-            // TODO: Login throttling
-
-            // Check database for user with matching credentials
-            try {
-                var user = await prismaClient.User.findUnique({
-                    where: {
-                       email: formData.email.toLowerCase()
-                    }
-                })
-            } catch (err) {
-                console.log(err)
-                return {
-                    status: 500,
-                    errors: {server: "Unable to login user"}
-                }
-            }
-            // If user with matching credentials does not exist, null will be returned
-            // in which case instead of checking "user.hashedPassword" an empty string is used,
-            // therefore "validPassword" will always be false
-
-            // Returning immediately allows malicious users to figure out valid usernames from response times,
-			// allowing them to only focus on guessing passwords in brute-force attacks.
-			// As a preventive measure, hash passwords even for invalid users           
-
-            // Check if password is correct
-            try {
-                var validPassword = await stringHasher.verify(user ? user.hashedPassword : "", formData.password)
-            } catch {
-                validPassword = false
-            }
-
-            // if password incorrect
-            if (!validPassword) {
-                errors.email = "Email or password incrorrect"
-                errors.password = "Email or password incrorrect"
-            }
-
-            // Return errors if any 
-            if (formHasErrors()) {
-                return {
-                    status: 403,
-                    errors
-                }
-            }
-
-            // Create new expiry date 21 days from now
-            const expireyDate = new Date()
-            expireyDate.setDate(expireyDate.getDate() +21)
-
-            // Create new session
-            try {
-                // Get the ids of the user's sessions
-                const dbResponse = await prismaClient.User.update({
-                    // Set conditions
-                    where: {
-                        id: user.id
-                    },
-                    data: {
-                        // Create new session linked to user
-                        sessions: {
-                            create: {
-                                // Set the expires at field
-                                expiresAt: expireyDate
-                            }
-                        }
-                    },
-                    // Set which feilds to retrieve from db
-                    select: {
-                        sessions: {
-                            select: {
-                                id: true
-                            }
+        // Create User and Session entry in db
+        try {
+            let dbResponse = await prismaClient.User.create({
+                // Set data feilds
+                data: {
+                    username: formData.username,
+                    email: formData.email.toLowerCase(),
+                    hashedPassword: await stringHasher.hash(formData.password),
+                    sessions: {
+                        create: {
+                            expiresAt: expireyDate
                         }
                     }
-                })
-                // Get the id of the newest session
-                // which appears last in the array of sessions
-                var session = dbResponse.sessions.at(-1)
-            } catch (err) {
-                console.log(err)
-                return {
-                    status: 500,
-                    errors: {server: "Unable to login user"}
+                },
+                // Set return feilds
+                select: {
+                    emailVerificationCode:  true,
+                    sessions: {
+                        select: {
+                            id: true
+                        }
+                    }
                 }
-            }
-
-            // Create cookie so login persists refreshes
-            cookies.set("session", session.id, {
-                path: ".",
-                maxAge: 100 * 24 * 60 * 60,    // 100 days
-                sameSite: "strict",
-                secure: false
             })
+            let verificationCode = dbResponse.emailVerificationCode
+            mail.sendVerification("finn.milner@outlook.com", verificationCode)
+            // Get the id of the newest session
+            // which appears last in the array of sessions
+            var session = dbResponse.sessions.at(-1)
+        } catch (err) {
+            // Catch error, match error code to
+            // appropriate error message
+            switch (err.code) {
+                case "P2002":
+                    console.log(err)
+                    // TODO: gp back to old method and this only 
+                    // checks one feild at a time
+                    if (err.meta.target.includes("username")) {
+                        errors.username = "Username taken"
+                    }
+                    if (err.meta.target.includes("email")) {
+                        errors.email = "Email taken"
+                    }
+                default:
+                    errors.server = "Unable to register user"
+            }
+        }
 
+        // Return if user cannot be created
+        if (formHasErrors(errors)) {
             return {
-                status: 200,
+                status: 422,
                 errors
             }
         }
 
+        // Create cookie so login persists refreshes
+        cookies.set("session", session.id, {
+            path: ".",
+            maxAge: 100 * 24 * 60 * 60,    // 100 days
+            sameSite: "strict",
+            secure: false
+        })
 
-        else if (mode === "register") {
-
-            // Check database for users with matching values unique feilds
-            const existingUsers = await prismaClient.User.findMany({
-                where: {
-                    OR: [
-                        {
-                            username: formData.username
-                        },
-                        {
-                            email: formData.email.toLowerCase()
-                        }
-                    ]
-                },
-                select: {
-                    username: true,
-                    email: true
-                }
-            })
-
-            // Set errors if values match
-            for (const user of existingUsers) {
-                if (user.username === formData.username) {
-                    errors.username = "Username taken"
-                }
-                if (user.email === formData.email.toLowerCase()) {
-                    errors.email = "Email taken"
-                }
-            }
-
-            // Return errors if any
-            if (formHasErrors()) {
-                return {
-                    status: 409,
-                    errors
-                }
-            }
-
-            // Create new expiry date 21 days from now
-            const expireyDate = new Date()
-            expireyDate.setDate(expireyDate.getDate() +21)
-
-            // Create new user and session
-            try {
-                // Get the ids of the user's sessions
-                const dbResponse = await prismaClient.User.create({
-                    // Set user fields
-                    data: {
-                        username: formData.username,
-                        email: formData.email.toLowerCase(),
-                        emailVerificationCode: mail.sendVerification("finn.milner@outlook.com"),
-                        emailCodeSentAt: new Date(),
-                        hashedPassword: await stringHasher.hash(formData.password),
-                        // Create new session linked to user
-                        sessions: {
-                            create: {
-                                // Set the expires at field
-                                expiresAt: expireyDate
-                            }
-                        }
-                    },
-                    // Set which feilds to retrieve from db
-                    select: {
-                        sessions: {
-                            select: {
-                                id: true
-                            }
-                        }
-                    }
-                })
-                // Get the id of the newest session
-                // which appears last in the array of sessions
-                var session = dbResponse.sessions.at(-1)
-            } catch (err) {
-                console.log(err)
-                return {
-                    status: 500,
-                    errors: {server: "Unable to login user"}
-                }
-            }
-
-            // Create cookie so login persists refreshes
-            cookies.set("session", session.id, {
-                path: ".",
-                maxAge: 100 * 24 * 60 * 60,    // 100 days
-                sameSite: "strict",
-                secure: false
-            })
-
-            // TODO: Redirect home and add notice to verify email
-
-            return {
-                status: 200,
-                errors
-            }
+        // Return if no errors
+        return {
+            status: 200,
+            errors
         }
     }
 }

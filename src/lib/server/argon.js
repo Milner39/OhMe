@@ -12,4 +12,11 @@ if (process.env.NODE_ENV === "development") {
     global.argonInstance = stringHasher
 }
 
-export { stringHasher }
+// Create a hash that will always cause
+// stringHasher.verify(failHash, String) to return false
+const failHash = await stringHasher.hash("")
+
+export { 
+    stringHasher,
+    failHash
+}

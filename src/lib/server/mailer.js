@@ -14,9 +14,7 @@ const transporter = nodemailer.createTransport({
 
 // Create custom mail handler that can be used in server-side form actions
 const mail = {
-    sendVerification: (to) => {
-        // Generate code for verifying email
-        const code = crypto.randomUUID()
+    sendVerification: (to, code) => {
         // Select url based on enviromental variables
         const url = process.env.NODE_ENV === "development" ? 
         "http://"+process.env.NODE_SERVER_HOST+":5173" :
@@ -32,7 +30,6 @@ const mail = {
                 subject: "Verify Email",
                 text: `Verification link: ${url + "/verify/" + code}`
             })
-            return(code)
         } catch (err) {
             throw err
         }

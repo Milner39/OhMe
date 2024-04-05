@@ -118,7 +118,7 @@ export const actions = {
 
         // Update User entry in db
         try {
-            await prismaClient.User.update({
+            let dbResponse = await prismaClient.User.update({
                 // Set filter feilds
                 where: {
                     id:  user.id
@@ -127,13 +127,20 @@ export const actions = {
                 data: {
                     email: formData.email.toLowerCase(),
                     emailVerified: false,
-                    emailVerificationCode: mail.sendVerification("finn.milner@outlook.com"),
+                    emailVerificationCode: crypto.randomUUID(),
                     emailCodeSentAt: new Date()
+                },
+                // Set return feilds
+                select: {
+                    emailVerificationCode: true
                 }
             })
+            let verificationCode = dbResponse.emailVerificationCode
+            mail.sendVerification("finn.milner@outlook.com", verificationCode)
         } catch (err) {
             // Catch error, match error code to
             // appropriate error message
+            console.log(err)
             switch (err.code) {
                 case "P2002":
                     errors.email = "Email taken"
@@ -193,7 +200,7 @@ export const actions = {
 
         // Get hashedPassword of User entry to be updated
         try {
-            var response = await prismaClient.User.findUnique({
+            let dbResponse = await prismaClient.User.findUnique({
                 // Set filter feilds
                 where: {
                     id: user.id
@@ -203,6 +210,12 @@ export const actions = {
                     hashedPassword: true
                 }
             })
+            // If user with matching credentials does not exist, null will be returned
+            // in which case instead of verifing "User.hashedPassword" a hashed empty string is used,
+            // therefore "validPassword" will always be false
+            var hashedPassword = dbResponse ? 
+            dbResponse.hashedPassword : 
+            failHash
         } catch (err) {
             // Catch error, match error code to
             // appropriate error message
@@ -212,7 +225,7 @@ export const actions = {
             }
         }
 
-        // Return if entry cannot be updated
+        // Return if entry cannot get hashed password
         if (formHasErrors(errors)) {
             return {
                 status: 422,
@@ -220,12 +233,10 @@ export const actions = {
             }
         }
 
-        // Check if hashedPassword matches password input by client
-        try {
-            var correctPassword = await stringHasher.verify(response.hashedPassword, formData.password)
-        } catch {
-            correctPassword = false
-        }
+        // Returning immediately allows malicious users to figure out valid usernames from response times,
+		// allowing them to only focus on guessing passwords in brute-force attacks.
+		// As a preventive measure, verifiy passwords even for non-existing users  
+        const correctPassword = await stringHasher.verify(hashedPassword, formData.password)
 
         if (!correctPassword) {
             errors.password = "Password incorrect"
@@ -260,7 +271,6 @@ export const actions = {
                 },
                 // Set update feilds
                 data: {
-                    // Re-hash password
                     hashedPassword: await stringHasher.hash(formData.newPassword)
                 }
             })
