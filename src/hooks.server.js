@@ -20,20 +20,20 @@ const authHandle = async ({ event, resolve }) => {
         return resolve(event)
     }
 
-    // Check if session with matching id exists in db
+    // Check if Session with matching id exists in db
     try {
         // Get session and user from db query
         var { user, ...session } = await prismaClient.Session.findUnique({
-            // Set conditions
+            // Set filter feilds
             where: {
                 id: sessionId
             },
-            // Set which feilds to retrieve from db
+            // Set return feilds
             select: {
                 id: true,
                 expiresAt: true,
                 userId: true,
-                // Include user feilds
+                // Set user return feilds
                 user: {
                     select: {
                         // NOTE: DO NOT return hashedPassword
@@ -42,6 +42,7 @@ const authHandle = async ({ event, resolve }) => {
                         username: true,
                         email: true,
                         emailVerified: true,
+                        emailCodeSentAt: true,
                         web3Wallet: true,
                         // Get the ids of all other user sessions too
                         sessions: {
@@ -58,7 +59,7 @@ const authHandle = async ({ event, resolve }) => {
         user = null
     }
 
-    // If session with session id does not exist
+    // If Session with session id does not exist
     if (!session) {
         await event.cookies.delete("session", {path: "."})
         event.locals.user = null
@@ -66,7 +67,7 @@ const authHandle = async ({ event, resolve }) => {
         return resolve(event)
     }
 
-    // If session expired
+    // If Session expired
     if (session.expiresAt < new Date()) {
         await event.cookies.delete("session", {path: "."})
         event.locals.user = null
@@ -77,23 +78,27 @@ const authHandle = async ({ event, resolve }) => {
     // Get date 7 days from now
     const refreshDate = new Date()
     refreshDate.setDate(refreshDate.getDate() +7)
-    // If session expires in less than 7 days
+    // If Session expires in less than 7 days
     if (session.expiresAt < refreshDate) {
-        // Extend expiry date
-        // Create new expiry date 21 days from now
+        // Extend expiry date to 21 days from now
         const expiryDate = new Date()
         expiryDate.setDate(expiryDate.getDate() +21)
         // Make changes to session in the database
         try {
-            session = await prismaClient.Session.update({
+            await prismaClient.Session.update({
+                // Set filter feilds
                 where: {
                     id: sessionId
                 },
+                // Set update feilds
                 data: {
                     expiresAt: expiryDate
                 }
             })
+            // Update session object
+            session.expiresAt = expiryDate
         } catch (err) {
+            console.log("Error at hook.server.js:")
             console.log(err)
         }
     }
