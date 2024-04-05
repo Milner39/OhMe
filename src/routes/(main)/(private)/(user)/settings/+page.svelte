@@ -2,6 +2,9 @@
     // Import page to get data from load functions
     import { page } from "$app/stores"
 
+    // Import notice store
+    import { notice } from "$lib/stores/notice"
+
     // Import svgs
     import Settings from "$lib/assets/svgs/Settings.svelte"
     import Edit from "$lib/assets/svgs/Edit.svelte"
@@ -24,6 +27,11 @@
 
     // Get data returned from form action events
     export let form
+
+    // Set the notice if the form action returns one
+    $: if (form) {
+        notice.set(form.notice)
+    }
 </script>
 
 <Banner>

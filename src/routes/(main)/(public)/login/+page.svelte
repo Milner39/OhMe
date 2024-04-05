@@ -2,6 +2,9 @@
     // Import page to get data from load functions
     import { page } from "$app/stores"
 
+    // Import notice store
+    import { notice } from "$lib/stores/notice"
+
     // Import goto to change url params
     import { goto } from "$app/navigation"
 
@@ -16,13 +19,22 @@
     import Banner from "$lib/components/Banner.svelte"
     import AutoScroll from "$lib/components/AutoScroll.svelte"
 
-    // Allows access to data returned from form action events
-    export let form
-
     // Reactive variable to control what form to show
     $: mode = $page.data.mode
 
-    // TODO: "forgot password?" option when email verification is done
+    // Get data returned from form action events
+    export let form
+
+    // IMPROVE: Figure out how to get form data from form 
+    // actions that are on a different route (/logout),
+    // So that notices from that action can be set
+
+    // Set the notice if the form action returns one
+    $: if (form) {
+        notice.set(form.notice)
+    }
+    
+    // TODO: "forgot password?" option
 </script>
 
 <Banner>
