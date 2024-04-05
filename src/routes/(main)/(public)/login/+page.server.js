@@ -20,9 +20,6 @@ import { stringHasher, failHash } from "$lib/server/argon"
 // Import mail to handle verification codes and send emails
 import { mail } from "$lib/server/mailer"
 
-// IMPROVE: Reduce number of db queries and use prisma error codes to set errors
-// instead of making multiple requests to db to check unique containts etc
-
 // Define function to check if errors have been caught
 const formHasErrors = (obj) => {
     if (Object.keys(obj).length > 0) {
@@ -202,6 +199,49 @@ export const actions = {
             }
         }
 
+        // Check username or email is taken
+        try {
+            let dbResponse = await prismaClient.User.findMany({
+                where: {
+                    OR: [
+                        {
+                            username: formData.username
+                        },
+                        {
+                            email: formData.email.toLowerCase()
+                        }
+                    ]
+                },
+                select: {
+                    username: true,
+                    email: true
+                }
+            })
+            for (const user of dbResponse) {
+                if (user.username === formData.username) {
+                    errors.username = "Username taken"
+                }
+                if (user.email === formData.email) {
+                    errors.email = "Email taken"
+                }
+            }
+        } catch (err) {
+            // Catch error, match error code to
+            // appropriate error message
+            switch (err.code) {
+                default:
+                    errors.server = "Unable to register user"
+            }
+        }
+
+        // Return if username or email taken
+        if (formHasErrors(errors)) {
+            return {
+                status: 422,
+                errors
+            }
+        }
+
         // Create date 21 days from now
         const expireyDate = new Date()
         expireyDate.setDate(expireyDate.getDate() +21)
@@ -239,16 +279,6 @@ export const actions = {
             // Catch error, match error code to
             // appropriate error message
             switch (err.code) {
-                case "P2002":
-                    console.log(err)
-                    // TODO: gp back to old method and this only 
-                    // checks one feild at a time
-                    if (err.meta.target.includes("username")) {
-                        errors.username = "Username taken"
-                    }
-                    if (err.meta.target.includes("email")) {
-                        errors.email = "Email taken"
-                    }
                 default:
                     errors.server = "Unable to register user"
             }
