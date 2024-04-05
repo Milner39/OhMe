@@ -11,9 +11,6 @@
     import AutoScroll from "$lib/components/AutoScroll.svelte"
     import FormGroup from "$lib/components/FormGroup.svelte"
 
-    // Allows access to data returned from form action events
-    export let form
-
     // Reactive variables to display user data
     $: user = $page.data.user
 
@@ -25,6 +22,8 @@
         return (string.slice(0,8) + "..." + string.slice(-8))
     }
 
+    // Get data returned from form action events
+    export let form
 </script>
 
 <Banner>
