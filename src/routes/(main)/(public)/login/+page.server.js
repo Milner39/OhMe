@@ -77,10 +77,7 @@ export const actions = {
                 default:
                     errors.server = "Unable to login client"
             }
-        }
-
-        // Return if cannot get hashed password
-        if (formHasErrors(errors)) {
+            // Return if cannot get hashed password
             return {
                 status: 503,
                 errors,
@@ -93,17 +90,14 @@ export const actions = {
 		// As a preventive measure, verifiy passwords even for non-existing Users  
         const correctPassword = await stringHasher.verify(hashedPassword, formData.password)
 
-        // if password incorrect
-        if (!correctPassword) {
-            errors.email = "Email or password incrorrect"
-            errors.password = "Email or password incrorrect"
-        }
-
         // Return if password incorrect
-        if (formHasErrors(errors)) {
+        if (!correctPassword) {
             return {
                 status: 403,
-                errors
+                errors: {
+                    email: "Email or password incrorrect",
+                    password: "Email or password incrorrect"
+                }
             }
         }
 
@@ -145,10 +139,7 @@ export const actions = {
                 default:
                     errors.server = "Unable to login user"
             }
-        }
-
-        // Return if session cannot be created
-        if (formHasErrors(errors)) {
+            // Return if session cannot be created
             return {
                 status: 503,
                 errors,
@@ -237,6 +228,12 @@ export const actions = {
                 default:
                     errors.server = "Unable to register user"
             }
+            // Return if cannot get User entries
+            return {
+                status: 503,
+                errors,
+                notice: "We couldn't register your account, try again later..."
+            }
         }
 
         // Return if username or email taken
@@ -288,10 +285,7 @@ export const actions = {
                 default:
                     errors.server = "Unable to register user"
             }
-        }
-
-        // Return if user cannot be created
-        if (formHasErrors(errors)) {
+            // Return if user cannot be created
             return {
                 status: 503,
                 errors,

@@ -37,14 +37,9 @@ export const actions = {
         
         // Sanitize client input
         if (!sanitizer.username(formData.username)) {
-            errors.username = "Invalid username"
-        }
-
-        // Return if inputs not valid
-        if (formHasErrors(errors)) {
             return {
                 status: 422,
-                errors
+                errors: {username: "Invalid username"}
             }
         }
 
@@ -77,10 +72,7 @@ export const actions = {
                 default:
                     errors.server = "Unable to change information"
             }
-        }
-
-        // Return if entry cannot be updated
-        if (formHasErrors(errors)) {
+            // Return if entry cannot be updated
             return {
                 status: 503,
                 errors,
@@ -116,14 +108,9 @@ export const actions = {
         
         // Sanitize client input
         if (!sanitizer.email(formData.email)) {
-            errors.email = "Invalid email"
-        }
-
-        // Return if inputs not valid
-        if (formHasErrors(errors)) {
             return {
                 status: 422,
-                errors
+                errors: {email: "Invalid email"}
             }
         }
 
@@ -160,17 +147,13 @@ export const actions = {
         } catch (err) {
             // Catch error, match error code to
             // appropriate error message
-            console.log(err)
             switch (err.code) {
                 case "P2002":
                     errors.email = "Email taken"
                 default:
                     errors.server = "Unable to change information"
             }
-        }
-
-        // Return if entry cannot be updated
-        if (formHasErrors(errors)) {
+            // Return if entry cannot be updated
             return {
                 status: 503,
                 errors,
@@ -222,7 +205,7 @@ export const actions = {
 
         // Get hashed password of User entry to be updated
         try {
-            let dbResponse = await prismaClient.User.findUnique({
+            var dbResponse = await prismaClient.User.findUnique({
                 // Set filter feilds
                 where: {
                     id: user.id
@@ -232,12 +215,6 @@ export const actions = {
                     hashedPassword: true
                 }
             })
-            // If user with matching credentials does not exist, null will be returned
-            // in which case instead of verifing "User.hashedPassword" a hashed empty string is used,
-            // therefore "validPassword" will always be false
-            var hashedPassword = dbResponse ? 
-            dbResponse.hashedPassword : 
-            failHash
         } catch (err) {
             // Catch error, match error code to
             // appropriate error message
@@ -245,44 +222,41 @@ export const actions = {
                 default:
                     errors.server = "Unable to change information"
             }
-        }
-
-        // Return if cannot get hashed password
-        if (formHasErrors(errors)) {
+            // Return if cannot get hashed password
             return {
                 status: 503,
                 errors,
-                notice: "We couldn't update your username, try again later..."
+                notice: "We couldn't update your password, try again later..."
             }
         }
+        // If user with matching credentials does not exist, null will be returned
+        // in which case instead of verifing "User.hashedPassword" a hashed empty string is used,
+        // therefore "validPassword" will always be false
+        const hashedPassword = dbResponse ? 
+        dbResponse.hashedPassword : 
+        failHash
 
         // Returning immediately allows malicious users to figure out valid usernames from response times,
 		// allowing them to only focus on guessing passwords in brute-force attacks.
 		// As a preventive measure, verifiy passwords even for non-existing users  
         const correctPassword = await stringHasher.verify(hashedPassword, formData.password)
 
-        if (!correctPassword) {
-            errors.password = "Password incorrect"
-        }
-
         // Return if password is incorrect
-        if (formHasErrors(errors)) {
+        if (!correctPassword) {
             return {
                 status: 422,
-                errors
+                errors: {password: "Password incorrect"}
             }
         }
 
+        // Return if no change was made
         if (formData.password === formData.newPassword) {
-            errors.password = "Passwords are the same"
-            errors.newPassword = "Passwords are the same"
-        }
-
-        // Return if passwords are the same
-        if (formHasErrors(errors)) {
             return {
                 status: 422,
-                errors
+                errors: {
+                    password: "Passwords are the same",
+                    newPassword: "Passwords are the same"
+                }
             }
         }
 
@@ -305,10 +279,7 @@ export const actions = {
                 default:
                     errors.server = "Unable to change information"
             }
-        }
-
-        // Return if entry cannot be updated
-        if (formHasErrors(errors)) {
+            // Return if entry cannot be updated
             return {
                 status: 503,
                 errors,
