@@ -19,20 +19,18 @@
     import Banner from "$lib/components/Banner.svelte"
     import AutoScroll from "$lib/components/AutoScroll.svelte"
 
-    // Reactive variable to control what form to show
-    $: mode = $page.data.mode
-
     // Get data returned from form action events
     export let form
+
+    // Reactive variable to control what form to show
+    $: mode = $page.data.mode
 
     // IMPROVE: Figure out how to get form data from form 
     // actions that are on a different route (/logout),
     // So that notices from that action can be set
 
     // Set the notice if the form action returns one
-    $: if (form) {
-        notice.set(form.notice)
-    }
+    $: notice.set(form?.notice)
     
     // TODO: "forgot password?" option
 </script>

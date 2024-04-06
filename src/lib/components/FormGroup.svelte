@@ -28,26 +28,25 @@
     }}
 />
 
-<div class="title">
-    <slot name="title"/>
-</div>
 {#each forms as form, i}
     <form 
         {...form.attributes} 
         bind:this={formElements[i]} 
+        method="POST"
         use:enhance
     >
+        {#if form.inputs}
         {#each form.inputs as input, j}
             <div class="inputContainer">
                 <label 
-                    {...input.label.attributes} 
+                    {...input.label?.attributes} 
                     style="width: {labelWidth}px" 
                     for={input.id}
                 >
                     <h6 
                         bind:this={labelTexts[j]}
                     >
-                        {input.label.text}
+                        {input.label?.text}
                     </h6>
                 </label>
                 <input 
@@ -60,30 +59,17 @@
                             formElements[i].requestSubmit()
                         }
                     }}
-
                 >
             </div>
         {/each}
+        {/if}
     </form>
 {/each}
 
 <style lang="scss">
 
-    .title {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-
-        width: -moz-fit-content;
-        width: fit-content;
-
-        :global(svg) {
-            height: 1.25em;
-        }
-    }
-
     form {
-        border-radius: 1rem;
+        border-radius: 0.5rem;
         border: solid 1px var(--bg-4);
 
         padding: 1rem;

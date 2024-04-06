@@ -14,41 +14,37 @@
     import AutoScroll from "$lib/components/AutoScroll.svelte"
     import FormGroup from "$lib/components/FormGroup.svelte"
 
+    // Get data returned from form action events
+    export let form
+
     // Reactive variables to display user data
     $: user = $page.data.user
 
+    // Variables to control styles
+    let contentWidth
+    let scrollMenu
+    let scrollForms
+
     // Define a function to shrink strings to fit in input placeholder
     const shrinkString = (string) => {
-        if (string.length < 18) {
+        if (string.length < 16) {
             return string
         } 
         return (string.slice(0,8) + "..." + string.slice(-8))
     }
 
-    // Get data returned from form action events
-    export let form
-
-    // Set the notice if the form action returns one
-    $: if (form) {
-        notice.set(form.notice)
-    }
-</script>
-
-<Banner>
-    <Settings slot="svg"/>
-    <h4>Settings</h4>
-    <AutoScroll>
-        <h6>View And Change Account Settings</h6>
-    </AutoScroll>
-</Banner>
-
-<div class="page">
-    <div class="pageContent">
-        <div class="block">
-            <FormGroup forms={[
+    // Variable to control what form group is shown
+    let selectedGroup = 0
+    // Reactive variable to control content of form groups
+    $: FORM_GROUPS = [
+        {
+            title: {
+                text: "Account Information",
+                svg: Edit
+            },
+            forms: [
                 {
                     attributes: {
-                        method: "POST",
                         action: "?/username"
                     },
                     inputs: [
@@ -62,15 +58,14 @@
                                 name: "username",
                                 required: true,
                                 autocomplete: "username",
-                                class: form?.errors.username ? "invalid" : "",
-                                placeholder: form?.errors.username || shrinkString(user.username)
+                                class: form?.errors?.username ? "invalid" : "",
+                                placeholder: form?.errors?.username || shrinkString(user?.username)
                             }
                         }
                     ]
                 },
                 {
                     attributes: {
-                        method: "POST",
                         action: "?/email"
                     },
                     inputs: [
@@ -84,16 +79,15 @@
                                 name: "email",
                                 required: true,
                                 autocomplete: "email",
-                                class: form?.errors.email ? "invalid" : "",
-                                placeholder: form?.errors.email || shrinkString(user.email)
+                                class: form?.errors?.email ? "invalid" : "",
+                                placeholder: form?.errors?.email || shrinkString(user?.email)
                             }
                         }
                     ]
                 },
                 {
                     attributes: {
-                        method: "POST",
-                        action: "?/password"
+                        action: "?/password",
                     },
                     inputs: [
                         {
@@ -106,8 +100,8 @@
                                 name: "password",
                                 required: true,
                                 autocomplete: "current-password",
-                                class: form?.errors.password ? "invalid" : "",
-                                placeholder: form?.errors.password || "Current Password"
+                                class: form?.errors?.password ? "invalid" : "",
+                                placeholder: form?.errors?.password || "Current Password"
                             }
                         },
                         {
@@ -120,40 +114,182 @@
                                 name: "newPassword",
                                 required: true,
                                 autocomplete: "new-password",
-                                class: form?.errors.newPassword ? "invalid" : "",
-                                placeholder: form?.errors.newPassword || "New Password"
+                                class: form?.errors?.newPassword ? "invalid" : "",
+                                placeholder: form?.errors?.newPassword || "New Password"
                             }
                         },
                     ]
                 }
-            ]}>
-                <svelte:fragment slot="title">
-                    <h5>Account Information</h5>
-                    <Edit/>
-                </svelte:fragment>
-            </FormGroup>
-        </div>
-        <div class="block">
-            <div class="blockTitle">
-                <h5>Payments</h5>
-                <Edit/>
+            ]
+        },
+        {
+            title: {
+                text: "Payments",
+                svg: Edit
+            },
+            forms: [
+                {
+
+                }
+            ]
+        },
+    ]
+
+    // Set the notice if the form action returns one
+    $: notice.set(form?.notice)
+</script>
+
+<Banner>
+    <Settings slot="svg"/>
+    <h4>Settings</h4>
+    <AutoScroll>
+        <h6>View And Change Account Settings</h6>
+    </AutoScroll>
+</Banner>
+
+<div class="page">
+    <div class="pageContent" bind:clientWidth={contentWidth}>
+        {#if contentWidth > 850}
+            <div class="block wide">
+                <ul class="scrollMenu" bind:this={scrollMenu} class:pushScrollBar={scrollMenu?.scrollHeight > scrollMenu?.clientHeight}>
+                    {#each FORM_GROUPS as group, i}
+                        <li class="title" class:active={selectedGroup === i}>
+                            <button on:click={() => {selectedGroup = i}}>
+                                <h5>{group.title?.text}</h5>
+                                <svelte:component this={group.title?.svg}/>
+                            </button>
+                        </li>
+                    {/each}
+                </ul>
+                <div class="scrollForms" bind:this={scrollForms} class:pullScrollBar={scrollForms?.scrollHeight > scrollForms?.clientHeight}>
+                    <FormGroup forms={FORM_GROUPS[selectedGroup].forms}/>
+                </div>
             </div>
-        </div>
+        {:else}
+            {#each FORM_GROUPS as group}
+                <div class="block">
+                    <div class="title">
+                        <h5>{group.title?.text}</h5>
+                        <svelte:component this={group.title?.svg}/>
+                    </div>
+                    <FormGroup forms={group.forms}/>
+                </div>
+            {/each}
+        {/if}
     </div>
 </div>
 
 <style lang="scss">
 
-    .blockTitle {
+    .title {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 1rem;
-
-        width: -moz-fit-content;
-        width: fit-content;
 
         :global(svg) {
             height: 1.25em;
+        }
+    }
+
+    .page:has(.block.wide) {
+        height: 0;
+    }
+
+    .pageContent:has(.block.wide) {
+        height: 100%;
+    }
+
+    .block.wide {
+        padding: 0;
+        gap: 0;
+
+        height: 100%;
+        overflow: hidden;
+
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-columns: auto 1fr;
+
+        >.scrollMenu {
+            display: flex;
+            flex-direction: column;
+
+            border: solid var(--bg-4);
+            border-width: 0 1px 0 0;
+
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            &.pushScrollBar {
+                >.title {
+                    margin-right: 2.5rem;
+                }
+            }
+            
+            >.title {
+                transition: color 200ms ease-in-out;
+                &.active {
+                    color: var(--br-3);
+                }
+
+                >button {
+                    width: 100%;
+                
+                    padding: 1rem;
+
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 1rem;
+
+                    text-wrap: nowrap;
+                    white-space: nowrap;
+
+                    transition: background-color 200ms ease-in-out;
+                    &:hover {
+                        background-color: var(--bg-4);
+                    }
+                }
+            }
+
+            &::-webkit-scrollbar {
+                width: 2.5rem;
+            }
+            &::-webkit-scrollbar-track {
+                background-color: transparent;
+            }
+            &::-webkit-scrollbar-thumb {
+                background-color: var(--bg-4);
+                border-radius: 1000px;
+                border: 1rem solid var(--bg-3);
+            }
+        }
+
+        >.scrollForms {
+            padding: 1rem;
+
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+
+            overflow-y: auto;
+
+            &.pullScrollBar {
+                padding-right: 0;
+            }
+
+            &::-webkit-scrollbar {
+                width: 2.5rem;
+            }
+            &::-webkit-scrollbar-track {
+                background-color: transparent;
+            }
+            &::-webkit-scrollbar-thumb {
+                background-color: var(--bg-4);
+                border-radius: 1000px;
+                border: 1rem solid var(--bg-3);
+            }
         }
     }
 

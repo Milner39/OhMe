@@ -163,10 +163,13 @@ input {
 }
 
 button {
+    background: none;
     border: none;
+    border-radius: 0;
+
     color: inherit;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: inherit;
+    font-weight: inherit;
 
     text-wrap: nowrap;
     white-space: nowrap;
@@ -177,8 +180,7 @@ button {
 }
 
 .button-slim {
-    background: none;
-    border-radius: 0;
+    font-weight: 600;
 
     transition: color 200ms ease-in-out;
     &:hover {
@@ -191,6 +193,8 @@ button {
 }
 
 .button-pill {
+    font-weight: 600;
+
     background-color: var(--br-3);
     padding: 0.5em 1em;
     border-radius: 1000px;
