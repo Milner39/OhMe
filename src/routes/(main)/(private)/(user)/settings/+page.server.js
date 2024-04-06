@@ -17,8 +17,9 @@ const formHasErrors = (obj) => {
 // Define actions
 export const actions = {
     username: async ({ request, locals }) => {
-        // Variable to hold error information
+        // Variables to hold error information
         let errors = {}
+        let notice
         
         // Get user from locals
         const { user } = locals
@@ -71,12 +72,13 @@ export const actions = {
                     errors.username = "Username taken"
                 default:
                     errors.server = "Unable to change information"
+                    notice = "We couldn't update your username, try again later..."
             }
             // Return if entry cannot be updated
             return {
                 status: 503,
                 errors,
-                notice: "We couldn't update your username, try again later..."
+                notice
             }
         }
 
@@ -88,8 +90,9 @@ export const actions = {
     },
 
     email: async ({ request, locals }) => {
-        // Variable to hold error information
+        // Variables to hold error information
         let errors = {}
+        let notice
 
         // Get user from locals
         const { user } = locals
@@ -152,12 +155,13 @@ export const actions = {
                     errors.email = "Email taken"
                 default:
                     errors.server = "Unable to change information"
+                    notice = "We couldn't update your email address, try again later..."
             }
             // Return if entry cannot be updated
             return {
                 status: 503,
                 errors,
-                notice: "We couldn't update your email address, try again later..."
+                notice
             }
         }
 
