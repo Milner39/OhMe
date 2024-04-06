@@ -76,6 +76,7 @@ export const actions = {
             switch (err.code) {
                 default:
                     errors.server = "Unable to login client"
+                    break
             }
             // Return if cannot get hashed password
             return {
@@ -138,6 +139,7 @@ export const actions = {
             switch (err.code) {
                 default:
                     errors.server = "Unable to login user"
+                    break
             }
             // Return if session cannot be created
             return {
@@ -227,6 +229,7 @@ export const actions = {
             switch (err.code) {
                 default:
                     errors.server = "Unable to register user"
+                    break
             }
             // Return if cannot get User entries
             return {
@@ -284,6 +287,7 @@ export const actions = {
             switch (err.code) {
                 default:
                     errors.server = "Unable to register user"
+                    break
             }
             // Return if user cannot be created
             return {

@@ -70,9 +70,11 @@ export const actions = {
             switch (err.code) {
                 case "P2002":
                     errors.username = "Username taken"
+                    break
                 default:
                     errors.server = "Unable to change information"
                     notice = "We couldn't update your username, try again later..."
+                    break
             }
             // Return if entry cannot be updated
             return {
@@ -153,9 +155,11 @@ export const actions = {
             switch (err.code) {
                 case "P2002":
                     errors.email = "Email taken"
+                    break
                 default:
                     errors.server = "Unable to change information"
                     notice = "We couldn't update your email address, try again later..."
+                    break
             }
             // Return if entry cannot be updated
             return {
@@ -225,6 +229,7 @@ export const actions = {
             switch (err.code) {
                 default:
                     errors.server = "Unable to change information"
+                    break
             }
             // Return if cannot get hashed password
             return {
@@ -282,6 +287,7 @@ export const actions = {
             switch (err.code) {
                 default:
                     errors.server = "Unable to change information"
+                    break
             }
             // Return if entry cannot be updated
             return {
