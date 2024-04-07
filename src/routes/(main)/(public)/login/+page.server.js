@@ -32,6 +32,7 @@ export const actions = {
     login: async ({ request, cookies }) => {
         // Variable to hold error information
         let errors = {}
+        let notice
 
         // Get form data
         const formData = Object.fromEntries(await request.formData())
@@ -50,7 +51,8 @@ export const actions = {
         if (formHasErrors(errors)) {
             return {
                 status: 422,
-                errors
+                errors,
+                notice
             }
         }
 
@@ -59,7 +61,7 @@ export const actions = {
             let dbResponse = await prismaClient.User.findUnique({
                 // Set filter feilds
                 where: {
-                    email: formData.email.toLowerCase()
+                    emailAddress: formData.email.toLowerCase()
                 },
                 // Set return feilds
                 select: {
@@ -75,6 +77,8 @@ export const actions = {
         } catch (err) {
             switch (err.code) {
                 default:
+                    console.error("Error at login.server.js")
+                    console.error(err)
                     errors.server = "Unable to login client"
                     break
             }
@@ -98,7 +102,8 @@ export const actions = {
                 errors: {
                     email: "Email or password incrorrect",
                     password: "Email or password incrorrect"
-                }
+                },
+                notice
             }
         }
 
@@ -111,7 +116,7 @@ export const actions = {
             let dbResponse = await prismaClient.User.update({
                 // Set filter feilds
                 where: {
-                    email: formData.email.toLowerCase()
+                    emailAddress: formData.email.toLowerCase()
                 },
                 // Set update feilds
                 data: {
@@ -140,6 +145,8 @@ export const actions = {
             // appropriate error message
             switch (err.code) {
                 default:
+                    console.error("Error at login.server.js")
+                    console.error(err)
                     errors.server = "Unable to login user"
                     break
             }
@@ -178,6 +185,7 @@ export const actions = {
     register: async ({ request, cookies }) => {
         // Variable to hold error information
         let errors = {}
+        let notice
 
         // Get form data
         const formData = Object.fromEntries(await request.formData())
@@ -201,7 +209,8 @@ export const actions = {
         if (formHasErrors(errors)) {
             return {
                 status: 422,
-                errors
+                errors,
+                notice
             }
         }
 
@@ -215,21 +224,27 @@ export const actions = {
                             username: formData.username
                         },
                         {
-                            email: formData.email.toLowerCase()
+                            email: {
+                                address: formData.email.toLowerCase()
+                            }
                         }
                     ]
                 },
                 // Set return feilds
                 select: {
                     username: true,
-                    email: true
+                    email: {
+                        select: {
+                            address: true
+                        }
+                    }
                 }
             })
             for (const user of dbResponse) {
                 if (user.username === formData.username) {
                     errors.username = "Username taken"
                 }
-                if (user.email === formData.email) {
+                if (user.email.address === formData.email) {
                     errors.email = "Email taken"
                 }
             }
@@ -238,6 +253,8 @@ export const actions = {
             // appropriate error message
             switch (err.code) {
                 default:
+                    console.error("Error at login.server.js")
+                    console.error(err)
                     errors.server = "Unable to register user"
                     break
             }
@@ -253,7 +270,8 @@ export const actions = {
         if (formHasErrors(errors)) {
             return {
                 status: 409,
-                errors
+                errors,
+                notice
             }
         }
 
@@ -267,8 +285,12 @@ export const actions = {
                 // Set data feilds
                 data: {
                     username: formData.username,
-                    email: formData.email.toLowerCase(),
                     hashedPassword: await stringHasher.hash(formData.password),
+                    email: {
+                        create: {
+                            address: formData.email.toLowerCase(),
+                        }
+                    },
                     sessions: {
                         create: {
                             expiresAt: expireyDate
@@ -278,7 +300,11 @@ export const actions = {
                 // Set return feilds
                 select: {
                     id: true,
-                    emailVerificationCode:  true,
+                    email: {
+                        select: {
+                            verifyLink: true
+                        }
+                    },
                     sessions: {
                         select: {
                             id: true
@@ -287,8 +313,7 @@ export const actions = {
                 }
             })
             // Send verification email
-            let verificationCode = dbResponse.emailVerificationCode
-            mail.sendVerification("finn.milner@outlook.com", verificationCode)
+            mail.sendVerification("finn.milner@outlook.com", dbResponse.email.verifyLink)
             // Get the id of the newest session
             // which appears last in the array of sessions
             var session = dbResponse.sessions.at(-1)
@@ -298,6 +323,8 @@ export const actions = {
             // appropriate error message
             switch (err.code) {
                 default:
+                    console.error("Error at login.server.js")
+                    console.error(err)
                     errors.server = "Unable to register user"
                     break
             }

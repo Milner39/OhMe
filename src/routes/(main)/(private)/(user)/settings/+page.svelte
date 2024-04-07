@@ -86,7 +86,7 @@
                                 required: true,
                                 autocomplete: "email",
                                 class: form?.errors?.email ? "invalid" : "",
-                                placeholder: form?.errors?.email || shrinkString(user?.email)
+                                placeholder: form?.errors?.email || shrinkString(user?.email.address)
                             }
                         }
                     ]

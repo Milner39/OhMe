@@ -15,32 +15,40 @@ datasource db {
 
 // Define User model
 model User {
-  // Generates a unique string when a user is created that will be used as the key
-  id                       String      @id @unique @default(uuid())
+  id                String       @id @unique @default(uuid())
 
-  // User credentials
-  username                 String      @unique
-  email                    String      @unique
-  hashedPassword           String     
+  // User information
+  username          String       @unique
+  hashedPassword    String     
+  web3Wallet        String?     
+
+  // Relations
+  emailAddress      String       @unique
+  email             Email        @relation(references: [address], fields: [emailAddress], onDelete: Restrict, onUpdate: Cascade)
+
+  sessions          Session[]    
+}
+
+model Email {
+  id            String      @id @unique @default(uuid())
 
   // Email information
-  emailVerified            Boolean     @default(false)
-  emailVerificationCode    String      @unique @default(uuid())
-  emailCodeSentAt          DateTime    @default(now())
+  address       String      @unique
+  verified      Boolean     @default(false)
+  verifyLink    String      @unique @default(uuid())
+  linkSentAt    DateTime    @default(now())
 
-  web3Wallet               String?
-
-  sessions                 Session[]
+  // Used to reference which user is linked to this email
+  user          User?     
 }
 
 model Session {
-  // Generates a unique string when a session is created that will be used as the key
-  id           String    @id @unique @default(uuid())
+  id           String      @id @unique @default(uuid())
 
   // Indicates when a session expires 
   expiresAt    DateTime
 
   // Used to reference which user is linked to this session
   userId       String
-  user         User      @relation(references: [id], fields: [userId], onDelete: Cascade)
+  user         User        @relation(references: [id], fields: [userId], onDelete: Cascade)
 }

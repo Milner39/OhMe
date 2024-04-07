@@ -40,7 +40,8 @@ export const actions = {
         if (!sanitizer.username(formData.username)) {
             return {
                 status: 422,
-                errors: {username: "Invalid username"}
+                errors: {username: "Invalid username"},
+                notice
             }
         }
 
@@ -48,7 +49,8 @@ export const actions = {
         if (user.username === formData.username) {
             return {
                 status: 200,
-                errors
+                errors,
+                notice
             }
         }
 
@@ -72,6 +74,8 @@ export const actions = {
                     errors.username = "Username taken"
                     break
                 default:
+                    console.error("Error at settings.server.js")
+                    console.error(err)
                     errors.server = "Unable to change information"
                     notice = "We couldn't update your username, try again later..."
                     break
@@ -87,7 +91,8 @@ export const actions = {
         // Return if no errors
         return {
             status: 200,
-            errors
+            errors,
+            notice: "Successfully updated your username!"
         }
     },
 
@@ -115,15 +120,17 @@ export const actions = {
         if (!sanitizer.email(formData.email)) {
             return {
                 status: 422,
-                errors: {email: "Invalid email"}
+                errors: {email: "Invalid email"},
+                notice
             }
         }
 
         // Return if no change was made
-        if (user.username === formData.username) {
+        if (user.email.address === formData.email) {
             return {
                 status: 200,
-                errors
+                errors,
+                notice
             }
         }
 
@@ -136,19 +143,26 @@ export const actions = {
                 },
                 // Set update feilds
                 data: {
-                    email: formData.email.toLowerCase(),
-                    emailVerified: false,
-                    emailVerificationCode: crypto.randomUUID(),
-                    emailCodeSentAt: new Date()
+                    email: {
+                        update: {
+                            address: formData.email.toLowerCase(),
+                            verified: false,
+                            verifyLink: crypto.randomUUID(),
+                            linkSentAt: new Date()
+                        }
+                    }
                 },
                 // Set return feilds
                 select: {
-                    emailVerificationCode: true
+                    email: {
+                        select: {
+                            verifyLink: true
+                        }
+                    }
                 }
             })
             // Send verification email
-            let verificationCode = dbResponse.emailVerificationCode
-            mail.sendVerification("finn.milner@outlook.com", verificationCode)
+            mail.sendVerification("finn.milner@outlook.com", dbResponse.email.verifyLink)
         } catch (err) {
             // Catch error, match error code to
             // appropriate error message
@@ -157,6 +171,8 @@ export const actions = {
                     errors.email = "Email taken"
                     break
                 default:
+                    console.error("Error at settings.server.js")
+                    console.error(err)
                     errors.server = "Unable to change information"
                     notice = "We couldn't update your email address, try again later..."
                     break
@@ -172,13 +188,15 @@ export const actions = {
         // Return if no errors
         return {
             status: 200,
-            errors
+            errors,
+            notice: "Successfully updated your email address!"
         }
     },
 
     password: async ({ request, locals }) => {
         // Variable to hold error information
         let errors = {}
+        let notice
         
         // Get user from locals
         const { user } = locals
@@ -207,7 +225,8 @@ export const actions = {
         if (formHasErrors(errors)) {
             return {
                 status: 422,
-                errors
+                errors,
+                notice
             }
         }
 
@@ -228,6 +247,8 @@ export const actions = {
             // appropriate error message
             switch (err.code) {
                 default:
+                    console.error("Error at settings.server.js")
+                    console.error(err)
                     errors.server = "Unable to change information"
                     break
             }
@@ -254,7 +275,8 @@ export const actions = {
         if (!correctPassword) {
             return {
                 status: 422,
-                errors: {password: "Password incorrect"}
+                errors: {password: "Password incorrect"},
+                notice
             }
         }
 
@@ -265,7 +287,8 @@ export const actions = {
                 errors: {
                     password: "Passwords are the same",
                     newPassword: "Passwords are the same"
-                }
+                },
+                notice
             }
         }
 
@@ -286,6 +309,8 @@ export const actions = {
             // appropriate error message
             switch (err.code) {
                 default:
+                    console.error("Error at settings.server.js")
+                    console.error(err)
                     errors.server = "Unable to change information"
                     break
             }

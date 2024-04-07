@@ -30,28 +30,32 @@ const authHandle = async ({ event, resolve }) => {
                 id: true,
                 expiresAt: true,
                 userId: true,
-                // Set user return feilds
+                // Set User return feilds
                 user: {
                     select: {
                         // NOTE: DO NOT return hashedPassword
                         // Never EVER make hashed passwords visible client-side
                         id: true,
                         username: true,
-                        email: true,
-                        emailVerified: true,
-                        emailCodeSentAt: true,
                         web3Wallet: true,
-                        // Get the ids of all other user sessions too
-                        sessions: {
+                        // Set Email return feilds
+                        email: {
                             select: {
-                                id: true
+                                // NOTE: don't return verifyLink,
+                                // possible security concerns but unlikely
+                                id: true,
+                                address: true,
+                                verified: true,
+                                linkSentAt: true
                             }
                         }
                     }
                 }
             }
-        })
+        }) || {}
     } catch (err) {
+        console.error("Error at hook.server.js:")
+        console.error(err)
         session = null
         user = null
     }
@@ -111,8 +115,8 @@ const authHandle = async ({ event, resolve }) => {
             // Update session object
             session.expiresAt = expiryDate
         } catch (err) {
-            console.log("Error at hook.server.js:")
-            console.log(err)
+            console.error("Error at hook.server.js:")
+            console.error(err)
         }
     }
 
