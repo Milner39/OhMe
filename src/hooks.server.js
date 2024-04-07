@@ -4,17 +4,13 @@ import { sequence } from "@sveltejs/kit/hooks"
 // Import prisma client
 import { client as prismaClient } from "$lib/server/prisma"
 
-// ISSUE: clients can set their own cookies.
-// This means if a client were to brute force session ids,
-// they could get a match and sign into a user.
-// Session cookies need to be made more secure,
-// possibly by using a second uuid as a password.
 const authHandle = async ({ event, resolve }) => {
-    // Get session id from event cookies
+    // Get session and user id from event cookies
     const sessionId = event.cookies.get("session")
+    const userId = event.cookies.get("user")
 
-    // If no session cookie
-    if (!sessionId) {
+    // If no cookies
+    if (!sessionId || !userId) {
         event.locals.user = null
         event.locals.session = null
         return resolve(event)
@@ -26,7 +22,8 @@ const authHandle = async ({ event, resolve }) => {
         var { user, ...session } = await prismaClient.Session.findUnique({
             // Set filter feilds
             where: {
-                id: sessionId
+                id: sessionId,
+                userId: userId
             },
             // Set return feilds
             select: {
@@ -54,14 +51,22 @@ const authHandle = async ({ event, resolve }) => {
                 }
             }
         })
-    } catch {
+    } catch (err) {
         session = null
         user = null
     }
 
     // If Session with session id does not exist
     if (!session) {
-        await event.cookies.delete("session", {path: "."})
+        await event.cookies.delete("session", {
+            path: "/",
+            secure: false
+        })
+        await event.cookies.delete("user", {
+            path: "/",
+            secure: false
+        })
+
         event.locals.user = null
         event.locals.session = null
         return resolve(event)
@@ -69,7 +74,15 @@ const authHandle = async ({ event, resolve }) => {
 
     // If Session expired
     if (session.expiresAt < new Date()) {
-        await event.cookies.delete("session", {path: "."})
+        await event.cookies.delete("session", {
+            path: "/",
+            secure: false
+        })
+        await event.cookies.delete("user", {
+            path: "/",
+            secure: false
+        })
+
         event.locals.user = null
         event.locals.session = null
         return resolve(event)

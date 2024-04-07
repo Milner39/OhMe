@@ -123,6 +123,7 @@ export const actions = {
                 },
                 // Set return feilds
                 select: {
+                    id: true,
                     sessions: {
                         select: {
                             id: true
@@ -133,6 +134,7 @@ export const actions = {
             // Get the id of the newest session
             // which appears last in the array of sessions
             var session = dbResponse.sessions.at(-1)
+            var userId = dbResponse.id
         } catch (err) {
             // Catch error, match error code to
             // appropriate error message
@@ -150,9 +152,17 @@ export const actions = {
         }
 
         // Create cookie so login persists refreshes
-        cookies.set("session", session.id, {
-            path: ".",
+        await cookies.set("session", session.id, {
+            path: "/",
             maxAge: 100 * 24 * 60 * 60,    // 100 days
+            httpOnly: true,
+            sameSite: "strict",
+            secure: false
+        })
+        await cookies.set("user", userId, {
+            path: "/",
+            maxAge: 100 * 24 * 60 * 60,    // 100 days
+            httpOnly: true,
             sameSite: "strict",
             secure: false
         })
@@ -267,6 +277,7 @@ export const actions = {
                 },
                 // Set return feilds
                 select: {
+                    id: true,
                     emailVerificationCode:  true,
                     sessions: {
                         select: {
@@ -281,6 +292,7 @@ export const actions = {
             // Get the id of the newest session
             // which appears last in the array of sessions
             var session = dbResponse.sessions.at(-1)
+            var userId = dbResponse.id
         } catch (err) {
             // Catch error, match error code to
             // appropriate error message
@@ -298,9 +310,17 @@ export const actions = {
         }
 
         // Create cookie so login persists refreshes
-        cookies.set("session", session.id, {
-            path: ".",
+        await cookies.set("session", session.id, {
+            path: "/",
             maxAge: 100 * 24 * 60 * 60,    // 100 days
+            httpOnly: true,
+            sameSite: "strict",
+            secure: false
+        })
+        await cookies.set("user", userId, {
+            path: "/",
+            maxAge: 100 * 24 * 60 * 60,    // 100 days
+            httpOnly: true,
             sameSite: "strict",
             secure: false
         })
