@@ -22,8 +22,14 @@
 
     // Variables to control styles
     let contentWidth
-    let scrollMenu
+    let wideModeSize = 850
     let scrollForms
+    let formScrollBar
+    // Function to run on resize
+    const onResize = () => {
+        if (contentWidth <= wideModeSize) {return}
+        formScrollBar = scrollForms.clientHeight < scrollForms.scrollHeight
+    }
 
     // Define a function to shrink strings to fit in input placeholder
     const shrinkString = (string) => {
@@ -132,7 +138,7 @@
 
                 }
             ]
-        },
+        }
     ]
 
     // Set the notice if the form action returns one
@@ -147,11 +153,13 @@
     </AutoScroll>
 </Banner>
 
+<svelte:window on:resize={onResize}/>
+
 <div class="page">
     <div class="pageContent" bind:clientWidth={contentWidth}>
-        {#if contentWidth > 850}
+        {#if contentWidth > wideModeSize}
             <div class="block wide">
-                <ul class="scrollMenu" bind:this={scrollMenu} class:pushScrollBar={scrollMenu?.scrollHeight > scrollMenu?.clientHeight}>
+                <ul class="scrollMenu">
                     {#each FORM_GROUPS as group, i}
                         <li class="title" class:active={selectedGroup === i}>
                             <button on:click={() => {selectedGroup = i}}>
@@ -161,7 +169,7 @@
                         </li>
                     {/each}
                 </ul>
-                <div class="scrollForms" bind:this={scrollForms} class:pullScrollBar={scrollForms?.scrollHeight > scrollForms?.clientHeight}>
+                <div class="scrollForms" bind:this={scrollForms} class:pullScrollBar={formScrollBar}>
                     <FormGroup forms={FORM_GROUPS[selectedGroup].forms}/>
                 </div>
             </div>
@@ -194,6 +202,7 @@
 
     .page:has(.block.wide) {
         height: 0;
+        min-height: 250px;
     }
 
     .pageContent:has(.block.wide) {
@@ -220,12 +229,6 @@
 
             overflow-y: auto;
             overflow-x: hidden;
-
-            &.pushScrollBar {
-                >.title {
-                    margin-right: 2.5rem;
-                }
-            }
             
             >.title {
                 transition: color 200ms ease-in-out;

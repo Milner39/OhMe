@@ -58,7 +58,7 @@
                     {/if}
                 </div>
             {:else}
-                <div class="tabs">
+                <div class="menu">
                     <button class="button-slim" type="button"
                         class:active={(mode || "login") === "login"}
                         on:click={() => {goto("?mode=login")}}
@@ -72,9 +72,9 @@
                         <h5>Register</h5>
                     </button>
                 </div>
-                <div class="centered">
+                <div class="forms">
                     {#if (mode || "login") === "login"}
-                        <form class="form" method="POST" action="?/login" use:enhance>
+                        <form method="POST" action="?/login" use:enhance>
                             <h5>Log In To Your Account</h5>
                             <div>
                                 <label for="email"><small>Email Address*</small></label>
@@ -93,7 +93,7 @@
                             <button class="button-pill" type="submit"><h6>Login</h6></button>
                         </form>
                     {:else if (mode || "login") === "register"}
-                        <form class="form" method="POST" action="?/register" use:enhance>
+                        <form method="POST" action="?/register" use:enhance>
                             <h5>Create A New Account</h5>
                             <div>
                                 <label for="username"><small>Username*</small></label>
@@ -130,19 +130,16 @@
     .pageContent {
         height: 100%;
 
+        flex-direction: row;
         align-items: center;
         justify-content: center;
     }
 
     .block {
-        width: 75%;
-        min-width: -moz-fit-content;
-        min-width: fit-content;
-        max-width: 40rem;
+        flex: 1;
+        max-width: 500px;
 
-        height: max-content;
-
-        .loggedIn {
+        >.loggedIn {
             display: grid;
             gap: 1rem;
             justify-content: center;
@@ -150,43 +147,35 @@
             text-align: center;
             font-weight: 600;
         
-            form {
+            >form {
                 display: grid;
             }
         }
 
-        .tabs {
+        >.menu {
             display: flex;
             gap: 1rem;
 
-            button {
+            >button {
                 font-weight: 300;
             }
         }
 
-        .form {
-            display: grid;
-            grid-auto-flow: row;
-            gap: 1rem;
+        >.forms {
+            >form {
+                display: grid;
+                grid-auto-flow: row;
+                gap: 1rem;
 
-            label {
-                color: var(--tx-4);
-                font-weight: 300;
-            }
-            input {
-                width: 100%;
+                label {
+                    color: var(--tx-4);
+                    font-weight: 300;
+                }
+                input {
+                    width: 100%;
+                }
             }
         }
-    }
-
-
-    .centered {
-        width: 75%;
-        min-width: -moz-fit-content;
-        min-width: fit-content;
-        max-width: 50%;
-
-        margin-inline: auto;
     }
 
 </style>
