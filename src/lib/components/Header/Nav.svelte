@@ -261,9 +261,10 @@
                 display: grid;
                 gap: 1rem;
 
-                :global(button) {
+                :global(.button-slim) {
                     background-color: var(--sc-1);
                     color: var(--br-4);
+
                     padding: 0.5em 1em;
                     border-radius: 1000px;
 
@@ -272,6 +273,9 @@
                         color: var(--br-4);
                         background-color: var(--sc-2);
                     }
+
+                    display: flex;
+                    justify-content: center;
                 }
             }
         }

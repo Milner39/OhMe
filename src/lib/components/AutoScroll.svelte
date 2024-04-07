@@ -48,7 +48,6 @@
     .scroller {
         width: 100%;
 
-        text-wrap: nowrap;
         white-space: nowrap;
         overflow: hidden;
     }

@@ -42,14 +42,14 @@
         <svelte:fragment slot="brand">
             <h2>OhMe</h2>
         </svelte:fragment>
-        <button class="button-slim" type="button" on:click={() => goto("/settings")}><h6 class="collapsibleTarget">Settings</h6></button>
+        <a class="button-slim" href="/settings"><h6 class="collapsibleTarget">Settings</h6></a>
         <svelte:fragment slot="static">
             {#if $page.data.user}
                 <form method="POST" use:enhance>
                     <button class="button-pill" type="submit" formaction="/logout"><h6>Log Out</h6></button>
                 </form>
             {:else}
-                <button class="button-pill" type="button" on:click={() => goto("/login")}><h6>Log In</h6></button>
+                <a class="button-pill" href="/login"><h6>Log In</h6></a>
             {/if}
         </svelte:fragment>
     </Nav>

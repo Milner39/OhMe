@@ -171,7 +171,6 @@ button {
     font-size: inherit;
     font-weight: inherit;
 
-    text-wrap: nowrap;
     white-space: nowrap;
 
     &:hover {
@@ -180,6 +179,7 @@ button {
 }
 
 .button-slim {
+    white-space: nowrap;
     font-weight: 600;
 
     transition: color 200ms ease-in-out;
@@ -193,6 +193,7 @@ button {
 }
 
 .button-pill {
+    white-space: nowrap;
     font-weight: 600;
 
     background-color: var(--br-3);

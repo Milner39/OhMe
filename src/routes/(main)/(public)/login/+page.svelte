@@ -120,6 +120,9 @@
                         </form>
                     {/if}
                 </div>
+                <button class="button-slim">
+                    <h6>Forgot your password?</h6>
+                </button>
             {/if}
         </div>
     </div>
@@ -155,10 +158,6 @@
         >.menu {
             display: flex;
             gap: 1rem;
-
-            >button {
-                font-weight: 300;
-            }
         }
 
         >.forms {

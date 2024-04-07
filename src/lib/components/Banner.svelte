@@ -66,7 +66,6 @@
         >.text {
             display: grid;
 
-            text-wrap: nowrap;
             white-space: nowrap;
         }
     }

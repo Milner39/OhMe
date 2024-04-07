@@ -89,7 +89,6 @@
             row-gap: 0.1rem;
 
             >label {
-                text-wrap: nowrap;
                 white-space: nowrap;
                 >* {
                     width: min-content;

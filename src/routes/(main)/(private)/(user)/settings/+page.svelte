@@ -246,7 +246,6 @@
                     justify-content: space-between;
                     gap: 1rem;
 
-                    text-wrap: nowrap;
                     white-space: nowrap;
 
                     transition: background-color 200ms ease-in-out;
