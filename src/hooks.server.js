@@ -19,7 +19,7 @@ const authHandle = async ({ event, resolve }) => {
     // Check if Session with matching id exists in db
     try {
         // Get session and user from db query
-        var { user, ...session } = await prismaClient.Session.findUnique({
+        let dbResponse = await prismaClient.Session.findUnique({
             // Set filter feilds
             where: {
                 id: sessionId,
@@ -52,7 +52,8 @@ const authHandle = async ({ event, resolve }) => {
                     }
                 }
             }
-        }) || {}
+        })
+        var { user, ...session} = dbResponse || {}
     } catch (err) {
         console.error("Error at hook.server.js:")
         console.error(err)
