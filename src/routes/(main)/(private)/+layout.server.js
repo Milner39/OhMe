@@ -5,9 +5,9 @@ import { redirect } from '@sveltejs/kit'
 const loginPage = "/login"
 
 // Define load function to be ran on every page down this route
-export const load = async (event) => {
+export const load = async ({locals}) => {
     // If client has no session, redirect to login page
-    if (!event.locals.session) {
+    if (!locals.session) {
         redirect(302, loginPage)
     }
 }

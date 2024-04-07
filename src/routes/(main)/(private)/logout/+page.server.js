@@ -23,6 +23,8 @@ export const actions = {
                 }
             })
         } catch (err) {
+            console.error("Error at logout.server.js:")
+            console.error(err)
             return {
                 status: 503,
                 errors: {sever: "Could not logout client"},
