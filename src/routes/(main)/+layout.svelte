@@ -5,11 +5,8 @@
     // Import page to get data from load functions
     import { page } from "$app/stores"
 
-    // Import function to redirect user
-    import { goto } from "$app/navigation"
-
     // Import enhance to prevent hard refeshes after form submitions
-    import { enhance } from "$app/forms"
+    import { enhance, applyAction } from "$app/forms"
 
     // Import components
     import Header from "$lib/components/Header/Header.svelte"
@@ -45,7 +42,14 @@
         <a class="button-slim" href="/settings"><h6 class="collapsibleTarget">Settings</h6></a>
         <svelte:fragment slot="static">
             {#if $page.data.user}
-                <form method="POST" use:enhance>
+                <form method="POST"
+                    use:enhance={() => {
+                        return async ({ result, update }) => {
+                            await applyAction(result)
+                            update()
+                        }
+                    }}
+                >
                     <button class="button-pill" type="submit" formaction="/logout"><h6>Log Out</h6></button>
                 </form>
             {:else}

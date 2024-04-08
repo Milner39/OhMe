@@ -36,7 +36,7 @@ export const actions = {
         return {
             status: 200,
             errors: {},
-            notice: "Successfully loged out!"
+            notice: "Successfully logged out!"
         }
     }
 }

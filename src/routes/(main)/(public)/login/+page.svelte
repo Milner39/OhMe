@@ -10,7 +10,7 @@
 
     // Import enhance to prevent hard refeshes after form submitions
     // and to add extra data to forms
-    import { enhance } from "$app/forms"
+    import { enhance, applyAction } from "$app/forms"
 
     // Import svgs
     import LogIn from "$lib/assets/svgs/LogIn.svelte"
@@ -24,10 +24,6 @@
 
     // Reactive variable to control what form to show
     $: mode = $page.data.mode
-
-    // IMPROVE: Figure out how to get form data from form 
-    // actions that are on a different route (/logout),
-    // So that notices from that action can be set
 
     // Set the notice if the form action returns one
     $: notice.set(form?.notice)
@@ -52,7 +48,14 @@
                         <h4>You have been logged in</h4>
                     {:else}
                         <h4>You are already logged in</h4>
-                        <form method="POST" action="/logout" use:enhance>
+                        <form method="POST" action="/logout" 
+                            use:enhance={() => {
+                                return async ({ result, update }) => {
+                                    await applyAction(result)
+                                    update()
+                                }
+                            }}
+                        >
                             <button class="button-pill" type="submit"><h6>Log Out</h6></button>
                         </form>
                     {/if}
