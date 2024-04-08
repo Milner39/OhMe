@@ -239,7 +239,11 @@ export const actions = {
                 },
                 // Set return feilds
                 select: {
-                    hashedPassword: true
+                    password: {
+                        select: {
+                            hash: true
+                        }
+                    }
                 }
             })
         } catch (err) {
@@ -263,7 +267,7 @@ export const actions = {
         // in which case instead of verifing "User.hashedPassword" a hashed empty string is used,
         // therefore "validPassword" will always be false
         const hashedPassword = dbResponse ? 
-        dbResponse.hashedPassword : 
+        dbResponse.password.hash : 
         failHash
 
         // Returning immediately allows malicious users to figure out valid usernames from response times,
@@ -301,7 +305,11 @@ export const actions = {
                 },
                 // Set update feilds
                 data: {
-                    hashedPassword: await stringHasher.hash(formData.newPassword)
+                    password: {
+                        update: {
+                            hash: await stringHasher.hash(formData.newPassword)
+                        }
+                    }
                 }
             })
         } catch (err) {

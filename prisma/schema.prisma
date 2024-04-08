@@ -13,21 +13,20 @@ datasource db {
 
 
 
-// TODO: seperate password into seperate table along
-// with a string for a link to reset password and a 
-// datetime for when that link was sent
 // Define User model
 model User {
   id                String       @id @unique @default(uuid())
 
   // User information
-  username          String       @unique
-  hashedPassword    String     
+  username          String       @unique   
   web3Wallet        String?     
 
   // Relations
   emailAddress      String       @unique
   email             Email        @relation(references: [address], fields: [emailAddress], onDelete: Restrict, onUpdate: Cascade)
+
+  passwordId        String       @unique
+  password          Password     @relation(references: [id], fields: [passwordId]) 
 
   sessions          Session[]    
 }
@@ -43,6 +42,18 @@ model Email {
 
   // Used to reference which user is linked to this email
   user          User?     
+}
+
+model Password {
+  id            String       @id @unique @default(uuid())
+
+  // Password information
+  hash          String
+  resetLink     String?      @unique 
+  linkSentAt    DateTime?
+
+  // Used to reference which user is linked to this password
+  user              User?
 }
 
 model Session {

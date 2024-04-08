@@ -65,14 +65,18 @@ export const actions = {
                 },
                 // Set return feilds
                 select: {
-                    hashedPassword: true
+                    password: {
+                        select: {
+                            hash: true
+                        }
+                    }
                 }
             })
             // If User with matching credentials does not exist, null will be returned
             // in which case instead of verifing "User.hashedPassword" a hashed empty string is used,
             // therefore "validPassword" will always be false
             var hashedPassword = dbResponse ? 
-            dbResponse.hashedPassword : 
+            dbResponse.password.hash : 
             failHash
         } catch (err) {
             switch (err.code) {
@@ -285,10 +289,14 @@ export const actions = {
                 // Set data feilds
                 data: {
                     username: formData.username,
-                    hashedPassword: await stringHasher.hash(formData.password),
                     email: {
                         create: {
                             address: formData.email.toLowerCase(),
+                        }
+                    },
+                    password: {
+                        create: {
+                            hash: await stringHasher.hash(formData.password)
                         }
                     },
                     sessions: {

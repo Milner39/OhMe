@@ -33,7 +33,7 @@ const authHandle = async ({ event, resolve }) => {
                 // Set User return feilds
                 user: {
                     select: {
-                        // NOTE: DO NOT return hashedPassword
+                        // NOTE: DO NOT return hashed password
                         // Never EVER make hashed passwords visible client-side
                         id: true,
                         username: true,
@@ -48,12 +48,22 @@ const authHandle = async ({ event, resolve }) => {
                                 verified: true,
                                 linkSentAt: true
                             }
+                        },
+                        password: {
+                            select: {
+                                // NOTE: don't return resetLink,
+                                // possible security concerns but unlikely
+                                id: true,
+                                linkSentAt: true
+                            }
                         }
                     }
                 }
             }
         })
-        var { user, ...session} = dbResponse || {}
+        if (dbResponse) {
+            var { user, ...session} = dbResponse
+        }
     } catch (err) {
         console.error("Error at hook.server.js:")
         console.error(err)
