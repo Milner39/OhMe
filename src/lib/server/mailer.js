@@ -28,7 +28,7 @@ const mail = {
                 },
                 to: to,
                 subject: "Verify Email",
-                text: `Verification link: ${url + "/verify?user="+userId+"&code="+code}`
+                html: `Click <a href='${url + "/verify?user="+userId+"&code="+code}'>here</a> to verify your email address.`
             })
         } catch (err) {
             throw err
@@ -48,7 +48,7 @@ const mail = {
                 },
                 to: to,
                 subject: "Reset password",
-                text: `Recovery link: ${url + "/recover?user="+userId+"&code="+code}`
+                html: `Click <a href='${url + "/recover?user="+userId+"&code="+code}'>here</a> to reset your password.`
             })
         } catch (err) {
             throw err
