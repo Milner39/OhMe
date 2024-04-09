@@ -41,7 +41,7 @@
     <div class="pageContent">
         <div class="block">
             {#if $page.data.user}
-                <div class="loggedIn">
+                <div class="complete">
                     {#if form}
                         <h4>You have been logged in</h4>
                     {:else}
@@ -126,7 +126,7 @@
                                 <label for="email"><small>Email Address*</small></label>
                                 <input name="email" id="email" required autocomplete="email"
                                     class:invalid={form?.errors.email}
-                                    placeholder={form?.errors.email}
+                                    placeholder={form?.errors.email || form?.status === 200 ? "A link has been sent" : ""}
                                 >
                             </div>
                             <button class="button-pill" type="submit"><h6>Reset</h6></button>
@@ -158,7 +158,7 @@
         flex: 1;
         max-width: 500px;
 
-        >.loggedIn {
+        >.complete {
             display: grid;
             gap: 1rem;
             justify-content: center;
