@@ -32,13 +32,13 @@ model User {
 }
 
 model Email {
-  id            String      @id @unique @default(uuid())
+  id            String       @id @unique @default(uuid())
 
   // Email information
-  address       String      @unique
-  verified      Boolean     @default(false)
-  verifyLink    String      @unique @default(uuid())
-  linkSentAt    DateTime    @default(now())
+  address       String       @unique
+  verified      Boolean      @default(false)
+  verifyCode    String?      @unique
+  codeSentAt    DateTime?  
 
   // Used to reference which user is linked to this email
   user          User?     
@@ -49,8 +49,8 @@ model Password {
 
   // Password information
   hash          String
-  resetLink     String?      @unique 
-  linkSentAt    DateTime?
+  resetCode     String?      @unique 
+  codeSentAt    DateTime?
 
   // Used to reference which user is linked to this password
   user              User?

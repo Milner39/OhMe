@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 
 // Create custom mail handler that can be used in server-side form actions
 const mail = {
-    sendVerification: (to, code) => {
+    sendVerification: (to, userId, code) => {
         // Select url based on enviromental variables
         const url = process.env.NODE_ENV === "development" ? 
         "http://"+process.env.NODE_SERVER_HOST+":5173" :
@@ -28,7 +28,27 @@ const mail = {
                 },
                 to: to,
                 subject: "Verify Email",
-                text: `Verification link: ${url + "/verify/" + code}`
+                text: `Verification link: ${url + "/verify?user="+userId+"&code="+code}`
+            })
+        } catch (err) {
+            throw err
+        }
+    },
+    sendRecovery: (to, userId, code) => {
+        // Select url based on enviromental variables
+        const url = process.env.NODE_ENV === "development" ? 
+        "http://"+process.env.NODE_SERVER_HOST+":5173" :
+        process.env.NODE_SERVER_ORIGIN
+        // Send email with recovery link
+        try {
+            transporter.sendMail({
+                from: {
+                    name: "OhMe",
+                    address: process.env.PRIVATE_EMAIL_USER
+                },
+                to: to,
+                subject: "Reset password",
+                text: `Recovery link: ${url + "/recover?user="+userId+"&code="+code}`
             })
         } catch (err) {
             throw err

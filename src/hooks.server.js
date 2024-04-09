@@ -41,20 +41,20 @@ const authHandle = async ({ event, resolve }) => {
                         // Set Email return feilds
                         email: {
                             select: {
-                                // NOTE: don't return verifyLink,
+                                // NOTE: don't return verifyCode,
                                 // possible security concerns but unlikely
                                 id: true,
                                 address: true,
                                 verified: true,
-                                linkSentAt: true
+                                codeSentAt: true
                             }
                         },
                         password: {
                             select: {
-                                // NOTE: don't return resetLink,
+                                // NOTE: don't return resetCode,
                                 // possible security concerns but unlikely
                                 id: true,
-                                linkSentAt: true
+                                codeSentAt: true
                             }
                         }
                     }

@@ -5,7 +5,7 @@ export const load = async ({ url }) => {
 
     // If "?mode=..." is either login or mode, pass data to page
     // This will control which form is shown
-    if (mode === "login" || mode === "register") {
+    if (mode === "login" || mode === "register" || mode === "recover") {
         return {mode}
     }
 }
@@ -72,12 +72,9 @@ export const actions = {
                     }
                 }
             })
-            // If User with matching credentials does not exist, null will be returned
-            // in which case instead of verifing "User.hashedPassword" a hashed empty string is used,
-            // therefore "validPassword" will always be false
-            var hashedPassword = dbResponse ? 
-            dbResponse.password.hash : 
-            failHash
+            if (dbResponse) {
+                var { password } = dbResponse
+            }
         } catch (err) {
             switch (err.code) {
                 default:
@@ -93,6 +90,10 @@ export const actions = {
                 notice: "We couldn't log you in, try again later..."
             }
         }
+        // If user with matching credentials does not exist, null will be returned
+        // in which case instead of verifing "User.hashedPassword" a hashed empty string is used,
+        // therefore "validPassword" will always be false
+        const hashedPassword = password?.hash || failHash
 
         // Returning immediately allows malicious clients to figure out valid usernames from response times,
 		// allowing them to only focus on guessing passwords in brute-force attacks.
@@ -104,8 +105,8 @@ export const actions = {
             return {
                 status: 403,
                 errors: {
-                    email: "Email or password incrorrect",
-                    password: "Email or password incrorrect"
+                    email: "Email or password incorrect",
+                    password: "Email or password incorrect"
                 },
                 notice
             }
@@ -140,10 +141,9 @@ export const actions = {
                     }
                 }
             })
-            // Get the id of the newest session
-            // which appears last in the array of sessions
-            var session = dbResponse.sessions.at(-1)
-            var userId = dbResponse.id
+            if (dbResponse) {
+                var { sessions, ...user } = dbResponse
+            }
         } catch (err) {
             // Catch error, match error code to
             // appropriate error message
@@ -163,16 +163,16 @@ export const actions = {
         }
 
         // Create cookie so login persists refreshes
-        await cookies.set("session", session.id, {
+        await cookies.set("session", sessions.at(-1).id, {
             path: "/",
-            maxAge: 100 * 24 * 60 * 60,    // 100 days
+            maxAge: 50 * 24 * 60 * 60,    // 50 days
             httpOnly: true,
             sameSite: "strict",
             secure: false
         })
-        await cookies.set("user", userId, {
+        await cookies.set("user", user.id, {
             path: "/",
-            maxAge: 100 * 24 * 60 * 60,    // 100 days
+            maxAge: 50 * 24 * 60 * 60,    // 50 days
             httpOnly: true,
             sameSite: "strict",
             secure: false
@@ -292,6 +292,8 @@ export const actions = {
                     email: {
                         create: {
                             address: formData.email.toLowerCase(),
+                            verifyCode: crypto.randomUUID(),
+                            codeSentAt: new Date()
                         }
                     },
                     password: {
@@ -310,7 +312,8 @@ export const actions = {
                     id: true,
                     email: {
                         select: {
-                            verifyLink: true
+                            address: true,
+                            verifyCode: true
                         }
                     },
                     sessions: {
@@ -320,12 +323,10 @@ export const actions = {
                     }
                 }
             })
-            // Send verification email
-            mail.sendVerification("finn.milner@outlook.com", dbResponse.email.verifyLink)
-            // Get the id of the newest session
-            // which appears last in the array of sessions
-            var session = dbResponse.sessions.at(-1)
-            var userId = dbResponse.id
+            if (dbResponse) {
+                var { sessions, email, ...user } = dbResponse
+                mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
+            }
         } catch (err) {
             // Catch error, match error code to
             // appropriate error message
@@ -345,16 +346,16 @@ export const actions = {
         }
 
         // Create cookie so login persists refreshes
-        await cookies.set("session", session.id, {
+        await cookies.set("session", sessions.at(-1).id, {
             path: "/",
-            maxAge: 100 * 24 * 60 * 60,    // 100 days
+            maxAge: 50 * 24 * 60 * 60,    // 50 days
             httpOnly: true,
             sameSite: "strict",
             secure: false
         })
-        await cookies.set("user", userId, {
+        await cookies.set("user", user.id, {
             path: "/",
-            maxAge: 100 * 24 * 60 * 60,    // 100 days
+            maxAge: 50 * 24 * 60 * 60,    // 50 days
             httpOnly: true,
             sameSite: "strict",
             secure: false
@@ -365,6 +366,136 @@ export const actions = {
             status: 200,
             errors,
             notice: "Successfully registered your account! Check your inbox for a verification link"
+        }
+    },
+
+    recover: async ({ request }) => {
+        // Variable to hold error information
+        let errors = {}
+        let notice
+        
+        // Get form data
+        const formData = Object.fromEntries(await request.formData())
+
+        // Sanitize email input
+        if (!sanitizer.email(formData.email)) {
+            errors.email = "Invalid email"
+        }
+
+        // Return if inputs not valid
+        if (formHasErrors(errors)) {
+            return {
+                status: 422,
+                errors,
+                notice
+            }
+        }
+
+        // Get User entry to be recovered
+        try {
+            let dbResponse = await prismaClient.User.findUnique({
+                // Set filter feilds
+                where: {
+                    emailAddress: formData.email.toLowerCase()
+                },
+                // Set return feilds
+                select: {
+                    password: {
+                        select: {
+                            codeSentAt: true
+                        }
+                    }
+                }
+            })
+            if (dbResponse) {
+                var { password } = dbResponse
+            }
+        } catch (err) {
+            switch (err.code) {
+                default:
+                    console.error("Error at login.server.js")
+                    console.error(err)
+                    errors.server = "Unable to recover account"
+                    break
+            }
+            // Return if cannot get hashed password
+            return {
+                status: 503,
+                errors,
+                notice: "We couldn't recover your account, try again later..."
+            }
+        }
+
+        // Return if User entry does not exist
+        if (!password) {
+            return {
+                status: 403,
+                errors: { email: "Email incorrect" },
+                notice
+            }
+        }
+
+        const { codeSentAt } = password
+        // If last link was sent less than an hour ago
+        if (codeSentAt && codeSentAt.setTime(codeSentAt.getTime() + 1 * 60 * 60 * 1000) > new Date()) {
+            return {
+                status: 422,
+                errors: { email: "Wait an hour between resets"},
+                notice
+            }
+        }
+
+        // Create password reset link
+        try {
+            let dbResponse = await prismaClient.User.update({
+                // Set filter feilds
+                where: {
+                    emailAddress: formData.email.toLowerCase()
+                },
+                // Set update feilds
+                data: {
+                    password: {
+                        update: {
+                            resetCode: crypto.randomUUID(),
+                            codeSentAt: new Date()
+                        }
+                    }
+                },
+                // Set return feilds
+                select: {
+                    id: true,
+                    password: {
+                        select: {
+                            resetCode: true
+                        }
+                    }
+                }
+            })
+            if (dbResponse) {
+                let { password, ...user} = dbResponse
+                mail.sendRecovery("finn.milner@outlook.com", user.id, password.resetCode)
+            }
+        } catch (err) {
+            switch (err.code) {
+                default:
+                    console.error("Error at login.server.js")
+                    console.error(err)
+                    errors.server = "Unable to recover account"
+                    break
+            }
+            // Return if cannot get hashed password
+            return {
+                status: 503,
+                errors,
+                notice: "We couldn't recover your account, try again later..."
+            }
+        }
+
+        // Return if no errors
+        return {
+            status: 200,
+            errors,
+            notice: "Successfully recovered your account! Check your inbox for a reset link"
         }
     }
 }

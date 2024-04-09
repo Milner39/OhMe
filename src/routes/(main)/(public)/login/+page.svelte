@@ -27,8 +27,6 @@
 
     // Set the notice if the form action returns one
     $: notice.set(form?.notice)
-    
-    // TODO: "forgot password?" option
 </script>
 
 <Banner>
@@ -78,7 +76,7 @@
                 <div class="forms">
                     {#if (mode || "login") === "login"}
                         <form method="POST" action="?/login" use:enhance>
-                            <h5>Log In To Your Account</h5>
+                            <h5 class="title">Log In To Your Account</h5>
                             <div>
                                 <label for="email"><small>Email Address*</small></label>
                                 <input name="email" id="email" required autocomplete="email"
@@ -97,7 +95,7 @@
                         </form>
                     {:else if (mode || "login") === "register"}
                         <form method="POST" action="?/register" use:enhance>
-                            <h5>Create A New Account</h5>
+                            <h5 class="title">Create A New Account</h5>
                             <div>
                                 <label for="username"><small>Username*</small></label>
                                 <input name="username" id="username" required autocomplete="username"
@@ -121,9 +119,24 @@
                             </div>
                             <button class="button-pill" type="submit"><h6>Register</h6></button>
                         </form>
+                    {:else if (mode || "login") === "recover"}
+                        <form method="POST" action="?/recover" use:enhance>
+                            <h5 class="title">Reset Your Password</h5>
+                            <div>
+                                <label for="email"><small>Email Address*</small></label>
+                                <input name="email" id="email" required autocomplete="email"
+                                    class:invalid={form?.errors.email}
+                                    placeholder={form?.errors.email}
+                                >
+                            </div>
+                            <button class="button-pill" type="submit"><h6>Reset</h6></button>
+                        </form>
                     {/if}
                 </div>
-                <button class="button-slim">
+                <button class="button-slim" type="button"
+                    class:active={(mode || "login") === "recover"}
+                    on:click={() => {goto("?mode=recover")}}
+                >
                     <h6>Forgot your password?</h6>
                 </button>
             {/if}
@@ -169,7 +182,12 @@
                 grid-auto-flow: row;
                 gap: 1rem;
 
+                >.title {
+                    text-align: center;
+                }
+
                 label {
+                    margin-left: 2px;
                     color: var(--tx-4);
                     font-weight: 300;
                 }

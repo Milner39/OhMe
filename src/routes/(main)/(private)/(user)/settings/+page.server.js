@@ -3,7 +3,7 @@ import { sanitizer } from "$lib/server/sanitize.js"
 // Import the prisma client to interact with database
 import { client as prismaClient } from "$lib/server/prisma"
 // Import a hashing function to hash & unhash strings
-import { stringHasher } from "$lib/server/argon"
+import { stringHasher, failHash } from "$lib/server/argon"
 // Import mail to handle verification codes and send emails
 import { mail } from "$lib/server/mailer"
 
@@ -147,8 +147,8 @@ export const actions = {
                         update: {
                             address: formData.email.toLowerCase(),
                             verified: false,
-                            verifyLink: crypto.randomUUID(),
-                            linkSentAt: new Date()
+                            verifyCode: crypto.randomUUID(),
+                            codeSentAt: new Date()
                         }
                     }
                 },
@@ -156,13 +156,15 @@ export const actions = {
                 select: {
                     email: {
                         select: {
-                            verifyLink: true
+                            verifyCode: true
                         }
                     }
                 }
             })
-            // Send verification email
-            mail.sendVerification("finn.milner@outlook.com", dbResponse.email.verifyLink)
+            if (dbResponse) {
+                let { email } = dbResponse
+                mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
+            }
         } catch (err) {
             // Catch error, match error code to
             // appropriate error message
@@ -232,7 +234,7 @@ export const actions = {
 
         // Get hashed password of User entry to be updated
         try {
-            var dbResponse = await prismaClient.User.findUnique({
+            let dbResponse = await prismaClient.User.findUnique({
                 // Set filter feilds
                 where: {
                     id: user.id
@@ -246,6 +248,9 @@ export const actions = {
                     }
                 }
             })
+            if (dbResponse) {
+                var { password } = dbResponse
+            }
         } catch (err) {
             // Catch error, match error code to
             // appropriate error message
@@ -266,9 +271,7 @@ export const actions = {
         // If user with matching credentials does not exist, null will be returned
         // in which case instead of verifing "User.hashedPassword" a hashed empty string is used,
         // therefore "validPassword" will always be false
-        const hashedPassword = dbResponse ? 
-        dbResponse.password.hash : 
-        failHash
+        const hashedPassword = password?.hash || failHash
 
         // Returning immediately allows malicious users to figure out valid usernames from response times,
 		// allowing them to only focus on guessing passwords in brute-force attacks.
