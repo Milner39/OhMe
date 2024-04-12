@@ -10,10 +10,6 @@
     // Import page to get data from load functions
     import { page } from "$app/stores"
 
-    // https://kit.svelte.dev/docs/modules#$app-navigation-goto
-    // Import function to change url params
-    import { goto } from "$app/navigation"
-
     // https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
     // "Without an argument, use:enhance will emulate the browser-native behaviour, just without the full-page reloads."
     //  https://kit.svelte.dev/docs/modules#$app-forms-applyaction
