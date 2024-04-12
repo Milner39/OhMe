@@ -160,6 +160,9 @@ input {
         -webkit-background-clip: text;
         -webkit-text-fill-color: var(--tx-1);
     }
+
+    // Fix jumping text inputs on safari
+    float: left;
 }
 
 button {
