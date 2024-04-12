@@ -14,22 +14,21 @@
     // The form html elements
     let formElements = []
 
-    // The child of each label html element
+    // The child of each label html element in 2D array
     let labelTexts = []
+    for (let i = 0; i < forms.length; i++) {labelTexts.push([])}
 
     // The width of the widest label
     export let labelWidth = 0
 
+    // Define function to be ran on mount and resize
     const onResize = () => {
         // Calculate widest width of labels
-        labelWidth = Math.max(...labelTexts.map(label => label.clientWidth))
+        labelWidth = Math.max(...[].concat(...labelTexts).map(label => label.clientWidth))
     }
 
     // When component is mounted
     onMount(() => {
-        // Run resize function
-        onResize()
-
         // Create a resize observer
         const resizeObserver = new ResizeObserver(_ => {
             // Run resize function
@@ -67,8 +66,8 @@
                     style="width: {labelWidth}px" 
                     for={input.id}
                 >
-                    <!-- Bind h6 to `labelTexts[j]` so it can be accesed by the script -->
-                    <h6 bind:this={labelTexts[j]}>
+                    <!-- Bind h6 to `labelTexts[i][j]` so it can be accesed by the script -->
+                    <h6 bind:this={labelTexts[i][j]}>
                         {input.label?.text}
                     </h6>
                 </label>
