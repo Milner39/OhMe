@@ -1,24 +1,7 @@
 <script>
-    // https://svelte.dev/docs/svelte#onmount
-    // onMount: runs a function as soon as component has been mounted on the DOM
-    // Import functions to handle lifecycle events
-    import { onMount } from "svelte"
-
-    // The html element containing banner text
-    let text
-
     // The height of the div containing text
     let textHeight = 0
-
-    // When component is mounted
-    onMount(() => {
-        // Get inital text height
-        textHeight = text.clientHeight
-    })
 </script>
-
-<!-- Add an event listener to update `textHeight` on resize -->
-<svelte:window on:resize={() => {textHeight = text.clientHeight}}/>
 
 <div class="banner">
     <div class="bannerContent">
@@ -27,8 +10,8 @@
             <!-- Children in `svg` slot go here -->
             <slot name="svg"/>
         </div>
-        <!-- Bind div to `text` so it can be accesed by the script -->
-        <div class="text" bind:this={text}>
+        <!-- Bind div's clientHeight to `textHeight` so it can be accesed by the script -->
+        <div class="text" bind:clientHeight={textHeight}>
             <!-- Other children go here -->
             <slot/>
         </div>

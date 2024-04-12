@@ -62,15 +62,25 @@
         dropdown = collapsed ? dropdown : false
     }
 
-    // Define function to toggle `dropdown`
-    const toggleDropdown = () => {
-        dropdown = !dropdown
-    }
-
     // When component is mounted
     onMount(() => {
         // Run resize function
         onResize()
+
+        // Create a resize observer
+        const resizeObserver = new ResizeObserver(_ => {
+            // Run resize function
+            onResize()
+        })
+
+        // Observe the `collapsible` element
+        resizeObserver.observe(collapsible)
+
+        // When component is unmounted
+        return () => {
+            // Unobserve all elements
+            resizeObserver.disconnect()
+        }
     })
 
     // On navigation
@@ -78,11 +88,12 @@
         // Close the dropdown
         dropdown = false
     })
-</script>
 
-<!-- TODO: Change every resize event listener from window to an appropiate element -->
-<!-- Add an event listener to call "onResize" function -->
-<svelte:window on:resize={onResize}/>
+    // Define function to toggle `dropdown`
+    const toggleDropdown = () => {
+        dropdown = !dropdown
+    }
+</script>
 
 <div class="zIndex">
     <nav>

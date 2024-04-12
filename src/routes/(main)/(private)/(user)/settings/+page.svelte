@@ -49,6 +49,21 @@
     onMount(() => {
         // Run resize function
         onResize()
+
+        // Create a resize observer
+        const resizeObserver = new ResizeObserver(_ => {
+            // Run resize function
+            onResize()
+        })
+
+        // Observe the `scrollForms` element
+        resizeObserver.observe(scrollForms)
+
+        // When component is unmounted
+        return () => {
+            // Unobserve all elements
+            resizeObserver.disconnect()
+        }
     })
 
     // Define a function to shrink strings to fit in input placeholder
@@ -172,9 +187,6 @@
         }
     ]
 </script>
-
-<!-- Add an event listener to call "onResize" function -->
-<svelte:window on:resize={onResize}/>
 
 <Banner>
     <Settings slot="svg"/>

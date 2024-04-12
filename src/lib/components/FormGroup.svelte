@@ -20,15 +20,34 @@
     // The width of the widest label
     export let labelWidth = 0
 
+    const onResize = () => {
+        // Calculate widest width of labels
+        labelWidth = Math.max(...labelTexts.map(label => label.clientWidth))
+    }
+
     // When component is mounted
     onMount(() => {
-        // get inital value for "labelWidth"
-        labelWidth = Math.max(...labelTexts.map(label => label.clientWidth))
+        // Run resize function
+        onResize()
+
+        // Create a resize observer
+        const resizeObserver = new ResizeObserver(_ => {
+            // Run resize function
+            onResize()
+        })
+
+        // Observe the `formElements` elements
+        for (const form of formElements) {
+            resizeObserver.observe(form)
+        }
+
+        // When component is unmounted
+        return () => {
+            // Unobserve all elements
+            resizeObserver.disconnect()
+        }
     })
 </script>
-
-<!-- Add an event listener to update label width on resize -->
-<svelte:window on:resize={() => {labelWidth = Math.max(...labelTexts.map(label => label.clientWidth))}}/>
 
 <!-- Create a form for every item in `forms` -->
 {#each forms as form, i}
