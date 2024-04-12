@@ -7,15 +7,11 @@
     import Banner from "$lib/components/Banner.svelte"
     import AutoScroll from "$lib/components/AutoScroll.svelte"
     import FormGroup from "$lib/components/FormGroup.svelte"
+    import SidebarPane from "$lib/components/SidebarPane.svelte"
 
     // https://kit.svelte.dev/docs/modules#$app-stores
     // Import page to get data from load functions
     import { page } from "$app/stores"
-
-    // https://svelte.dev/docs/svelte#onmount
-    // onMount: runs a function as soon as component has been mounted on the DOM
-    // Import functions to handle lifecycle events
-    import { onMount } from "svelte"
 
     // Import notice store
     import { notice } from "$lib/stores/notice"
@@ -29,42 +25,9 @@
     let wideModeSize = 850
     // The width of the html element containing the page content
     let contentWidth
-    // The html element containing the forms on wide screens
-    let scrollForms
-    // A boolean indicating if a scroll bar on the `scrollForms` element is shown
-    let formScrollBar = false
 
     // Variable to indicate what form group is shown on wide screens
     let selectedFormGroup = 0
-
-    // Define function to be ran on mount and resize
-    const onResize = () => {
-        // If `contentWidth` is smaller than `wideModeSize`: exit the function
-        if (contentWidth <= wideModeSize) {return}
-        // Set the `formScrollBar` to `true` if a scrollbar is shown
-        formScrollBar = scrollForms.clientHeight < scrollForms.scrollHeight
-    }
-
-    // When component is mounted
-    onMount(() => {
-        // Run resize function
-        onResize()
-
-        // Create a resize observer
-        const resizeObserver = new ResizeObserver(_ => {
-            // Run resize function
-            onResize()
-        })
-
-        // Observe the `scrollForms` element
-        resizeObserver.observe(scrollForms)
-
-        // When component is unmounted
-        return () => {
-            // Unobserve all elements
-            resizeObserver.disconnect()
-        }
-    })
 
     // Define a function to shrink strings to fit in input placeholder
     const shrinkString = (string) => {
@@ -202,22 +165,17 @@
         <!-- Display the widescreen version of the layout if `contentWidth` is wider than `wideModeSize`  -->
         {#if contentWidth > wideModeSize}
             <div class="block wide">
-                <ul class="scrollMenu">
-                    <!-- Create a title for every item in `FORM_GROUPS` -->
-                    {#each FORM_GROUPS as group, i}
-                        <li class="title" class:active={selectedFormGroup === i}>
-                            <button on:click={() => {selectedFormGroup = i}}>
-                                <h5>{group.title?.text}</h5>
-                                <svelte:component this={group.title?.svg}/>
-                            </button>
-                        </li>
-                    {/each}
-                </ul>
-                <!-- Bind div to `scrollForms` so it can be accesed by the script -->
-                <div class="scrollForms" bind:this={scrollForms} class:pullScrollBar={formScrollBar}>
-                    <!-- Pass the `forms` prop as the selected index of `FORM_GROUPS` -->
-                    <FormGroup forms={FORM_GROUPS[selectedFormGroup].forms}/>
-                </div>
+                <!-- Bind `selectedPane` to `selectedFormGroup` so it can be accesed by the script -->
+                <SidebarPane bind:selectedPane={selectedFormGroup} sideItemCount={FORM_GROUPS.length}>
+                    <svelte:fragment slot="sidebar" let:index>
+                        <h5>{FORM_GROUPS[index].title?.text}</h5>
+                        <svelte:component this={FORM_GROUPS[index].title?.svg}/>
+                    </svelte:fragment>
+                    <!-- Re-render the component if `selectedFormGroup` changes -->
+                    {#key selectedFormGroup}
+                        <FormGroup forms={FORM_GROUPS[selectedFormGroup].forms}/>
+                    {/key}
+                </SidebarPane>
             </div>
         {:else}
             <!-- Create a form group for every item in `FORM_GROUPS` -->
@@ -257,89 +215,10 @@
     }
 
     .block.wide {
+        height: 100%;
         padding: 0;
         gap: 0;
-
-        height: 100%;
         overflow: hidden;
-
-        display: grid;
-        grid-auto-flow: column;
-        grid-template-columns: auto 1fr;
-
-        >.scrollMenu {
-            display: flex;
-            flex-direction: column;
-
-            border: solid var(--bg-4);
-            border-width: 0 1px 0 0;
-
-            overflow-y: auto;
-            overflow-x: hidden;
-            
-            >.title {
-                transition: color 200ms ease-in-out;
-                &.active {
-                    color: var(--br-3);
-                }
-
-                >button {
-                    width: 100%;
-                
-                    padding: 1rem;
-
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    gap: 1rem;
-
-                    white-space: nowrap;
-
-                    transition: background-color 200ms ease-in-out;
-                    &:hover {
-                        background-color: var(--bg-4);
-                    }
-                }
-            }
-
-            &::-webkit-scrollbar {
-                width: 2.5rem;
-            }
-            &::-webkit-scrollbar-track {
-                background-color: transparent;
-            }
-            &::-webkit-scrollbar-thumb {
-                background-color: var(--bg-4);
-                border-radius: 1000px;
-                border: 1rem solid var(--bg-3);
-            }
-        }
-
-        >.scrollForms {
-            padding: 1rem;
-
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-
-            overflow-y: auto;
-
-            &.pullScrollBar {
-                padding-right: 0;
-            }
-
-            &::-webkit-scrollbar {
-                width: 2.5rem;
-            }
-            &::-webkit-scrollbar-track {
-                background-color: transparent;
-            }
-            &::-webkit-scrollbar-thumb {
-                background-color: var(--bg-4);
-                border-radius: 1000px;
-                border: 1rem solid var(--bg-3);
-            }
-        }
     }
 
 </style>
