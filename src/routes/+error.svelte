@@ -1,18 +1,23 @@
 <script>
     // Import styles
-    import "$lib/styles/global.scss";
+    import "$lib/styles/global.scss"
 
+    // https://kit.svelte.dev/docs/modules#$app-stores
+    // Import `page` store to get error information
+    import { page } from "$app/stores"
+
+    // https://svelte.dev/docs/svelte#onmount
+    // onMount: runs a function as soon as component has been mounted on the DOM
     // Import functions to handle lifecycle events
     import { onMount } from "svelte"
 
+    // https://kit.svelte.dev/docs/modules#$app-navigation-goto
     // Import function to redirect user
     import { goto } from "$app/navigation"
 
-    // Import page to get error information
-    import { page } from "$app/stores"
-
-    // Redirect the user after 3s
+    // When component is mounted
     onMount(() => {
+        // Redirect client in 3 seconds
         setTimeout(() => {
             goto("/")
         }, 3000)

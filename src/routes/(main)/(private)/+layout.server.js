@@ -1,13 +1,17 @@
-// Import function to redirect user
+// https://kit.svelte.dev/docs/load#redirects
+// "To redirect users, use the redirect helper from @sveltejs/kit to specify the location
+//  to which they should be redirected..."
 import { redirect } from '@sveltejs/kit'
 
-// Define page to redirect to
-const loginPage = "/login"
+// Define redirect url
+const loginUrl = "/login"
 
-// Define load function to be ran on every page down this route
+// https://kit.svelte.dev/docs/load#layout-data
+// Define load function
 export const load = async ({locals}) => {
-    // If client has no session, redirect to login page
+    // If `locals.session` is undefined (Client not logged in)
     if (!locals.session) {
-        redirect(302, loginPage)
+        // Redirect to login page
+        redirect(302, loginUrl)
     }
 }

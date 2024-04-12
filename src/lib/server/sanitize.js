@@ -1,5 +1,6 @@
-// Create custom user input sanitizer that can be used in server-side form actions
+// Create `sanitizer` object to be used server-side form actions
 const sanitizer = {
+    
     // IMPROVE: Use switch case statement to check for more specific error messages
     // Example: case email.length > 50 { error.email = "Email too long"}
     // If no cases are hit, no errors

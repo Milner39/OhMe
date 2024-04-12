@@ -1,31 +1,47 @@
-// Import function used to run multiple hooks in sequence
+// https://kit.svelte.dev/docs/hooks
+// "'Hooks' are app-wide functions you declare that SvelteKit will call in response to specific events..."
+
+// The `event` object represents the request clients make to the server
+// Data can be passed down to server-side `load` functions by populating the `event.locals` object
+
+// The `resolve` function renders the route and generates a `Response` for the client
+
+// https://kit.svelte.dev/docs/modules#sveltejs-kit-hooks
+// "A helper function for sequencing multiple handle calls in a middleware-like manner."
 import { sequence } from "@sveltejs/kit/hooks"
 
-// Import prisma client
+// Import prisma client instance to modify db
 import { client as prismaClient } from "$lib/server/prisma"
 
+// Define hook to handle client authentication
 const authHandle = async ({ event, resolve }) => {
-    // Get session and user id from event cookies
-    const sessionId = event.cookies.get("session")
+    // Get user and session id from client's cookies
     const userId = event.cookies.get("user")
+    const sessionId = event.cookies.get("session")
 
-    // If no cookies
+    // If no client does not have both cookies
     if (!sessionId || !userId) {
+        // Set both local objects to null
         event.locals.user = null
         event.locals.session = null
+
+        // Return response
         return resolve(event)
     }
 
-    // Check if Session with matching id exists in db
+    // Check if Session entry with matching id exists in db
+    // Only get the Session if it has a User relation with a matching id
+    // This means in order for a malicious client to set their own cookie values,
+    // they would have to correctly guess a valid Session id and the corresponding User id,
+    // with random UUIDs this should be very secure.
     try {
-        // Get session and user from db query
         let dbResponse = await prismaClient.Session.findUnique({
             // Set filter feilds
             where: {
                 id: sessionId,
                 userId: userId
             },
-            // Set return feilds
+            // Set Session return feilds
             select: {
                 id: true,
                 expiresAt: true,
@@ -33,15 +49,13 @@ const authHandle = async ({ event, resolve }) => {
                 // Set User return feilds
                 user: {
                     select: {
-                        // NOTE: DO NOT return hashed password
-                        // Never EVER make hashed passwords visible client-side
                         id: true,
                         username: true,
                         web3Wallet: true,
                         // Set Email return feilds
                         email: {
                             select: {
-                                // NOTE: don't return verifyCode,
+                                // NOTE: do not return `verifyCode`,
                                 // possible security concerns but unlikely
                                 id: true,
                                 address: true,
@@ -49,9 +63,13 @@ const authHandle = async ({ event, resolve }) => {
                                 codeSentAt: true
                             }
                         },
+                        // Set Password return feilds
                         password: {
                             select: {
-                                // NOTE: don't return resetCode,
+                                // NOTE: DO NOT return `hash`
+                                // NEVER EVER make hashed passwords visible client-side
+
+                                // NOTE: do not return `resetCode`,
                                 // possible security concerns but unlikely
                                 id: true,
                                 codeSentAt: true
@@ -61,18 +79,19 @@ const authHandle = async ({ event, resolve }) => {
                 }
             }
         })
+        // If `dbResponse` is not null (Matching Session found)
         if (dbResponse) {
             var { user, ...session} = dbResponse
         }
     } catch (err) {
+        // Catch errors
         console.error("Error at hook.server.js:")
         console.error(err)
-        session = null
-        user = null
     }
 
-    // If Session with session id does not exist
+    // If `session` undefined
     if (!session) {
+        // Delete client's cookies
         await event.cookies.delete("session", {
             path: "/",
             secure: false
@@ -82,13 +101,17 @@ const authHandle = async ({ event, resolve }) => {
             secure: false
         })
 
+        // Set both local objects to null
         event.locals.user = null
         event.locals.session = null
+
+        // Return response
         return resolve(event)
     }
 
-    // If Session expired
+    // If Session is expired
     if (session.expiresAt < new Date()) {
+        // Delete client's cookies
         await event.cookies.delete("session", {
             path: "/",
             secure: false
@@ -98,20 +121,25 @@ const authHandle = async ({ event, resolve }) => {
             secure: false
         })
 
+        // Set both local objects to null
         event.locals.user = null
         event.locals.session = null
+
+        // Return response
         return resolve(event)
     }
 
     // Get date 7 days from now
-    const refreshDate = new Date()
-    refreshDate.setDate(refreshDate.getDate() +7)
+    const renewDate = new Date()
+    renewDate.setDate(renewDate.getDate() +7)
+
     // If Session expires in less than 7 days
-    if (session.expiresAt < refreshDate) {
-        // Extend expiry date to 21 days from now
+    if (session.expiresAt < renewDate) {
+        // Get date 21 days from now
         const expiryDate = new Date()
         expiryDate.setDate(expiryDate.getDate() +21)
-        // Make changes to session in the database
+
+        // Extend `expiresAt` date
         try {
             await prismaClient.Session.update({
                 // Set filter feilds
@@ -123,18 +151,22 @@ const authHandle = async ({ event, resolve }) => {
                     expiresAt: expiryDate
                 }
             })
-            // Update session object
+            // Update `session` object
             session.expiresAt = expiryDate
         } catch (err) {
+            // Catch errors
             console.error("Error at hook.server.js:")
             console.error(err)
         }
     }
 
+    // Set both local objects to corresponding values
     event.locals.user = user
     event.locals.session = session
+
+    // Return response
     return resolve(event)
 }
 
-// Export handle to be run
+// Export handle sequence to be run on events
 export const handle = sequence(authHandle)

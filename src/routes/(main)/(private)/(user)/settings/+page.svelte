@@ -1,10 +1,4 @@
 <script>
-    // Import page to get data from load functions
-    import { page } from "$app/stores"
-
-    // Import notice store
-    import { notice } from "$lib/stores/notice"
-
     // Import svgs
     import Settings from "$lib/assets/svgs/Settings.svelte"
     import Edit from "$lib/assets/svgs/Edit.svelte"
@@ -14,34 +8,71 @@
     import AutoScroll from "$lib/components/AutoScroll.svelte"
     import FormGroup from "$lib/components/FormGroup.svelte"
 
-    // Get data returned from form action events
+    // https://kit.svelte.dev/docs/modules#$app-stores
+    // Import page to get data from load functions
+    import { page } from "$app/stores"
+
+    // https://svelte.dev/docs/svelte#onmount
+    // onMount: runs a function as soon as component has been mounted on the DOM
+    // Import functions to handle lifecycle events
+    import { onMount } from "svelte"
+
+    // Import notice store
+    import { notice } from "$lib/stores/notice"
+
+    // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
+    // "...the action can respond with data that will be available through the form property"
+    // Get data returned from form actions
     export let form
 
-    // Reactive variables to display user data
-    $: user = $page.data.user
-
-    // Variables to control styles
-    let contentWidth
+    // The width in pixels that indicates when the widescreen style change should occur
     let wideModeSize = 850
+    // The width of the html element containing the page content
+    let contentWidth
+    // The html element containing the forms on wide screens
     let scrollForms
-    let formScrollBar
-    // Function to run on resize
+    // A boolean indicating if a scroll bar on the `scrollForms` element is shown
+    let formScrollBar = false
+
+    // Variable to indicate what form group is shown on wide screens
+    let selectedFormGroup = 0
+
+    // Define function to be ran on mount and resize
     const onResize = () => {
+        // If `contentWidth` is smaller than `wideModeSize`: exit the function
         if (contentWidth <= wideModeSize) {return}
+        // Set the `formScrollBar` to `true` if a scrollbar is shown
         formScrollBar = scrollForms.clientHeight < scrollForms.scrollHeight
     }
 
+    // When component is mounted
+    onMount(() => {
+        // Run resize function
+        onResize()
+    })
+
     // Define a function to shrink strings to fit in input placeholder
     const shrinkString = (string) => {
-        if (string.length < 16) {
-            return string
-        } 
+        // If `string` contains less than 16 chars: exit the function
+        if (string.length < 16) {return string} 
+        // Return a concatenated string
         return (string.slice(0,8) + "..." + string.slice(-8))
     }
 
-    // Variable to control what form group is shown
-    let selectedGroup = 0
-    // Reactive variable to control content of form groups
+    // Reactive statements are indicated by the `$:` label
+    // https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
+    // "Reactive statements run
+    //  after other script code
+    //  before the component markup is rendered
+    //  whenever the values that they depend on have changed."
+
+    // Reactive statement to set the notice if the form action returns one
+    $: notice.set(form?.notice)
+
+    // Reactive statement to update the `user` variable when `$page.data.user` changes
+    $: user = $page.data.user
+
+    // Reactive statement to control the content of form groups
     $: FORM_GROUPS = [
         {
             title: {
@@ -140,10 +171,10 @@
             ]
         }
     ]
-
-    // Set the notice if the form action returns one
-    $: notice.set(form?.notice)
 </script>
+
+<!-- Add an event listener to call "onResize" function -->
+<svelte:window on:resize={onResize}/>
 
 <Banner>
     <Settings slot="svg"/>
@@ -153,27 +184,31 @@
     </AutoScroll>
 </Banner>
 
-<svelte:window on:resize={onResize}/>
-
 <div class="page">
+    <!-- Bind div's clientWidth to `contentWidth` so it can be accesed by the script -->
     <div class="pageContent" bind:clientWidth={contentWidth}>
+        <!-- Display the widescreen version of the layout if `contentWidth` is wider than `wideModeSize`  -->
         {#if contentWidth > wideModeSize}
             <div class="block wide">
                 <ul class="scrollMenu">
+                    <!-- Create a title for every item in `FORM_GROUPS` -->
                     {#each FORM_GROUPS as group, i}
-                        <li class="title" class:active={selectedGroup === i}>
-                            <button on:click={() => {selectedGroup = i}}>
+                        <li class="title" class:active={selectedFormGroup === i}>
+                            <button on:click={() => {selectedFormGroup = i}}>
                                 <h5>{group.title?.text}</h5>
                                 <svelte:component this={group.title?.svg}/>
                             </button>
                         </li>
                     {/each}
                 </ul>
+                <!-- Bind div to `scrollForms` so it can be accesed by the script -->
                 <div class="scrollForms" bind:this={scrollForms} class:pullScrollBar={formScrollBar}>
-                    <FormGroup forms={FORM_GROUPS[selectedGroup].forms}/>
+                    <!-- Pass the `forms` prop as the selected index of `FORM_GROUPS` -->
+                    <FormGroup forms={FORM_GROUPS[selectedFormGroup].forms}/>
                 </div>
             </div>
         {:else}
+            <!-- Create a form group for every item in `FORM_GROUPS` -->
             {#each FORM_GROUPS as group}
                 <div class="block">
                     <div class="title">

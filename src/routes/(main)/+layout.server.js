@@ -1,7 +1,10 @@
+// https://kit.svelte.dev/docs/load#layout-data
 // Define load function
 export const load = async ({ locals }) => {
-    if (!locals.user) { return null }
-
-    const {sessions, ...user} = locals.user
-    return { user }
+    // If `locals.user` is defined (Client logged in)
+    if (locals.user) {
+        // Return only the `user` object
+        const {sessions, ...user} = locals.user
+        return { user }
+    }
 }

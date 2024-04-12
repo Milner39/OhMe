@@ -1,13 +1,14 @@
-// Import function to create prisma client
+// https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/instantiate-prisma-client
+// Import `PrismaClient` class
 import { PrismaClient } from "@prisma/client"
 
-// Declare a global prisma variable to prevent multiple instances
+// Declare a `global.prismaClient` variable to prevent multiple instances
 global.prismaClient
 
-// Use the global prisma client if it exists or initalise one
+// Use `global.prismaClient` if it is declared or initalise one
 const client = global.prismaClient || new PrismaClient()
 
-// Set the global prisma client if running in development mode
+// Set `global.prismaClient` if running in development mode
 if (process.env.NODE_ENV === "development") {
     global.prismaClient = client
 }

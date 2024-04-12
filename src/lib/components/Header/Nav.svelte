@@ -3,13 +3,17 @@
     import Close from "$lib/assets/svgs/Close.svelte"
     import Menu from "$lib/assets/svgs/Menu.svelte";
 
-    // Import function to handle lifecycle events
+    // https://svelte.dev/docs/svelte#onmount
+    // onMount: runs a function as soon as component has been mounted on the DOM
+    // Import functions to handle lifecycle events
     import { onMount } from "svelte"
 
+    // https://kit.svelte.dev/docs/modules#$app-navigation-onnavigate
+    // onNavigate: runs a function before navigation to a new URL
     // Import function to handle navigation events
     import { onNavigate } from "$app/navigation"
 
-    // Let links be passed to component as prop
+    // Get `links` prop from parent
     export let links
 
     // The html element containing collapsible content
@@ -24,64 +28,75 @@
 
     // Define function to be ran on mount and resize
     const onResize = () => {
-        // Get width of the collapsible container
+        // Get width of `collapsible`
         const containerWidth = collapsible.clientWidth
 
-        // Get width of dropdown toggle button
+        // Get width of `dropdownButton`
         const dropdownButtonWidth = dropdownButton.clientWidth
 
-        // Get all items in collapsible container
+        // Get all elements with the "collapsibleTarget" class in `collapsible`
         const collapsibleItems = [...collapsible.getElementsByClassName("collapsibleTarget")]
         
-        // Calculate total width of all items in "collapsibleItems"
+        // Calculate total width of all items in `collapsibleItems`
         const totalItemWidth = collapsibleItems.reduce((total, item) => total + item.clientWidth, 0)
 
-        // Get gap between items in "collapsible"
+        // Get gap between items in `collapsible`
         const collapsibleGap = Number(window.getComputedStyle(collapsible).columnGap.slice(0,-2))
 
-        // Calculate the extra spacing required to fit all items in "collapsibleItems"
+        // Calculate the extra spacing required to fit all items in `collapsibleItems`
         const spacingWidth = collapsibleGap * (collapsibleItems.length -1)   
 
-        // Calcualte the extra width taken up by elements that only appear when "collapsed == true"
-        // "collapsed" will be [ true or flase ] therefore static difference will be [ 0 or {dropdownButtonWidth} ]
+        // Calcualte the extra width taken up by elements that only appear when `collapsed === true`
+        // `collapsed` will be [ `true` or `flase` ] therefore static difference will be [ `dropdownButtonWidth` or 0 ]
         const staticDifference = (dropdownButtonWidth) * collapsed
 
-        // Set boolean to control "collapsible" is collapsed
+        // Set boolean to control `collapsible` is collapsed
         collapsed = (containerWidth + staticDifference < totalItemWidth + spacingWidth)
 
-        // "dropdown" = it's current value if collapsed is true or false if collapsed is false
-        // This logic closes the dropdown if there is enough space for collaspible div,
-        // meaning the dropdown is no longer necessary
+        // If `collapsed === true`:
+        //   set `dropdown` to its current value
+        // If  `collapsed === false`:
+        //   set `dropdown` to `false`
+        // This logic closes the dropdown if there is enough space for `collaspible`,
+        // meaning the dropdown can be closed
         dropdown = collapsed ? dropdown : false
     }
 
-    // Define function to toggle "dropdown"
+    // Define function to toggle `dropdown`
     const toggleDropdown = () => {
         dropdown = !dropdown
     }
 
-    // When component is mounted, get inital value for "collapsed"
+    // When component is mounted
     onMount(() => {
+        // Run resize function
         onResize()
     })
 
+    // On navigation
     onNavigate(() => {
+        // Close the dropdown
         dropdown = false
     })
 </script>
 
+<!-- TODO: Change every resize event listener from window to an appropiate element -->
 <!-- Add an event listener to call "onResize" function -->
 <svelte:window on:resize={onResize}/>
 
 <div class="zIndex">
     <nav>
+        <!-- If the `brand` slot was passed in -->
         {#if $$slots.brand}
             <a class="brand" href="/">
+                <!-- Children in `brand` slot go here -->
                 <slot name="brand"/>
             </a>
         {/if}
+        <!-- Bind div to `collapsible` so it can be accesed by the script -->
         <div class="collapse" class:collapsed={collapsed} bind:this={collapsible}>
             <ul class="navLinks">
+                <!-- Create a link for every item in `links` -->
                 {#each links as link}
                     <li class="navLink">
                         <a href={link.href}>
@@ -90,47 +105,57 @@
                     </li>
                 {/each}
             </ul>
+            <!-- If a slot was passed in -->
             {#if $$slots.default}
                 <div class="extra">
+                    <!-- Other children go here -->
                     <slot/>
                 </div>
             {/if}
         </div>
         <div class="static" class:collapsed={collapsed}>
+            <!-- If the `static` slot was passed in -->
             {#if $$slots.static}
+                <!-- Children in `static` slot go here -->
                 <slot name="static"/>
             {/if}
+            <!-- Bind button to `dropdown` so it can be accesed by the script -->
             <button class="dropdown-button button-slim" class:collapsed={!collapsed} type="button" 
-                title={dropdown ? "Close dropdown":"Open dropdown"}
+                title={dropdown ? "Close dropdown" : "Open dropdown"}
                 on:click={toggleDropdown}
                 bind:this={dropdownButton}
             >
-            {#if dropdown}
-                <Close/>
-            {:else}
-                <Menu/>
-            {/if}
+                <!-- Control which svg is displayed in button -->
+                {#if dropdown}
+                    <Close/>
+                {:else}
+                    <Menu/>
+                {/if}
             </button>
             
         </div>
     </nav>
+    <!-- If `collapsed` and `dropdown` are true: display dropdown -->
     {#if collapsed && dropdown}
-    <div class="dropdown">
-        <ul class="navLinks">
-            {#each links as link}
-                <li class="navLink">
-                    <a href={link.href}>
-                        <h6>{link.text}</h6>
-                    </a>
-                </li>
-            {/each}
-        </ul>
-        {#if $$slots.default}
-            <div class="extra">
-                <slot/>
-            </div>
-        {/if}
-    </div>
+        <div class="dropdown">
+            <ul class="navLinks">
+                <!-- Create a link for every item in `links` -->
+                {#each links as link}
+                    <li class="navLink">
+                        <a href={link.href}>
+                            <h6>{link.text}</h6>
+                        </a>
+                    </li>
+                {/each}
+            </ul>
+            <!-- If a slot was passed in -->
+            {#if $$slots.default}
+                <div class="extra">
+                    <!-- Other children go here -->
+                    <slot/>
+                </div>
+            {/if}
+        </div>
     {/if}
 </div>
 

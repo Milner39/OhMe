@@ -1,68 +1,80 @@
+// https://www.prisma.io/docs/orm/prisma-schema/overview/generators
 // Define client for interacting with database with js
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
+// https://www.prisma.io/docs/orm/prisma-schema/overview/data-sources
 // Define database provider and url.
 // This project uses a file based database,
 // apposed to one hosted by a provider
 datasource db {
-  provider = "sqlite"
-  url      = "file:./database.sqlite"
+    provider = "sqlite"
+    url      = "file:./database.sqlite"
 }
 
 
-
-// Define User model
+// https://www.prisma.io/docs/orm/prisma-schema/data-model/models
+// "Models:
+//  Represent the entities of your application domain
+//  Map to the tables ... in your database
+//  Form the foundation of the queries available in the generated Prisma Client API
+//  ..."
+// Define database "Models" (Tables)
 model User {
-  id                String       @id @unique @default(uuid())
+    // Key
+    id                String       @id @unique @default(uuid())
 
-  // User information
-  username          String       @unique   
-  web3Wallet        String?     
+    // User information
+    username          String       @unique   
+    web3Wallet        String?     
 
-  // Relations
-  emailAddress      String       @unique
-  email             Email        @relation(references: [address], fields: [emailAddress], onDelete: Restrict, onUpdate: Cascade)
+    // Relations
+    //   Use `emailAddress` as the foreign key so User entries can be filtered by email address
+    emailAddress      String       @unique 
+    email             Email        @relation(references: [address], fields: [emailAddress], onDelete: Restrict, onUpdate: Cascade)
 
-  passwordId        String       @unique
-  password          Password     @relation(references: [id], fields: [passwordId]) 
+    passwordId        String       @unique
+    password          Password     @relation(references: [id], fields: [passwordId]) 
 
-  sessions          Session[]    
+    sessions          Session[]    
 }
 
 model Email {
-  id            String       @id @unique @default(uuid())
+    // Key
+    id            String       @id @unique @default(uuid())
 
-  // Email information
-  address       String       @unique
-  verified      Boolean      @default(false)
-  verifyCode    String?      @unique
-  codeSentAt    DateTime?  
+    // Email information
+    address       String       @unique
+    verified      Boolean      @default(false)
+    verifyCode    String?      @unique
+    codeSentAt    DateTime?  
 
-  // Used to reference which user is linked to this email
-  user          User?     
+    // Relations
+    user          User?     
 }
 
 model Password {
-  id            String       @id @unique @default(uuid())
+    // Key
+    id            String       @id @unique @default(uuid())
 
-  // Password information
-  hash          String
-  resetCode     String?      @unique 
-  codeSentAt    DateTime?
+    // Password information
+    hash          String
+    resetCode     String?      @unique 
+    codeSentAt    DateTime?
 
-  // Used to reference which user is linked to this password
-  user              User?
+    // Relations
+    user              User?
 }
 
 model Session {
-  id           String      @id @unique @default(uuid())
+    // Key
+    id           String      @id @unique @default(uuid())
 
-  // Indicates when a session expires 
-  expiresAt    DateTime
+    // Session information
+    expiresAt    DateTime
 
-  // Used to reference which user is linked to this session
-  userId       String
-  user         User        @relation(references: [id], fields: [userId], onDelete: Cascade)
+    // Relations
+    userId       String
+    user         User        @relation(references: [id], fields: [userId], onDelete: Cascade)
 }

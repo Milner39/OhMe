@@ -5,13 +5,13 @@
 # Installed dependencies
 node_modules
 
-# The folder that "npm run build" outputs to
+# The folder that `npm run build` outputs to
 /build
 
-# The folder that "npm run dev" outputs to
+# The folder that `npm run dev` outputs to
 /.svelte-kit
 
-# Enviromental variables but not the "env.example" file
+# Enviromental variables but not the `env.example` file
 .env
 .env.*
 !.env.example

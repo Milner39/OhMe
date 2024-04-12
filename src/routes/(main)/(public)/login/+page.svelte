@@ -1,17 +1,4 @@
 <script>
-    // Import page to get data from load functions
-    import { page } from "$app/stores"
-
-    // Import notice store
-    import { notice } from "$lib/stores/notice"
-
-    // Import goto to change url params
-    import { goto } from "$app/navigation"
-
-    // Import enhance to prevent hard refeshes after form submitions
-    // and to add extra data to forms
-    import { enhance, applyAction } from "$app/forms"
-
     // Import svgs
     import LogIn from "$lib/assets/svgs/LogIn.svelte"
 
@@ -19,14 +6,40 @@
     import Banner from "$lib/components/Banner.svelte"
     import AutoScroll from "$lib/components/AutoScroll.svelte"
 
-    // Get data returned from form action events
+    // https://kit.svelte.dev/docs/modules#$app-stores
+    // Import page to get data from load functions
+    import { page } from "$app/stores"
+
+    // https://kit.svelte.dev/docs/modules#$app-navigation-goto
+    // Import function to change url params
+    import { goto } from "$app/navigation"
+
+    // https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
+    // "Without an argument, use:enhance will emulate the browser-native behaviour, just without the full-page reloads."
+    //  https://kit.svelte.dev/docs/modules#$app-forms-applyaction
+    // "...updates form and $page.form to result.data (regardless of where you are submitting from, in contrast to update from enhance)"
+    import { enhance, applyAction } from "$app/forms"
+
+    // Import notice store
+    import { notice } from "$lib/stores/notice"
+
+    // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
+    // "...the action can respond with data that will be available through the form property"
+    // Get data returned from form actions
     export let form
 
-    // Reactive variable to control what form to show
-    $: mode = $page.data.mode
+    // Reactive statements are indicated by the `$:` label
+    // https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
+    // "Reactive statements run
+    //  after other script code
+    //  before the component markup is rendered
+    //  whenever the values that they depend on have changed."
 
-    // Set the notice if the form action returns one
+    // Reactive statement to set the notice if the form action returns one
     $: notice.set(form?.notice)
+
+    // Reactive statement to indicate which form to show
+    $: mode = $page.data.mode
 </script>
 
 <Banner>
@@ -60,21 +73,22 @@
                 </div>
             {:else}
                 <div class="menu">
+                    <!-- TODO: change to <a> -->
                     <button class="button-slim" type="button"
-                        class:active={(mode || "login") === "login"}
+                        class:active={mode === "login"}
                         on:click={() => {goto("?mode=login")}}
                     >
                         <h5>Login</h5>
                     </button>
                     <button class="button-slim" type="button"
-                        class:active={(mode || "login") === "register"}
+                        class:active={mode === "register"}
                         on:click={() => {goto("?mode=register")}}
                     >
                         <h5>Register</h5>
                     </button>
                 </div>
                 <div class="forms">
-                    {#if (mode || "login") === "login"}
+                    {#if mode === "login"}
                         <form method="POST" action="?/login" use:enhance>
                             <h5 class="title">Log In To Your Account</h5>
                             <div>
@@ -93,7 +107,7 @@
                             </div>
                             <button class="button-pill" type="submit"><h6>Login</h6></button>
                         </form>
-                    {:else if (mode || "login") === "register"}
+                    {:else if mode === "register"}
                         <form method="POST" action="?/register" use:enhance>
                             <h5 class="title">Create A New Account</h5>
                             <div>
@@ -119,14 +133,14 @@
                             </div>
                             <button class="button-pill" type="submit"><h6>Register</h6></button>
                         </form>
-                    {:else if (mode || "login") === "recover"}
+                    {:else if mode === "recover"}
                         <form method="POST" action="?/recover" use:enhance>
                             <h5 class="title">Reset Your Password</h5>
                             <div>
                                 <label for="email"><small>Email Address*</small></label>
                                 <input name="email" id="email" required autocomplete="email"
                                     class:invalid={form?.errors.email}
-                                    placeholder={form?.errors.email || form?.status === 200 ? "A link has been sent" : ""}
+                                    placeholder={form?.errors.email ? form?.errors.email : "A link has been sent"}
                                 >
                             </div>
                             <button class="button-pill" type="submit"><h6>Reset</h6></button>
@@ -134,7 +148,7 @@
                     {/if}
                 </div>
                 <button class="button-slim" type="button"
-                    class:active={(mode || "login") === "recover"}
+                    class:active={mode === "recover"}
                     on:click={() => {goto("?mode=recover")}}
                 >
                     <h6>Forgot your password?</h6>

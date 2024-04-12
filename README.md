@@ -1,6 +1,10 @@
 ## Developing
 
-Once you've created a project, installed dependencies with `npm install` (or `pnpm install` or `yarn`) and configured a `.env file`, start a development server:
+Install dependencies with `npm install` (or `pnpm install` or `yarn`)
+Created a database with `npx prisma db push`
+Configure a `.env file`
+
+start a development server:
 
 ```bash
 npm run dev

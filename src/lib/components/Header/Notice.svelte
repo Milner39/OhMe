@@ -1,23 +1,19 @@
 <script>
-    // Import notice store
-    import { notice } from "$lib/stores/notice"
-
     // Import svgs
     import Close from "$lib/assets/svgs/Close.svelte"
 
     // Import components
     import AutoScroll from "$lib/components//AutoScroll.svelte"
 
-    // Define function to close notice
-    const close = () => {
-        notice.close()
-    }
+    // Import notice store
+    import { notice } from "$lib/stores/notice"
 </script>
 
+<!-- If `notice` has a value: display notice -->
 {#if $notice}
     <div class="notice">
         <!-- Button to close notice -->
-        <button title="Close notice" class="button-slim" type="button" on:click={close}><Close/></button>
+        <button title="Close notice" class="button-slim" type="button" on:click={notice.close}><Close/></button>
         <AutoScroll>
             <h6>{$notice}</h6>
         </AutoScroll>

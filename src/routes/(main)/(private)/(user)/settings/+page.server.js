@@ -1,10 +1,13 @@
 // Import sanitizer to ensure all user inputs are valid
 import { sanitizer } from "$lib/server/sanitize.js"
-// Import the prisma client to interact with database
+
+// Import prisma client instance to modify db
 import { client as prismaClient } from "$lib/server/prisma"
-// Import a hashing function to hash & unhash strings
+
+// Import hashing functions to hash & verify hashes
 import { stringHasher, failHash } from "$lib/server/argon"
-// Import mail to handle verification codes and send emails
+
+// Import mailer to send emails
 import { mail } from "$lib/server/mailer"
 
 // Define function to check if errors have been caught
@@ -14,18 +17,21 @@ const formHasErrors = (obj) => {
     }
 }
 
+// https://kit.svelte.dev/docs/form-actions
+// "A +page.server.js file can export actions, which allow you to POST data to the server using the <form> element."
 // Define actions
 export const actions = {
     username: async ({ request, locals }) => {
-        // Variables to hold error information
+        // Variables to hold error information and set notice message
         let errors = {}
         let notice
         
-        // Get user from locals
+        // Get `user` object from locals
         const { user } = locals
 
-        // If no user
+        // If `user` is undefined
         if (!user) {
+            // Return appropriate response object
             return {
                 status: 403,
                 errors: {server: "Client not logged in"},
@@ -33,11 +39,12 @@ export const actions = {
             }
         }
 
-        // Get form data
+        // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
         
-        // Sanitize client input
+        // Check `formData.username` fits username requirements
         if (!sanitizer.username(formData.username)) {
+            // Return appropriate response object
             return {
                 status: 422,
                 errors: {username: "Invalid username"},
@@ -45,8 +52,9 @@ export const actions = {
             }
         }
 
-        // Return if no change was made
+        // Check `formData.username` is different from current username
         if (user.username === formData.username) {
+            // Return appropriate response object
             return {
                 status: 200,
                 errors,
@@ -67,9 +75,9 @@ export const actions = {
                 }
             })
         } catch (err) {
-            // Catch error, match error code to
-            // appropriate error message
+            // Catch errors
             switch (err.code) {
+                // Match error code to appropriate error message
                 case "P2002":
                     errors.username = "Username taken"
                     break
@@ -80,7 +88,7 @@ export const actions = {
                     notice = "We couldn't update your username, try again later..."
                     break
             }
-            // Return if entry cannot be updated
+            // Return appropriate response object if User entry cannot be updated
             return {
                 status: 503,
                 errors,
@@ -88,7 +96,7 @@ export const actions = {
             }
         }
 
-        // Return if no errors
+        // Return appropriate response object if no errors
         return {
             status: 200,
             errors,
@@ -97,15 +105,16 @@ export const actions = {
     },
 
     email: async ({ request, locals }) => {
-        // Variables to hold error information
+        // Variables to hold error information and set notice message
         let errors = {}
         let notice
 
-        // Get user from locals
+        // Get `user` object from locals
         const { user } = locals
 
-        // If no user
+        // If `user` is undefined
         if (!user) {
+            // Return appropriate response object
             return {
                 status: 403,
                 errors: {server: "Client not logged in"},
@@ -113,11 +122,12 @@ export const actions = {
             }
         }
 
-        // Get form data
+        // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
         
-        // Sanitize client input
+        // Check `formData.email` fits email requirements
         if (!sanitizer.email(formData.email)) {
+            // Return appropriate response object
             return {
                 status: 422,
                 errors: {email: "Invalid email"},
@@ -125,8 +135,9 @@ export const actions = {
             }
         }
 
-        // Return if no change was made
+        // Check `formData.email` is different from current email
         if (user.email.address === formData.email) {
+            // Return appropriate response object
             return {
                 status: 200,
                 errors,
@@ -161,14 +172,17 @@ export const actions = {
                     }
                 }
             })
+            // If `dbResponse` is not undefined
             if (dbResponse) {
+                // Get `email` object
                 let { email } = dbResponse
+                // Send email with link to verify updated email
                 mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             }
         } catch (err) {
-            // Catch error, match error code to
-            // appropriate error message
+            // Catch errors
             switch (err.code) {
+                // Match error code to appropriate error message
                 case "P2002":
                     errors.email = "Email taken"
                     break
@@ -179,7 +193,7 @@ export const actions = {
                     notice = "We couldn't update your email address, try again later..."
                     break
             }
-            // Return if entry cannot be updated
+            // Return appropriate response object if User entry cannot be updated
             return {
                 status: 503,
                 errors,
@@ -187,7 +201,7 @@ export const actions = {
             }
         }
 
-        // Return if no errors
+        // Return appropriate response object if no errors
         return {
             status: 200,
             errors,
@@ -196,15 +210,16 @@ export const actions = {
     },
 
     password: async ({ request, locals }) => {
-        // Variable to hold error information
+        // Variables to hold error information and set notice message
         let errors = {}
         let notice
-        
-        // Get user from locals
+
+        // Get `user` object from locals
         const { user } = locals
 
-        // If no user
+        // If `user` is undefined
         if (!user) {
+            // Return appropriate response object
             return {
                 status: 403,
                 errors: {server: "Client not logged in"},
@@ -212,10 +227,10 @@ export const actions = {
             }
         }
 
-        // Get form data
+        // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
         
-        // Sanitize client input
+        // Check `formData.password` and `formData.newPassword` fits password requirements
         if (!sanitizer.password(formData.password)) {
             errors.password = "Invalid password"
         }
@@ -223,8 +238,9 @@ export const actions = {
             errors.newPassword = "Invalid password"
         }
 
-        // Return if inputs not valid
+        // Check if form inputs have failed sanitization checks
         if (formHasErrors(errors)) {
+            // Return appropriate response object
             return {
                 status: 422,
                 errors,
@@ -248,38 +264,41 @@ export const actions = {
                     }
                 }
             })
+            // If `dbResponse` is not undefined
             if (dbResponse) {
+                // Get `password` object
                 var { password } = dbResponse
             }
         } catch (err) {
-            // Catch error, match error code to
-            // appropriate error message
+            // Catch errors
             switch (err.code) {
+                // Match error code to appropriate error message
                 default:
                     console.error("Error at settings.server.js")
                     console.error(err)
                     errors.server = "Unable to change information"
                     break
             }
-            // Return if cannot get hashed password
+            // Return appropriate response object if hashed password of User entry cannot be fetched
             return {
                 status: 503,
                 errors,
                 notice: "We couldn't update your password, try again later..."
             }
         }
-        // If user with matching credentials does not exist, null will be returned
-        // in which case instead of verifing "User.hashedPassword" a hashed empty string is used,
+        // If User entry with matching credentials does not exist, null will be returned
+        // in which case instead of verifing `User.hashedPassword` a hashed empty string is used,
         // therefore "validPassword" will always be false
         const hashedPassword = password?.hash || failHash
 
-        // Returning immediately allows malicious users to figure out valid usernames from response times,
-		// allowing them to only focus on guessing passwords in brute-force attacks.
-		// As a preventive measure, verifiy passwords even for non-existing users  
+        // This is done becasue returning immediately allows malicious users to figure out
+        // valid usernames from response times, allowing them to only focus on guessing passwords 
+        // in brute-force attacks. As a preventive measure, verifiy passwords even for non-existing users  
         const correctPassword = await stringHasher.verify(hashedPassword, formData.password)
 
-        // Return if password is incorrect
+        // Check if password is correct
         if (!correctPassword) {
+            // Return appropriate response object
             return {
                 status: 422,
                 errors: {password: "Password incorrect"},
@@ -287,7 +306,7 @@ export const actions = {
             }
         }
 
-        // Return if no change was made
+        // Check `formData.password` is different from `formData.newPassword`
         if (formData.password === formData.newPassword) {
             return {
                 status: 422,
@@ -316,16 +335,16 @@ export const actions = {
                 }
             })
         } catch (err) {
-            // Catch error, match error code to
-            // appropriate error message
+            // Catch errors
             switch (err.code) {
+                // Match error code to appropriate error message
                 default:
                     console.error("Error at settings.server.js")
                     console.error(err)
                     errors.server = "Unable to change information"
                     break
             }
-            // Return if entry cannot be updated
+            // Return appropriate response object if User entry cannot be updated
             return {
                 status: 503,
                 errors,
@@ -333,7 +352,7 @@ export const actions = {
             }
         }
 
-        // Return if no errors
+        // Return appropriate response object if no errors
         return {
             status: 200,
             errors,

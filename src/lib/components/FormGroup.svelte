@@ -1,51 +1,55 @@
 <script>
+    // https://svelte.dev/docs/svelte#onmount
+    // onMount: runs a function as soon as component has been mounted on the DOM
     // Import functions to handle lifecycle events
     import { onMount } from "svelte"
 
-    // Import enhance to prevent hard refeshes after form submitions
+    // https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
+    // "Without an argument, use:enhance will emulate the browser-native behaviour, just without the full-page reloads."
     import { enhance } from "$app/forms"
 
-    // Prop containing settings used to create forms
+    // Get `forms` prop from parent
     export let forms
 
     // The form html elements
     let formElements = []
-    // The child of each label html elements
+
+    // The child of each label html element
     let labelTexts = []
+
     // The width of the widest label
     export let labelWidth = 0
 
-    // When component is mounted, get inital value for "labelWidth"
+    // When component is mounted
     onMount(() => {
-        labelWidth = labelTexts.reduce((max, label) => max = Math.max(max, label.clientWidth), 0)
+        // get inital value for "labelWidth"
+        labelWidth = Math.max(...labelTexts.map(label => label.clientWidth))
     })
 </script>
 
 <!-- Add an event listener to update label width on resize -->
-<svelte:window 
-    on:resize={() => {
-        labelWidth = labelTexts.reduce((max, label) => max = Math.max(max, label.clientWidth), 0)
-    }}
-/>
+<svelte:window on:resize={() => {labelWidth = Math.max(...labelTexts.map(label => label.clientWidth))}}/>
 
+<!-- Create a form for every item in `forms` -->
 {#each forms as form, i}
-    <form 
+    <!-- Bind form to `formElements[i]` so it can be accesed by the script -->
+    <form
         {...form.attributes} 
         bind:this={formElements[i]} 
         method="POST"
         use:enhance
     >
-        {#if form.inputs}
-        {#each form.inputs as input, j}
+        <!-- Create a label and input for every item in `form.inputs` -->
+        {#each form?.inputs || [] as input, j}
             <div class="inputContainer">
+                <!-- Set width as largest label so all inputs line up -->
                 <label 
                     {...input.label?.attributes} 
                     style="width: {labelWidth}px" 
                     for={input.id}
                 >
-                    <h6 
-                        bind:this={labelTexts[j]}
-                    >
+                    <!-- Bind h6 to `labelTexts[j]` so it can be accesed by the script -->
+                    <h6 bind:this={labelTexts[j]}>
                         {input.label?.text}
                     </h6>
                 </label>
@@ -62,7 +66,6 @@
                 >
             </div>
         {/each}
-        {/if}
     </form>
 {/each}
 

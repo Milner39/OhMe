@@ -1,23 +1,33 @@
+// https://kit.svelte.dev/docs/load#page-data
 // Define load function
 export const load = async ({ url }) => {
+    // https://kit.svelte.dev/docs/web-standards#url-apis
     // Get URL parameter
     const mode = url.searchParams.get("mode")
 
-    // If "?mode=..." is either login or mode, pass data to page
-    // This will control which form is shown
-    if (mode === "login" || mode === "register" || mode === "recover") {
+    // Define the options for the different forms
+    const options = ["login", "register", "recover"]
+
+    // Check that the `mode` URL param is one of the items in `options`
+    if (options.includes(mode)) {
+        // Return `mode`
         return {mode}
+    } else {
+        // Return object with `mode: "login"` key-value pair
+        return {mode: "login"}
     }
 }
 
-// Import sanitizer to ensure all user inputs are safe
+// Import sanitizer to ensure all user inputs are valid
 import { sanitizer } from "$lib/server/sanitize.js"
-// Import the prisma client to interact with database
+
+// Import prisma client instance to modify db
 import { client as prismaClient } from "$lib/server/prisma"
-// Import a hashing function to store hashed passwords in database
-// and to unhash stored values to validate password user input
+
+// Import hashing functions to hash & verify hashes
 import { stringHasher, failHash } from "$lib/server/argon"
-// Import mail to handle verification codes and send emails
+
+// Import mailer to send emails
 import { mail } from "$lib/server/mailer"
 
 // Define function to check if errors have been caught
@@ -27,28 +37,31 @@ const formHasErrors = (obj) => {
     }
 }
 
-// Define actions 
+// https://kit.svelte.dev/docs/form-actions
+// "A +page.server.js file can export actions, which allow you to POST data to the server using the <form> element."
+// Define actions
 export const actions = {
     login: async ({ request, cookies }) => {
-        // Variable to hold error information
+        // Variables to hold error information and set notice message
         let errors = {}
         let notice
 
-        // Get form data
+        // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // Sanitize email input
+        // Check `formData.email` fits email requirements
         if (!sanitizer.email(formData.email)) {
             errors.email = "Invalid email"
         }
 
-        // Sanitize password input
+        // Check `formData.password` fits password requirements
         if (!sanitizer.password(formData.password)) {
             errors.password = "Invalid password"
         }
 
-        // Return if inputs not valid
+        // Check if form inputs have failed sanitization checks
         if (formHasErrors(errors)) {
+            // Return appropriate response object
             return {
                 status: 422,
                 errors,
@@ -72,36 +85,41 @@ export const actions = {
                     }
                 }
             })
+            // If `dbResponse` is not undefined
             if (dbResponse) {
+                // Get `password` object
                 var { password } = dbResponse
             }
         } catch (err) {
+            // Catch errors
             switch (err.code) {
+                // Match error code to appropriate error message
                 default:
                     console.error("Error at login.server.js")
                     console.error(err)
                     errors.server = "Unable to login client"
                     break
             }
-            // Return if cannot get hashed password
+            // Return appropriate response object if hashed password of User entry cannot be fetched
             return {
                 status: 503,
                 errors,
                 notice: "We couldn't log you in, try again later..."
             }
         }
-        // If user with matching credentials does not exist, null will be returned
-        // in which case instead of verifing "User.hashedPassword" a hashed empty string is used,
+        // If User entry with matching credentials does not exist, null will be returned
+        // in which case instead of verifing `User.hashedPassword` a hashed empty string is used,
         // therefore "validPassword" will always be false
         const hashedPassword = password?.hash || failHash
 
-        // Returning immediately allows malicious clients to figure out valid usernames from response times,
-		// allowing them to only focus on guessing passwords in brute-force attacks.
-		// As a preventive measure, verifiy passwords even for non-existing Users  
+        // This is done becasue returning immediately allows malicious users to figure out
+        // valid usernames from response times, allowing them to only focus on guessing passwords 
+        // in brute-force attacks. As a preventive measure, verifiy passwords even for non-existing users  
         const correctPassword = await stringHasher.verify(hashedPassword, formData.password)
 
-        // Return if password incorrect
+        // Check if password is correct
         if (!correctPassword) {
+            // Return appropriate response object
             return {
                 status: 403,
                 errors: {
@@ -116,7 +134,7 @@ export const actions = {
         const expireyDate = new Date()
         expireyDate.setDate(expireyDate.getDate() +21)
 
-        // Create Session entry in db, linked to User entry
+        // Update User entry in db
         try {
             let dbResponse = await prismaClient.User.update({
                 // Set filter feilds
@@ -141,20 +159,22 @@ export const actions = {
                     }
                 }
             })
+            // If `dbResponse` is not undefined
             if (dbResponse) {
+                // Get `sessions` and `user` object
                 var { sessions, ...user } = dbResponse
             }
         } catch (err) {
-            // Catch error, match error code to
-            // appropriate error message
+            // Catch errors
             switch (err.code) {
+                // Match error code to appropriate error message
                 default:
                     console.error("Error at login.server.js")
                     console.error(err)
                     errors.server = "Unable to login user"
                     break
             }
-            // Return if session cannot be created
+            // Return appropriate response object if User entry cannot be updated
             return {
                 status: 503,
                 errors,
@@ -162,7 +182,7 @@ export const actions = {
             }
         }
 
-        // Create cookie so login persists refreshes
+        // Set cookies in client's browser so login persists refreshes
         await cookies.set("session", sessions.at(-1).id, {
             path: "/",
             maxAge: 50 * 24 * 60 * 60,    // 50 days
@@ -178,7 +198,7 @@ export const actions = {
             secure: false
         })
 
-        // Return if no errors
+        // Return appropriate response object if no errors
         return {
             status: 200,
             errors,
@@ -187,30 +207,31 @@ export const actions = {
     },
 
     register: async ({ request, cookies }) => {
-        // Variable to hold error information
+        // Variables to hold error information and set notice message
         let errors = {}
         let notice
 
-        // Get form data
+        // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // Sanitize username input
+        // Check `formData.username` fits username requirements
         if (!sanitizer.username(formData.username)) {
             errors.username = "Invalid username"
         }
 
-        // Sanitize email input
+        // Check `formData.email` fits email requirements
         if (!sanitizer.email(formData.email)) {
             errors.email = "Invalid email"
         }
 
-        // Sanitize password input
+        // Check `formData.password` fits password requirements
         if (!sanitizer.password(formData.password)) {
             errors.password = "Invalid password"
         }
 
-        // Return if inputs not valid
+        // Check if form inputs have failed sanitization checks
         if (formHasErrors(errors)) {
+            // Return appropriate response object
             return {
                 status: 422,
                 errors,
@@ -218,7 +239,7 @@ export const actions = {
             }
         }
 
-        // Check username or email is taken
+        // Get User entries with the username and email from `formData`
         try {
             let dbResponse = await prismaClient.User.findMany({
                 // Set filter feilds
@@ -244,6 +265,7 @@ export const actions = {
                     }
                 }
             })
+            // Check if username or email taken
             for (const user of dbResponse) {
                 if (user.username === formData.username) {
                     errors.username = "Username taken"
@@ -253,16 +275,16 @@ export const actions = {
                 }
             }
         } catch (err) {
-            // Catch error, match error code to
-            // appropriate error message
+            // Catch errors
             switch (err.code) {
+                // Match error code to appropriate error message
                 default:
                     console.error("Error at login.server.js")
                     console.error(err)
                     errors.server = "Unable to register user"
                     break
             }
-            // Return if cannot get User entries
+            // Return appropriate response object if hashed password of User entries cannot be fetched
             return {
                 status: 503,
                 errors,
@@ -270,7 +292,7 @@ export const actions = {
             }
         }
 
-        // Return if username or email taken
+        // Return appropriate response object if username or email taken
         if (formHasErrors(errors)) {
             return {
                 status: 409,
@@ -283,7 +305,7 @@ export const actions = {
         const expireyDate = new Date()
         expireyDate.setDate(expireyDate.getDate() +21)
 
-        // Create User and Session entry in db
+        // Create User entry in db
         try {
             let dbResponse = await prismaClient.User.create({
                 // Set data feilds
@@ -323,21 +345,24 @@ export const actions = {
                     }
                 }
             })
+            // If `dbResponse` is not undefined
             if (dbResponse) {
+                // Get `sessions`, `email` and `user` object
                 var { sessions, email, ...user } = dbResponse
+                // Send email with link to verify email
                 mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             }
         } catch (err) {
-            // Catch error, match error code to
-            // appropriate error message
+            // Catch errors
             switch (err.code) {
+                // Match error code to appropriate error message
                 default:
                     console.error("Error at login.server.js")
                     console.error(err)
                     errors.server = "Unable to register user"
                     break
             }
-            // Return if user cannot be created
+            // Return appropriate response object if User entry cannot be created
             return {
                 status: 503,
                 errors,
@@ -345,7 +370,7 @@ export const actions = {
             }
         }
 
-        // Create cookie so login persists refreshes
+        // Set cookies in client's browser so login persists refreshes
         await cookies.set("session", sessions.at(-1).id, {
             path: "/",
             maxAge: 50 * 24 * 60 * 60,    // 50 days
@@ -361,7 +386,7 @@ export const actions = {
             secure: false
         })
 
-        // Return if no errors
+        // Return appropriate response object if no errors
         return {
             status: 200,
             errors,
@@ -370,23 +395,19 @@ export const actions = {
     },
 
     recover: async ({ request }) => {
-        // Variable to hold error information
+        // Variables to hold error information and set notice message
         let errors = {}
         let notice
-        
-        // Get form data
+
+        // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // Sanitize email input
+        // Check `formData.email` fits email requirements
         if (!sanitizer.email(formData.email)) {
-            errors.email = "Invalid email"
-        }
-
-        // Return if inputs not valid
-        if (formHasErrors(errors)) {
+            // Return appropriate response object
             return {
                 status: 422,
-                errors,
+                errors: {email: "Invalid email"},
                 notice
             }
         }
@@ -407,18 +428,22 @@ export const actions = {
                     }
                 }
             })
+            // If `dbResponse` is not undefined
             if (dbResponse) {
+                // Get `password` object
                 var { password } = dbResponse
             }
         } catch (err) {
+            // Catch errors
             switch (err.code) {
+                // Match error code to appropriate error message
                 default:
                     console.error("Error at login.server.js")
                     console.error(err)
                     errors.server = "Unable to recover account"
                     break
             }
-            // Return if cannot get hashed password
+            // Return appropriate response object if User entry cannot be fetched
             return {
                 status: 503,
                 errors,
@@ -426,8 +451,9 @@ export const actions = {
             }
         }
 
-        // Return if User entry does not exist
+        // Check if password is undefined
         if (!password) {
+            // Return appropriate response object
             return {
                 status: 403,
                 errors: { email: "Email incorrect" },
@@ -435,9 +461,11 @@ export const actions = {
             }
         }
 
+        // Get the DateTime of when the last password reset code was sent
         const { codeSentAt } = password
         // If last link was sent less than an hour ago
         if (codeSentAt && codeSentAt.setTime(codeSentAt.getTime() + 1 * 60 * 60 * 1000) > new Date()) {
+            // Return appropriate response object
             return {
                 status: 422,
                 errors: { email: "Wait an hour between resets"},
@@ -445,7 +473,7 @@ export const actions = {
             }
         }
 
-        // Create password reset link
+        // Update User entry in db
         try {
             let dbResponse = await prismaClient.User.update({
                 // Set filter feilds
@@ -471,19 +499,24 @@ export const actions = {
                     }
                 }
             })
+            // If `dbResponse` is not undefined
             if (dbResponse) {
+                // Get `password` and `user` object
                 let { password, ...user} = dbResponse
+                // Send email with link to reset password
                 mail.sendRecovery("finn.milner@outlook.com", user.id, password.resetCode)
             }
         } catch (err) {
+            // Catch errors
             switch (err.code) {
+                // Match error code to appropriate error message
                 default:
                     console.error("Error at login.server.js")
                     console.error(err)
                     errors.server = "Unable to recover account"
                     break
             }
-            // Return if cannot get hashed password
+            // Return appropriate response object if User entry cannot be updated
             return {
                 status: 503,
                 errors,
@@ -491,7 +524,7 @@ export const actions = {
             }
         }
 
-        // Return if no errors
+        // Return appropriate response object if no errors
         return {
             status: 200,
             errors,

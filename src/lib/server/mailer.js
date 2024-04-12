@@ -1,3 +1,5 @@
+// https://nodemailer.com/
+// "Nodemailer is a module for Node.js applications to allow easy as cake email sending."
 // Import function to create mail transporter to send emails
 import nodemailer from "nodemailer"
 
@@ -12,13 +14,14 @@ const transporter = nodemailer.createTransport({
     }
 })
 
-// Create custom mail handler that can be used in server-side form actions
+// Create `mail` object to be used in server-side form actions
 const mail = {
     sendVerification: (to, userId, code) => {
         // Select url based on enviromental variables
         const url = process.env.NODE_ENV === "development" ? 
         "http://"+process.env.NODE_SERVER_HOST+":5173" :
         process.env.NODE_SERVER_ORIGIN
+
         // Send email with verification link
         try {
             transporter.sendMail({
@@ -39,7 +42,8 @@ const mail = {
         const url = process.env.NODE_ENV === "development" ? 
         "http://"+process.env.NODE_SERVER_HOST+":5173" :
         process.env.NODE_SERVER_ORIGIN
-        // Send email with recovery link
+
+        // Send email with reset link
         try {
             transporter.sendMail({
                 from: {
@@ -48,7 +52,7 @@ const mail = {
                 },
                 to: to,
                 subject: "Reset password",
-                html: `Click <a href='${url + "/recover?user="+userId+"&code="+code}'>here</a> to reset your password.`
+                html: `Click <a href='${url + "/reset?user="+userId+"&code="+code}'>here</a> to reset your password.`
             })
         } catch (err) {
             throw err
