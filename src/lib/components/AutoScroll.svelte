@@ -1,10 +1,8 @@
 <script>
     // https://svelte.dev/docs/svelte#onmount
-    // https://svelte.dev/docs/svelte#ondestroy
     // onMount: runs a function as soon as component has been mounted on the DOM
-    // onDestroy: runs a function as soon as component has been unmounted
     // Import functions to handle lifecycle events
-    import { onMount, onDestroy } from "svelte"
+    import { onMount } from "svelte"
 
     // The html element that will scroll
     let scroller
@@ -34,19 +32,15 @@
         }
     }
 
-    // Store interval id so it can be cleared on unmount
-    let intervalId 
-
     // When component is mounted
     onMount(() => {
         // Call scroll function every 50ms
-        intervalId = setInterval(scrollRight, 50)
-    })
-
-    // When component is destroyed
-    onDestroy(() => {
-        // Clear interval so scroll function stops being called
-        clearInterval(intervalId)
+        const intervalId = setInterval(scrollRight, 50)
+        // When component is unmounted
+        return () => {
+            // Clear interval so scroll function stops being called
+            clearInterval(intervalId)
+        }
     })
 </script>
 
