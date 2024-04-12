@@ -64,9 +64,6 @@
 
     // When component is mounted
     onMount(() => {
-        // Run resize function
-        onResize()
-
         // Create a resize observer
         const resizeObserver = new ResizeObserver(_ => {
             // Run resize function
