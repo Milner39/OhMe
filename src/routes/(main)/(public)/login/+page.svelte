@@ -73,19 +73,12 @@
                 </div>
             {:else}
                 <div class="menu">
-                    <!-- TODO: change to <a> -->
-                    <button class="button-slim" type="button"
-                        class:active={mode === "login"}
-                        on:click={() => {goto("?mode=login")}}
-                    >
+                    <a href="?mode=login" class="button-slim" class:active={mode === "login"}>
                         <h5>Login</h5>
-                    </button>
-                    <button class="button-slim" type="button"
-                        class:active={mode === "register"}
-                        on:click={() => {goto("?mode=register")}}
-                    >
+                    </a>
+                    <a href="?mode=register" class="button-slim" class:active={mode === "register"}>
                         <h5>Register</h5>
-                    </button>
+                    </a>
                 </div>
                 <div class="forms">
                     {#if mode === "login"}
@@ -140,19 +133,16 @@
                                 <label for="email"><small>Email Address*</small></label>
                                 <input name="email" id="email" required autocomplete="email"
                                     class:invalid={form?.errors.email}
-                                    placeholder={form?.errors.email ? form?.errors.email : "A link has been sent"}
+                                    placeholder={form?.errors.email}
                                 >
                             </div>
                             <button class="button-pill" type="submit"><h6>Reset</h6></button>
                         </form>
                     {/if}
                 </div>
-                <button class="button-slim" type="button"
-                    class:active={mode === "recover"}
-                    on:click={() => {goto("?mode=recover")}}
-                >
+                <a href="?mode=recover" class="button-slim" class:active={mode === "recover"}>
                     <h6>Forgot your password?</h6>
-                </button>
+                </a>
             {/if}
         </div>
     </div>
@@ -209,6 +199,10 @@
                     width: 100%;
                 }
             }
+        }
+
+        >a {
+            align-self: center;
         }
     }
 
