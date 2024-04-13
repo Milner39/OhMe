@@ -19,8 +19,8 @@ const authHandle = async ({ event, resolve }) => {
     const userId = event.cookies.get("user")
     const sessionId = event.cookies.get("session")
 
-    // If no client does not have both cookies
-    if (!sessionId || !userId) {
+    // If client does not have both cookies
+    if (!userId || !sessionId) {
         // Set both local objects to null
         event.locals.user = null
         event.locals.session = null
