@@ -1,7 +1,8 @@
 // Import prisma client instance to modify db
 import { client as prismaClient } from "$lib/server/prisma"
 
-// TODO: This method of streaming data does not work on safari, I'm aware of this issue and I need to fix it
+// UPDATE: Streaming promises do not work on safari
+// This seems like a sveltekit issue: https://github.com/sveltejs/kit/issues/10315
 
 // https://kit.svelte.dev/docs/load#page-data
 // Define load function
@@ -15,10 +16,11 @@ export const load = async ({ url }) => {
     // https://kit.svelte.dev/docs/load#streaming-with-promises
     // Wrap main script in a function so it can be streamed as a promise
     const verify = async () => {
-        ///////
-        // Not needed, just showcases loading animation
-        await new Promise(resolve => setTimeout(resolve, 2500))
-        ///////
+        ////////                                                                      ////////
+        // Not needed, just showcases loading animation                                     //
+        // Cannot include due to safari not supporting the current promise streaming method //
+        // await new Promise(resolve => setTimeout(resolve, 2500))                          //
+        ////////                                                                      ////////
 
         // If url does not have both search params
         if (!userId || !verifyCode) {
