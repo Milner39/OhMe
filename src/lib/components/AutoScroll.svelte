@@ -12,35 +12,38 @@
 
     // Define function to scroll across div
     const scrollRight = async () => {
+        // Check if `scroller` element is at starting position: Wait 3000ms
+        if (scroll === 0) {await new Promise(resolve => setTimeout(resolve, 3000))}
+
         // Increment scroll position
         scroll += 1
+
+        // Check `scroller` element has not been unmounted
+        if (!scroller) {return}
 
         // Scroll to new position
         scroller.scrollTo({ left: scroll, behavior: 'smooth' })
 
         // If scroll position is larger than the maximum scroll distance
-        if (scroll >= scroller.scrollWidth - scroller.clientWidth) {
-            // Wait 3 seconds
+        if (scroll > scroller.scrollWidth - scroller.clientWidth) {
+            // Wait 3000ms
             await new Promise(resolve => setTimeout(resolve, 3000))
 
-            // Check html element has not been unmounted
-            if (scroller) {
-                // Reset scroll position
-                scroller.scrollLeft = 0
-                scroll = 0
-            }
+            // Check `scroller` element has not been unmounted
+            if (!scroller) {return}
+
+            // Reset scroll position
+            scroller.scrollLeft = 0
+            scroll = 0
         }
+        // Wait 50ms
+        await new Promise(resolve => setTimeout(resolve, 50))
+        scrollRight()
     }
 
     // When component is mounted
     onMount(() => {
-        // Call scroll function every 50ms
-        const intervalId = setInterval(scrollRight, 50)
-        // When component is unmounted
-        return () => {
-            // Clear interval so scroll function stops being called
-            clearInterval(intervalId)
-        }
+        scrollRight()
     })
 </script>
 
