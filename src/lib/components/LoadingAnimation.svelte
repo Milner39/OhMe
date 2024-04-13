@@ -27,7 +27,7 @@
             stroke-dasharray: 100%;
             stroke-dashoffset: -100%;
         }
-        62.5001% {
+        62.501% {
             opacity: 0;
             stroke-dasharray: 100%;
             stroke-dashoffset: 100%;
