@@ -25,14 +25,14 @@
 
 </script>
 
-<div>
+<div class="content">
     <!-- Show error information -->
     <h2>{$page.status}: {$page.error.message}</h2>
     <h3>Returning you home...</h3>
 </div>
 
 <style lang="scss">
-    div {
+    .content {
         width: 100vw;
         height: 100%;
 
