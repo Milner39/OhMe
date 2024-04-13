@@ -6,7 +6,7 @@
     import Header from "$lib/components/Header/Header.svelte"
 
     // https://kit.svelte.dev/docs/modules#$app-stores
-    // Import page to get data from load functions
+    // Import `page` to get page data
     import { page } from "$app/stores"
 
     // https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance

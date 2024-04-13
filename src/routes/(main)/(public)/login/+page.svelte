@@ -7,7 +7,7 @@
     import AutoScroll from "$lib/components/AutoScroll.svelte"
 
     // https://kit.svelte.dev/docs/modules#$app-stores
-    // Import page to get data from load functions
+    // Import `page` to get page data
     import { page } from "$app/stores"
 
     // https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
@@ -19,17 +19,17 @@
     // Import notice store
     import { notice } from "$lib/stores/notice"
 
-    // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
-    // "...the action can respond with data that will be available through the form property"
-    // Get data returned from form actions
-    export let form
-
     // Reactive statements are indicated by the `$:` label
     // https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
     // "Reactive statements run
     //  after other script code
     //  before the component markup is rendered
     //  whenever the values that they depend on have changed."
+
+    // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
+    // "...the action can respond with data that will be available through the form property"
+    // Get data returned from form actions
+    $: form = $page.form
 
     // Reactive statement to set the notice if the form action returns one
     $: notice.set(form?.notice)
@@ -83,15 +83,15 @@
                             <div>
                                 <label for="email"><small>Email Address*</small></label>
                                 <input name="email" id="email" required autocomplete="email"
-                                    class:invalid={form?.errors.email}
-                                    placeholder={form?.errors.email}
+                                    class:invalid={form?.errors?.email}
+                                    placeholder={form?.errors?.email}
                                 >
                             </div>
                             <div>
                                 <label for="password"><small>Password*</small></label>
                                 <input name="password" id="password" required autocomplete="current-password"
-                                    class:invalid={form?.errors.password}
-                                    placeholder={form?.errors.password}
+                                    class:invalid={form?.errors?.password}
+                                    placeholder={form?.errors?.password}
                                 >
                             </div>
                             <button class="button-pill" type="submit"><h6>Login</h6></button>
@@ -102,22 +102,22 @@
                             <div>
                                 <label for="username"><small>Username*</small></label>
                                 <input name="username" id="username" required autocomplete="username"
-                                    class:invalid={form?.errors.username}
-                                    placeholder={form?.errors.username}
+                                    class:invalid={form?.errors?.username}
+                                    placeholder={form?.errors?.username}
                                 >
                             </div>
                             <div>
                                 <label for="email"><small>Email Address*</small></label>
                                 <input name="email" id="email" required autocomplete="email"
-                                    class:invalid={form?.errors.email}
-                                    placeholder={form?.errors.email}
+                                    class:invalid={form?.errors?.email}
+                                    placeholder={form?.errors?.email}
                                 >
                             </div>
                             <div>
                                 <label for="password"><small>Password*</small></label>
                                 <input name="password" id="password" required autocomplete="new-password"
-                                    class:invalid={form?.errors.password}
-                                    placeholder={form?.errors.password}
+                                    class:invalid={form?.errors?.password}
+                                    placeholder={form?.errors?.password}
                                 >
                             </div>
                             <button class="button-pill" type="submit"><h6>Register</h6></button>
@@ -128,8 +128,8 @@
                             <div>
                                 <label for="email"><small>Email Address*</small></label>
                                 <input name="email" id="email" required autocomplete="email"
-                                    class:invalid={form?.errors.email}
-                                    placeholder={form?.errors.email}
+                                    class:invalid={form?.errors?.email}
+                                    placeholder={form?.errors?.email}
                                 >
                             </div>
                             <button class="button-pill" type="submit"><h6>Reset</h6></button>

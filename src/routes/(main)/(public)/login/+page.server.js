@@ -41,6 +41,7 @@ const formHasErrors = (obj) => {
 // "A +page.server.js file can export actions, which allow you to POST data to the server using the <form> element."
 // Define actions
 export const actions = {
+    // MARK: Login
     login: async ({ request, cookies }) => {
         // Variables to hold error information and set notice message
         let errors = {}
@@ -205,7 +206,7 @@ export const actions = {
             notice: "Successfully logged in!"
         }
     },
-
+    // MARK: Register
     register: async ({ request, cookies }) => {
         // Variables to hold error information and set notice message
         let errors = {}
@@ -393,7 +394,7 @@ export const actions = {
             notice: "Successfully registered your account! Check your inbox for a verification link"
         }
     },
-
+    // MARK: Recover
     recover: async ({ request }) => {
         // Variables to hold error information and set notice message
         let errors = {}

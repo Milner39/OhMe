@@ -10,16 +10,11 @@
     import SidebarPane from "$lib/components/SidebarPane.svelte"
 
     // https://kit.svelte.dev/docs/modules#$app-stores
-    // Import page to get data from load functions
+    // Import `page` to get page data
     import { page } from "$app/stores"
 
     // Import notice store
     import { notice } from "$lib/stores/notice"
-
-    // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
-    // "...the action can respond with data that will be available through the form property"
-    // Get data returned from form actions
-    export let form
 
     // The width in pixels that indicates when the widescreen style change should occur
     let wideModeSize = 850
@@ -43,6 +38,11 @@
     //  after other script code
     //  before the component markup is rendered
     //  whenever the values that they depend on have changed."
+
+    // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
+    // "...the action can respond with data that will be available through the form property"
+    // Get data returned from form actions
+    $: form = $page.form
 
     // Reactive statement to set the notice if the form action returns one
     $: notice.set(form?.notice)

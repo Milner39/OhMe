@@ -3,7 +3,7 @@
     import "$lib/styles/global.scss"
 
     // https://kit.svelte.dev/docs/modules#$app-stores
-    // Import `page` store to get error information
+    // Import `page` to get page data
     import { page } from "$app/stores"
 
     // https://svelte.dev/docs/svelte#onmount
@@ -34,7 +34,7 @@
 <style lang="scss">
     div {
         width: 100vw;
-        height: 100vh;
+        height: 100%;
 
         display: flex;
         flex-direction: column;
