@@ -1,0 +1,41 @@
+<script>
+    // Import svgs
+    import Chart from "$lib/assets/svgs/Chart.svelte";
+</script>
+
+<div class="animation">
+    <Chart/>
+</div>
+
+<style lang="scss">
+    .animation > :global(svg) {
+        height: 100%;
+
+        :global(path.animate) {
+            animation: loadingSvg 2500ms ease infinite;
+        }
+    }
+
+    @keyframes loadingSvg {
+        0%, 25% {
+            opacity: 1;
+            stroke-dasharray: 100%;
+            stroke-dashoffset: 0%;
+        }
+        62.499% {
+            opacity: 0;
+            stroke-dasharray: 100%;
+            stroke-dashoffset: -100%;
+        }
+        62.5001% {
+            opacity: 0;
+            stroke-dasharray: 100%;
+            stroke-dashoffset: 100%;
+        }
+        100% {
+            opacity: 1;
+            stroke-dasharray: 100%;
+            stroke-dashoffset: 0%;
+        }
+    }
+</style>
