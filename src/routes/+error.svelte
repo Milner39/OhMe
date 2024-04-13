@@ -27,8 +27,8 @@
 
 <div class="content">
     <!-- Show error information -->
-    <h2>{$page.status}: {$page.error.message}</h2>
-    <h3>Returning you home...</h3>
+    <h3>{$page.status}: {$page.error.message}</h3>
+    <h4>Returning you home...</h4>
 </div>
 
 <style lang="scss">
@@ -40,6 +40,8 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+
+        text-align: center;
         
         background-color: var(--bg-3);
     }
