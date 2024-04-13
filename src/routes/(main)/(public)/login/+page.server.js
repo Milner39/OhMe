@@ -122,7 +122,7 @@ export const actions = {
         if (!correctPassword) {
             // Return appropriate response object
             return {
-                status: 403,
+                status: 401,
                 errors: {
                     email: "Email or password incorrect",
                     password: "Email or password incorrect"
@@ -456,7 +456,7 @@ export const actions = {
         if (!password) {
             // Return appropriate response object
             return {
-                status: 403,
+                status: 401,
                 errors: { email: "Email incorrect" },
                 notice
             }

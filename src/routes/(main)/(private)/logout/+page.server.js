@@ -13,7 +13,7 @@ export const actions = {
         if (!session) {
             // Return appropriate response object
             return {
-                status: 403,
+                status: 401,
                 errors: {server: "Client not logged in"},
                 notice: "Login to access that page"
             }

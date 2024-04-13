@@ -33,7 +33,7 @@ export const actions = {
         if (!user) {
             // Return appropriate response object
             return {
-                status: 403,
+                status: 401,
                 errors: {server: "Client not logged in"},
                 notice: "Login to access that page"
             }
@@ -116,7 +116,7 @@ export const actions = {
         if (!user) {
             // Return appropriate response object
             return {
-                status: 403,
+                status: 401,
                 errors: {server: "Client not logged in"},
                 notice: "Login to access that page"
             }
@@ -221,7 +221,7 @@ export const actions = {
         if (!user) {
             // Return appropriate response object
             return {
-                status: 403,
+                status: 401,
                 errors: {server: "Client not logged in"},
                 notice: "Login to access that page"
             }
