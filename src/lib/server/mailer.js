@@ -37,7 +37,7 @@ const mail = {
             throw err
         }
     },
-    sendRecovery: (to, userId, code) => {
+    sendReset: (to, userId, code) => {
         // Select url based on enviromental variables
         const url = process.env.NODE_ENV === "development" ? 
         "http://"+process.env.NODE_SERVER_HOST+":5173" :

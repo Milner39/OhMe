@@ -122,8 +122,8 @@
                             </div>
                             <button class="button-pill" type="submit"><h6>Register</h6></button>
                         </form>
-                    {:else if mode === "recover"}
-                        <form method="POST" action="?/recover" use:enhance>
+                    {:else if mode === "reset"}
+                        <form method="POST" action="?/reset" use:enhance>
                             <h5 class="title">Reset Your Password</h5>
                             <div>
                                 <label for="email"><small>Email Address*</small></label>
@@ -136,7 +136,7 @@
                         </form>
                     {/if}
                 </div>
-                <a href="?mode=recover" class="button-slim" class:active={mode === "recover"}>
+                <a href="?mode=reset" class="button-slim" class:active={mode === "reset"}>
                     <h6>Forgot your password?</h6>
                 </a>
             {/if}

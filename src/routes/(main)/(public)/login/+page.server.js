@@ -6,7 +6,7 @@ export const load = async ({ url }) => {
     const mode = url.searchParams.get("mode")
 
     // Define the options for the different forms
-    const options = ["login", "register", "recover"]
+    const options = ["login", "register", "reset"]
 
     // Check that the `mode` URL param is one of the items in `options`
     if (options.includes(mode)) {
@@ -394,8 +394,8 @@ export const actions = {
             notice: "Successfully registered your account! Check your inbox for a verification link"
         }
     },
-    // MARK: Recover
-    recover: async ({ request }) => {
+    // MARK: Reset
+    reset: async ({ request }) => {
         // Variables to hold error information and set notice message
         let errors = {}
         let notice
@@ -413,7 +413,7 @@ export const actions = {
             }
         }
 
-        // Get User entry to be recovered
+        // Get User entry to send password reset email
         try {
             let dbResponse = await prismaClient.User.findUnique({
                 // Set filter feilds
@@ -441,14 +441,14 @@ export const actions = {
                 default:
                     console.error("Error at login.server.js")
                     console.error(err)
-                    errors.server = "Unable to recover account"
+                    errors.server = "Unable to send password reset link"
                     break
             }
             // Return appropriate response object if User entry cannot be fetched
             return {
                 status: 503,
                 errors,
-                notice: "We couldn't recover your account, try again later..."
+                notice: "We couldn't email you a password reset link, try again later..."
             }
         }
 
@@ -505,7 +505,7 @@ export const actions = {
                 // Get `password` and `user` object
                 let { password, ...user} = dbResponse
                 // Send email with link to reset password
-                mail.sendRecovery("finn.milner@outlook.com", user.id, password.resetCode)
+                mail.sendReset("finn.milner@outlook.com", user.id, password.resetCode)
             }
         } catch (err) {
             // Catch errors
@@ -514,14 +514,14 @@ export const actions = {
                 default:
                     console.error("Error at login.server.js")
                     console.error(err)
-                    errors.server = "Unable to recover account"
+                    errors.server = "Unable to send password reset link"
                     break
             }
             // Return appropriate response object if User entry cannot be updated
             return {
                 status: 503,
                 errors,
-                notice: "We couldn't recover your account, try again later..."
+                notice: "We couldn't email you a password reset link, try again later..."
             }
         }
 
@@ -529,7 +529,7 @@ export const actions = {
         return {
             status: 200,
             errors,
-            notice: "Successfully recovered your account! Check your inbox for a reset link"
+            notice: "Success! Check your inbox for a password reset link"
         }
     }
 }
