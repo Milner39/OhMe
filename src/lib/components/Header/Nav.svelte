@@ -200,7 +200,7 @@
         >.collapse {
             overflow: hidden;
 
-            flex: 1 1 auto;
+            flex-grow: 1;
 
             display: flex;
             align-items: center;
@@ -213,7 +213,7 @@
             }
 
             >.navLinks {
-                flex: 1;
+                flex-grow: 1;
                 display: flex;
                 justify-content: center;
                 gap: 1rem;

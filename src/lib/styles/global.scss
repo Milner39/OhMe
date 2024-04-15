@@ -206,7 +206,7 @@ button {
     color: var(--tx-1);
     background-color: var(--bg-2);
     
-    flex: 1 1 auto;
+    flex-grow: 1;
 }
 
 .pageContent {

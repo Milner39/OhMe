@@ -155,7 +155,7 @@
     }
 
     .block {
-        flex: 1;
+        flex-grow: 1;
         max-width: 500px;
 
         >.complete {
@@ -190,6 +190,8 @@
                     margin-left: 2px;
                     color: var(--tx-4);
                     font-weight: 300;
+                    display: flex;
+                    text-align: left;
                 }
                 input {
                     width: 100%;
