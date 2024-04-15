@@ -61,7 +61,7 @@ export const load = async ({ url }) => {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at login.server.js")
+                    console.error("Error at verify.server.js")
                     console.error(err)
                     errors.server = "Unable to verify address"
                     break
@@ -124,7 +124,7 @@ export const load = async ({ url }) => {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at login.server.js")
+                    console.error("Error at verify.server.js")
                     console.error(err)
                     errors.server = "Unable to verify address"
                     break
