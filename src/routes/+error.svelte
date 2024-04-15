@@ -26,9 +26,11 @@
 </script>
 
 <div class="content">
-    <!-- Show error information -->
-    <h3>{$page.status}: {$page.error.message}</h3>
-    <h4>Returning you home...</h4>
+    <div class="block">
+        <!-- Show error information -->
+        <h3>{$page.status}: {$page.error.message}</h3>
+        <h4>Returning you home...</h4>
+    </div>
 </div>
 
 <style lang="scss">
@@ -40,6 +42,8 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+
+        padding: 1rem;
 
         text-align: center;
         
