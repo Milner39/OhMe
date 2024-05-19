@@ -312,8 +312,8 @@ export const actions = {
             return {
                 status: 422,
                 errors: {
-                    password: "Passwords are the same",
-                    newPassword: "Passwords are the same"
+                    password: "Must not match",
+                    newPassword: "Must not match"
                 },
                 notice
             }
