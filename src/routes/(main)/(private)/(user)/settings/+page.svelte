@@ -13,9 +13,6 @@
     // Import `page` to get page data
     import { page } from "$app/stores"
 
-    // Import notice store
-    import { notice } from "$lib/stores/notice"
-
     // The width in pixels that indicates when the widescreen style change should occur
     let wideModeSize = 850
     // The width of the html element containing the page content
@@ -43,9 +40,6 @@
     // "...the action can respond with data that will be available through the form property"
     // Get data returned from form actions
     $: form = $page.form
-
-    // Reactive statement to set the notice if the form action returns one
-    $: notice.set(form?.notice)
 
     // Reactive statement to update the `user` variable when `$page.data.user` changes
     $: user = $page.data.user

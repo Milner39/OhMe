@@ -16,9 +16,6 @@
     // "...updates form and $page.form to result.data (regardless of where you are submitting from, in contrast to update from enhance)"
     import { enhance, applyAction } from "$app/forms"
 
-    // Import notice store
-    import { notice } from "$lib/stores/notice"
-
     // Reactive statements are indicated by the `$:` label
     // https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
     // "Reactive statements run
@@ -30,9 +27,6 @@
     // "...the action can respond with data that will be available through the form property"
     // Get data returned from form actions
     $: form = $page.form
-
-    // Reactive statement to set the notice if the form action returns one
-    $: notice.set(form?.notice)
 
     // Reactive statement to indicate which form to show
     $: mode = $page.data.mode
