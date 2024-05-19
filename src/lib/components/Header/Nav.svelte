@@ -1,7 +1,12 @@
 <script>
     // Import svgs
     import Close from "$lib/assets/svgs/Close.svelte"
-    import Menu from "$lib/assets/svgs/Menu.svelte";
+    import Menu from "$lib/assets/svgs/Menu.svelte"
+
+    // https://svelte.dev/docs/svelte-transition
+    // Import transitions and easing functions
+    import { fly } from "svelte/transition"
+    import { quadInOut } from "svelte/easing"
 
     // https://svelte.dev/docs/svelte#onmount
     // onMount: runs a function as soon as component has been mounted on the DOM
@@ -145,7 +150,14 @@
     </nav>
     <!-- If `collapsed` and `dropdown` are true: display dropdown -->
     {#if collapsed && dropdown}
-        <div class="dropdown">
+        <div class="dropdown" 
+            transition:fly={{
+                duration: 400,
+                easing: quadInOut,
+                y: "-100%",
+                opacity: 1
+            }}
+        >
             <ul class="navLinks">
                 <!-- Create a link for every item in `links` -->
                 {#each links as link}
