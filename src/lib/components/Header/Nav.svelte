@@ -5,7 +5,7 @@
 
     // https://svelte.dev/docs/svelte-transition
     // Import transitions and easing functions
-    import { fly } from "svelte/transition"
+    import { fly, fade } from "svelte/transition"
     import { quadInOut } from "svelte/easing"
 
     // https://svelte.dev/docs/svelte#onmount
@@ -150,6 +150,15 @@
     </nav>
     <!-- If `collapsed` and `dropdown` are true: display dropdown -->
     {#if collapsed && dropdown}
+        <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
+        <div class="dropdown-closeArea"
+            on:click={() => dropdown = false}
+            transition:fade={{
+                duration: 400,
+                easing: quadInOut,
+                opacity: 1
+            }}
+        />
         <div class="dropdown" 
             transition:fly={{
                 duration: 400,
@@ -268,6 +277,20 @@
                 }
             }
         }
+    }
+
+    .dropdown-closeArea {
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+
+        height: 100vh;
+        height: 100dvh;
+        width: 100%;
+
+        background-color: black;
+        opacity: 0.5;
     }
 
     .dropdown {

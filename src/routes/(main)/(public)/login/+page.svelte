@@ -140,8 +140,12 @@
 
 <style lang="scss">
 
+    .page {
+        display: grid;
+    }
+
     .pageContent {
-        height: 100%;
+        width: 100%;
 
         flex-direction: row;
         align-items: center;
