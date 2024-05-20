@@ -196,6 +196,15 @@ button {
     &:hover {
         background-color: var(--br-4);
     }
+
+    &.button-alt {
+        background-color: var(--sc-1);
+        color: var(--br-4);
+
+        &:hover {
+            background-color: var(--sc-2);
+        }
+    }
 }
 
 

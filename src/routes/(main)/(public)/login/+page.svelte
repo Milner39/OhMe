@@ -1,6 +1,7 @@
 <script>
     // Import svgs
     import LogIn from "$lib/assets/svgs/LogIn.svelte"
+    import Checkmark from "$lib/assets/svgs/Checkmark.svelte"
 
     // Import components
     import Banner from "$lib/components/Banner.svelte"
@@ -40,99 +41,114 @@
     </AutoScroll>
 </Banner>
 
+<!-- ISSUE: Really weird behaviour on safari -->
+<!-- TODO: Try remove the need for either `page` or `pageContent` elements -->
+
 <div class="page">
     <div class="pageContent">
-        <div class="block">
+        <div class="block" class:success={$page.data.user && form} class:returned={$page.data.user && !form}>
             {#if $page.data.user}
-                <div class="complete">
-                    {#if form}
-                        <h4>You have been logged in</h4>
-                    {:else}
-                        <h4>You are already logged in</h4>
-                        <form method="POST" action="/logout" 
-                            use:enhance={() => {
-                                return async ({ result, update }) => {
-                                    await applyAction(result)
-                                    update()
-                                }
-                            }}
-                        >
-                            <button class="button-pill" type="submit"><h6>Log Out</h6></button>
-                        </form>
-                    {/if}
-                </div>
+                {#if form}
+                    <Checkmark/>
+                    <h4 class="title">Success</h4>
+                    <h6>You have logged into your account. You can continue using the app as normal now.</h6>
+                    <a class="button-pill" href="/">
+                        <h6>Home</h6>
+                    </a>
+                {:else}
+                    <h4 class="title">Logout?</h4>
+                    <h6>You are already logged into your account. You can logout here or continue to use the app as normal.</h6>
+                    <form method="POST" action="/logout" 
+                        use:enhance={() => {
+                            return async ({ result, update }) => {
+                                await applyAction(result)
+                                update()
+                            }
+                        }}
+                    >
+                        <button class="button-pill" type="submit"><h6>Log Out</h6></button>
+                    </form>
+                {/if}
             {:else}
-                <div class="menu">
-                    <a href="?mode=login" class="button-slim" class:active={mode === "login"}>
-                        <h5>Login</h5>
+                <h4 class="title">
+                    {
+                    mode === "login" ? "Login" :
+                    mode === "register" ? "Register" :
+                    "Reset Password"
+                    }
+                </h4>
+                {#if mode === "login"}
+                    <h6>Log into an existing account.</h6>
+                    <form class="form" method="POST" action="?/login" use:enhance>
+                        <div>
+                            <label for="email"><small>Email Address*</small></label>
+                            <input name="email" id="email" required autocomplete="email"
+                                class:invalid={form?.errors?.email}
+                                placeholder={form?.errors?.email}
+                            >
+                        </div>
+                        <div>
+                            <label for="password"><small>Password*</small></label>
+                            <input name="password" id="password" required autocomplete="current-password"
+                                class:invalid={form?.errors?.password}
+                                placeholder={form?.errors?.password}
+                            >
+                        </div>
+                        <button class="button-pill" type="submit"><h6>Log In</h6></button>
+                    </form>
+                    <a href="?mode=reset" class="button-pill button-alt">
+                        <h6>Forgot password</h6>
                     </a>
-                    <a href="?mode=register" class="button-slim" class:active={mode === "register"}>
-                        <h5>Register</h5>
+                    <h6>Don't have an account yet?</h6>
+                    <a href="?mode=register" class="button-slim">
+                        <h6>Register</h6>
                     </a>
-                </div>
-                <div class="forms">
-                    {#if mode === "login"}
-                        <form method="POST" action="?/login" use:enhance>
-                            <h5 class="title">Log In To Your Account</h5>
-                            <div>
-                                <label for="email"><small>Email Address*</small></label>
-                                <input name="email" id="email" required autocomplete="email"
-                                    class:invalid={form?.errors?.email}
-                                    placeholder={form?.errors?.email}
-                                >
-                            </div>
-                            <div>
-                                <label for="password"><small>Password*</small></label>
-                                <input name="password" id="password" required autocomplete="current-password"
-                                    class:invalid={form?.errors?.password}
-                                    placeholder={form?.errors?.password}
-                                >
-                            </div>
-                            <button class="button-pill" type="submit"><h6>Login</h6></button>
-                        </form>
-                    {:else if mode === "register"}
-                        <form method="POST" action="?/register" use:enhance>
-                            <h5 class="title">Create A New Account</h5>
-                            <div>
-                                <label for="username"><small>Username*</small></label>
-                                <input name="username" id="username" required autocomplete="username"
-                                    class:invalid={form?.errors?.username}
-                                    placeholder={form?.errors?.username}
-                                >
-                            </div>
-                            <div>
-                                <label for="email"><small>Email Address*</small></label>
-                                <input name="email" id="email" required autocomplete="email"
-                                    class:invalid={form?.errors?.email}
-                                    placeholder={form?.errors?.email}
-                                >
-                            </div>
-                            <div>
-                                <label for="password"><small>Password*</small></label>
-                                <input name="password" id="password" required autocomplete="new-password"
-                                    class:invalid={form?.errors?.password}
-                                    placeholder={form?.errors?.password}
-                                >
-                            </div>
-                            <button class="button-pill" type="submit"><h6>Register</h6></button>
-                        </form>
-                    {:else if mode === "reset"}
-                        <form method="POST" action="?/reset" use:enhance>
-                            <h5 class="title">Reset Your Password</h5>
-                            <div>
-                                <label for="email"><small>Email Address*</small></label>
-                                <input name="email" id="email" required autocomplete="email"
-                                    class:invalid={form?.errors?.email}
-                                    placeholder={form?.errors?.email}
-                                >
-                            </div>
-                            <button class="button-pill" type="submit"><h6>Reset</h6></button>
-                        </form>
-                    {/if}
-                </div>
-                <a href="?mode=reset" class="button-slim" class:active={mode === "reset"}>
-                    <h6>Forgot your password?</h6>
-                </a>
+                {:else if mode === "register"}
+                    <h6>Register a new account.</h6>
+                    <form class="form" method="POST" action="?/register" use:enhance>
+                        <div>
+                            <label for="username"><small>Username*</small></label>
+                            <input name="username" id="username" required autocomplete="username"
+                                class:invalid={form?.errors?.username}
+                                placeholder={form?.errors?.username}
+                            >
+                        </div>
+                        <div>
+                            <label for="email"><small>Email Address*</small></label>
+                            <input name="email" id="email" required autocomplete="email"
+                                class:invalid={form?.errors?.email}
+                                placeholder={form?.errors?.email}
+                            >
+                        </div>
+                        <div>
+                            <label for="password"><small>Password*</small></label>
+                            <input name="password" id="password" required autocomplete="new-password"
+                                class:invalid={form?.errors?.password}
+                                placeholder={form?.errors?.password}
+                            >
+                        </div>
+                        <button class="button-pill" type="submit"><h6>Register</h6></button>
+                    </form>
+                    <h6>Have an account already?</h6>
+                    <a href="?mode=login" class="button-slim">
+                        <h6>Login</h6>
+                    </a>
+                {:else if mode === "reset"}
+                    <h6>Sent a password reset link via email.</h6>
+                    <form class="form" method="POST" action="?/reset" use:enhance>
+                        <div>
+                            <label for="email"><small>Email Address*</small></label>
+                            <input name="email" id="email" required autocomplete="email"
+                                class:invalid={form?.errors?.email}
+                                placeholder={form?.errors?.email}
+                            >
+                        </div>
+                        <button class="button-pill" type="submit"><h6>Reset</h6></button>
+                    </form>
+                    <a href="?mode=login" class="button-pill button-alt">
+                        <h6>Cancel</h6>
+                    </a>
+                {/if}
             {/if}
         </div>
     </div>
@@ -156,50 +172,46 @@
         flex-grow: 1;
         max-width: 500px;
 
-        >.complete {
-            display: grid;
-            gap: 1rem;
-            justify-content: center;
+        text-align: center;
 
-            text-align: center;
+        >.title {
             font-weight: 600;
-        
-            >form {
-                display: grid;
+        }
+
+        &.success {
+            >a {
+                width: 100%;
+            }
+
+            >:global(svg) {
+                height: 5rem;
+                color: var(--green);
             }
         }
 
-        >.menu {
-            display: flex;
+        &.returned {
+            >form>button {
+                width: 100%;
+            };
+        }
+
+        >.form {
+            display: grid;
+            grid-auto-flow: row;
             gap: 1rem;
-        }
 
-        >.forms {
-            >form {
-                display: grid;
-                grid-auto-flow: row;
-                gap: 1rem;
-
-                >.title {
-                    text-align: center;
-                }
-
-                label {
-                    margin-left: 2px;
-                    color: var(--tx-4);
-                    font-weight: 300;
-                    display: flex;
-                    text-align: left;
-                }
-                input {
-                    width: 100%;
-                }
+            label {
+                margin-left: 2px;
+                color: var(--tx-4);
+                font-weight: 300;
+                display: flex;
+                text-align: left;
+            }
+            input {
+                width: 100%;
             }
         }
 
-        >a {
-            align-self: center;
-        }
     }
 
 </style>
