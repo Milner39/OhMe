@@ -23,13 +23,12 @@
     .banner {
         color: var(--tx-1);
         background-color: var(--bg-1);
+        padding: 1rem;
     }
 
     .bannerContent {
         max-width: var(--page-max-width);
         margin-inline: auto;
-
-        padding: 1rem;
 
         display: grid;
         justify-content: start;
