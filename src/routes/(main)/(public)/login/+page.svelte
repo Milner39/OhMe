@@ -41,11 +41,8 @@
     </AutoScroll>
 </Banner>
 
-<!-- ISSUE: Really weird behaviour on safari -->
-<!-- TODO: Try remove the need for either `page` or `pageContent` elements -->
-
 <div class="page">
-    <div class="pageContent">
+    <div class="widthCtrl">
         <div class="block" class:success={$page.data.user && form} class:returned={$page.data.user && !form}>
             {#if $page.data.user}
                 {#if form}
@@ -157,15 +154,10 @@
 <style lang="scss">
 
     .page {
-        display: grid;
-    }
-
-    .pageContent {
-        width: 100%;
-
-        flex-direction: row;
+        display: flex;
         align-items: center;
         justify-content: center;
+        flex-direction: row;
     }
 
     .block {

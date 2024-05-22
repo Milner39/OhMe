@@ -155,7 +155,7 @@
 
 <div class="page">
     <!-- Bind div's clientWidth to `contentWidth` so it can be accesed by the script -->
-    <div class="pageContent" bind:clientWidth={contentWidth}>
+    <div class="widthCtrl" bind:clientWidth={contentWidth}>
         <!-- Display the widescreen version of the layout if `contentWidth` is wider than `wideModeSize`  -->
         {#if contentWidth > wideModeSize}
             <div class="block wide">
@@ -188,6 +188,35 @@
 
 <style lang="scss">
 
+    .page {
+        display: flex;
+        align-items: center;
+        justify-content: baseline;
+        
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .page:has(.block.wide) {
+        height: 0;
+        min-height: 250px;
+
+        >.widthCtrl {
+            height: 100%;
+        }
+    }
+
+    .block {
+        width: 100%;
+    }
+
+    .block.wide {
+        height: 100%;
+        padding: 0;
+        gap: 0;
+        overflow: hidden;
+    }
+
     .title {
         display: flex;
         align-items: center;
@@ -197,22 +226,6 @@
         :global(svg) {
             height: 1.25em;
         }
-    }
-
-    .page:has(.block.wide) {
-        height: 0;
-        min-height: 250px;
-    }
-
-    .pageContent:has(.block.wide) {
-        height: 100%;
-    }
-
-    .block.wide {
-        height: 100%;
-        padding: 0;
-        gap: 0;
-        overflow: hidden;
     }
 
 </style>

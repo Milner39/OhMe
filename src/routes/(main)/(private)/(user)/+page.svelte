@@ -17,7 +17,7 @@
 </Banner>
 
 <div class="page">
-    <div class="pageContent">
+    <div class="widthCtrl">
         <div class="block">
             <h6>Cash Flow</h6>
             <BarChart
@@ -40,6 +40,16 @@
 </div>
 
 <style lang="scss">
+
+    .page {
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+    }
+
+    .block {
+        width: 100%;
+    }
 
     span {
         color: var(--green);
