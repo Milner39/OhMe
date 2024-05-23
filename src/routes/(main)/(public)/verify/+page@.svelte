@@ -14,53 +14,45 @@
     import Close from "$lib/assets/svgs/Close.svelte"
 </script>
 
-<div class="content">
+<div class="page">
     {#await $page.data.streamed}
         <div class="loading">
             <LoadingAnimation/>
         </div>
     {:then data} 
-        <div class="loaded" class:valid={data.status === 200}>
+        <div class="block loaded" class:valid={data.status === 200}>
             {#if data.status === 200}
                 <Checkmark/>
+                <h4 class="title">Email has been verified</h4>
+                <a class="button-pill" href="/"><h5>Return Home</h5></a>
             {:else}
                 <Close/>
-            {/if}
-            <div class="block">
-                {#if data.status === 200}
-                    <h4>Email has been verified</h4>
-                {:else if data.status === 400}
-                    <h4>Invalid verification request</h4>
+                {#if data.status === 400}
+                    <h5>Invalid verification request</h5>
                 {:else if data.status === 401}
-                    <h4>Verification code expired</h4>
+                    <h5>Verification code expired</h5>
                 {:else if data.status === 409}
-                    <h4>Email already verified</h4>
+                    <h5>Email already verified</h5>
                 {:else if data.status === 422}
-                    <h4>Incorrect verification code</h4>
+                    <h5>Incorrect verification code</h5>
                 {:else if data.status === 503}
-                    <h4>Failed to fetch from database</h4>
+                    <h5>Failed to fetch from database</h5>
                 {/if}
                 <a class="button-pill" href="/"><h5>Return Home</h5></a>
-            </div>
+            {/if}
         </div>
     {/await}
 </div>
 
 <style lang="scss">
-    .content {
-        width: 100vw;
-
-        flex-grow: 1;
-
+    .page {
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
+        flex-direction: row;
 
         padding: 1rem;
 
-        text-align: center;
-        
         background-color: var(--bg-3);
     }
 
@@ -69,10 +61,15 @@
         color: var(--br-3);
     }
 
-    .loaded {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
+    .block {
+        flex-grow: 1;
+        max-width: 500px;
+
+        text-align: center;
+
+        >.title {
+            font-weight: 600;
+        }
 
         > :global(svg) {
             color: var(--red);
