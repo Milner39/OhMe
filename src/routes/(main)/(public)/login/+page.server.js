@@ -391,7 +391,7 @@ export const actions = {
         return {
             status: 200,
             errors,
-            notice: "Successfully registered your account! Check your inbox for a verification link"
+            notice: "Successfully registered your account! Check your inbox for a email verification link"
         }
     },
     // MARK: Reset

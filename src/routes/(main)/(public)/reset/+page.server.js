@@ -22,7 +22,7 @@ export const load = async ({ url }) => {
     // https://kit.svelte.dev/docs/load#streaming-with-promises
     // Wrap main script in a function so it can be streamed as a promise
     const checkCode = async () => {
-        // Variables to hold error information and set notice message
+        // Variables to hold error information
         let errors = {}
 
         ////////                                                                      ////////
@@ -119,7 +119,7 @@ export const load = async ({ url }) => {
 // Define actions
 export const actions = {
     default: async ({ url, request }) => {
-        // Variables to hold error information and set notice message
+        // Variables to hold error information
         let errors = {}
 
         // https://kit.svelte.dev/docs/web-standards#url-apis

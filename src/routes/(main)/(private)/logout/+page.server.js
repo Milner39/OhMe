@@ -15,7 +15,7 @@ export const actions = {
             return {
                 status: 401,
                 errors: {server: "Client not logged in"},
-                notice: "Login to access that page"
+                notice
             }
         }
 

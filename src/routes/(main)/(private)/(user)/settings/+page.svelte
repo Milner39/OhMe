@@ -149,7 +149,7 @@
     <Settings slot="svg"/>
     <h4>Settings</h4>
     <AutoScroll>
-        <h6>View And Change Account Settings</h6>
+        <h6>Manage account and accessibility settings.</h6>
     </AutoScroll>
 </Banner>
 

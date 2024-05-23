@@ -12,7 +12,7 @@
     <Wallet slot="svg"/>
     <h4>Dashboard</h4>
     <AutoScroll>
-        <h6>Get General Information About Your Account Here</h6>
+        <h6>View your analytics and transactions.</h6>
     </AutoScroll>
 </Banner>
 

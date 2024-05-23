@@ -22,7 +22,7 @@ export const load = async ({ url }) => {
         // await new Promise(resolve => setTimeout(resolve, 2500))                          //
         ////////                                                                      ////////
 
-        // Variables to hold error information and set notice message
+        // Variables to hold error information
         let errors = {}
 
         // If url does not have both search params

@@ -37,7 +37,7 @@
     <LogIn slot="svg"/>
     <h4>Login</h4>
     <AutoScroll>
-        <h6>Log In To An Existing Account Or Create One</h6>
+        <h6>Log in or register an account.</h6>
     </AutoScroll>
 </Banner>
 
