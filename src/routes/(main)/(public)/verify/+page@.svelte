@@ -37,6 +37,8 @@
                     <h5>Incorrect verification code</h5>
                 {:else if data.status === 503}
                     <h5>Failed to fetch from database</h5>
+                {:else}
+                    <h5>Something went wrong</h5>
                 {/if}
                 <a class="button-pill" href="/"><h5>Return Home</h5></a>
             {/if}
