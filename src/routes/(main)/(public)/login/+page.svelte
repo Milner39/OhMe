@@ -75,7 +75,7 @@
                     }
                 </h4>
                 {#if mode === "login"}
-                    <h6>Log into an existing account.</h6>
+                    <h6>Enter your account details below.</h6>
                     <form class="form" method="POST" action="?/login" use:enhance>
                         <div>
                             <label for="email"><small>Email Address*</small></label>
@@ -101,7 +101,7 @@
                         <h6>Register</h6>
                     </a>
                 {:else if mode === "register"}
-                    <h6>Register a new account.</h6>
+                    <h6>Enter your email address and choose a password.</h6>
                     <form class="form" method="POST" action="?/register" use:enhance>
                         <div>
                             <label for="username"><small>Username*</small></label>
