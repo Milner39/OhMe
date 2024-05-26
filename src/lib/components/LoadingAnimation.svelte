@@ -20,22 +20,22 @@
         0%, 25% {
             opacity: 1;
             stroke-dasharray: 100%;
-            stroke-dashoffset: 0%;
+            stroke-dashoffset: 200%;
         }
         62.499% {
             opacity: 0;
             stroke-dasharray: 100%;
-            stroke-dashoffset: -100%;
+            stroke-dashoffset: 100%;
         }
         62.501% {
             opacity: 0;
             stroke-dasharray: 100%;
-            stroke-dashoffset: 100%;
+            stroke-dashoffset: 300%;
         }
         100% {
             opacity: 1;
             stroke-dasharray: 100%;
-            stroke-dashoffset: 0%;
+            stroke-dashoffset: 200%;
         }
     }
 </style>
