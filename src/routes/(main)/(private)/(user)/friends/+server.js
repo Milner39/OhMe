@@ -19,13 +19,30 @@ export const POST = async ({ request, locals }) => {
 
     // Get User entries that start with the search from the request
     try {
-        let dbResponse = await prismaClient.User.findMany({
+        // Get User entry with exactly matching username
+        let exactMatch = await prismaClient.User.findUnique({
+            // Set filter feilds
+            where: {
+                username: search
+            },
+            // Set return feilds
+            select: {
+                username: true
+            }
+        })
+
+        // Get User entry with partialy matching username
+        let partialMatch = await prismaClient.User.findMany({
             // Set quantity of results
-            take: 10,
+            // If an exact match is found, get 9, else 10
+            take: exactMatch ? 9 : 10,
             // Set filter feilds
             where: {
                 username: {
                     startsWith: search, 
+                },
+                NOT: {
+                    username: search
                 }
             },
             // Set return feilds
@@ -33,11 +50,10 @@ export const POST = async ({ request, locals }) => {
                 username: true
             }
         })
-        // If `dbResponse` is not undefined
-        if (dbResponse) {
-            // Get users
-            var users = dbResponse
-        }
+
+        // Combine results and filter out undefined
+        var users = [exactMatch, ...partialMatch].filter((user) => {return user})
+
     } catch (err) {
         // Catch errors
         switch (err.code) {
