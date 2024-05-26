@@ -99,7 +99,7 @@ export const actions = {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at login.server.js")
+                    console.error("Error at login/+page.server.js")
                     console.error(err)
                     errors.server = "Unable to login client"
                     break
@@ -173,7 +173,7 @@ export const actions = {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at login.server.js")
+                    console.error("Error at login/+page.server.js")
                     console.error(err)
                     errors.server = "Unable to login user"
                     break
@@ -283,7 +283,7 @@ export const actions = {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at login.server.js")
+                    console.error("Error at login/+page.server.js")
                     console.error(err)
                     errors.server = "Unable to register user"
                     break
@@ -361,7 +361,7 @@ export const actions = {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at login.server.js")
+                    console.error("Error at login/+page.server.js")
                     console.error(err)
                     errors.server = "Unable to register user"
                     break
@@ -442,7 +442,7 @@ export const actions = {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at login.server.js")
+                    console.error("Error at login/+page.server.js")
                     console.error(err)
                     errors.server = "Unable to send password reset link"
                     break
@@ -515,7 +515,7 @@ export const actions = {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at login.server.js")
+                    console.error("Error at login/+page.server.js")
                     console.error(err)
                     errors.server = "Unable to send password reset link"
                     break

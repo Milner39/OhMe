@@ -88,7 +88,7 @@ const authHandle = async ({ event, resolve }) => {
         }
     } catch (err) {
         // Catch errors
-        console.error("Error at hook.server.js:")
+        console.error("Error at hook.server.js")
         console.error(err)
     }
 
@@ -158,7 +158,7 @@ const authHandle = async ({ event, resolve }) => {
             session.expiresAt = expiryDate
         } catch (err) {
             // Catch errors
-            console.error("Error at hook.server.js:")
+            console.error("Error at hook.server.js")
             console.error(err)
         }
     }

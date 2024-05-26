@@ -59,7 +59,7 @@ export const POST = async ({ request, locals }) => {
         switch (err.code) {
             // Match error code to appropriate error message
             default:
-                console.error("Error at friends.server.js")
+                console.error("Error at friends/server.js")
                 console.error(err)
                 break
         }

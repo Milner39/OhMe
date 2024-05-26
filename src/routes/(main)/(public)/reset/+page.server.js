@@ -72,7 +72,7 @@ export const load = async ({ url }) => {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at reset.server.js")
+                    console.error("Error at reset/+page.server.js")
                     console.error(err)
                     errors.server = "Unable to check reset code"
                     break
@@ -182,7 +182,7 @@ export const actions = {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at reset.server.js")
+                    console.error("Error at reset/+page.server.js")
                     console.error(err)
                     errors.server = "Unable to reset password"
                     break

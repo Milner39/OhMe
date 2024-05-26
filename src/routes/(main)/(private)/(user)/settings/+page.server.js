@@ -83,7 +83,7 @@ export const actions = {
                     errors.username = "Username taken"
                     break
                 default:
-                    console.error("Error at settings.server.js")
+                    console.error("Error at settings/+page.server.js")
                     console.error(err)
                     errors.server = "Unable to change information"
                     notice = "We couldn't update your username, try again later..."
@@ -189,7 +189,7 @@ export const actions = {
                     errors.email = "Email taken"
                     break
                 default:
-                    console.error("Error at settings.server.js")
+                    console.error("Error at settings/+page.server.js")
                     console.error(err)
                     errors.server = "Unable to change information"
                     notice = "We couldn't update your email address, try again later..."
@@ -276,7 +276,7 @@ export const actions = {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at settings.server.js")
+                    console.error("Error at settings/+page.server.js")
                     console.error(err)
                     errors.server = "Unable to change information"
                     break
@@ -341,7 +341,7 @@ export const actions = {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at settings.server.js")
+                    console.error("Error at settings/+page.server.js")
                     console.error(err)
                     errors.server = "Unable to change information"
                     break

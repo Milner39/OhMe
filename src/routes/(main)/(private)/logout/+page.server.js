@@ -32,7 +32,7 @@ export const actions = {
             switch (err.code) {
                 // Match error code to appropriate error message
                 default:
-                    console.error("Error at logout.server.js:")
+                    console.error("Error at logout/+page.server.js")
                     console.error(err)
                     break
             }
