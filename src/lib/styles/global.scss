@@ -189,7 +189,7 @@ button {
     font-weight: 600;
 
     background-color: var(--br-3);
-    padding: 0.5em 1em;
+    padding: 0.5em 0.75em;
     border-radius: 1000px;
 
     transition: background-color 200ms ease-in-out;
@@ -205,6 +205,14 @@ button {
             background-color: var(--sc-2);
         }
     }
+
+    &.button-svg {
+        padding: 0.5em;
+    }
+}
+
+.button-svg {
+    line-height: 0;
 }
 
 
