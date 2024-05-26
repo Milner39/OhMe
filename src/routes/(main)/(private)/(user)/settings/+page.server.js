@@ -168,6 +168,7 @@ export const actions = {
                 select: {
                     email: {
                         select: {
+                            address: true,
                             verifyCode: true
                         }
                     }

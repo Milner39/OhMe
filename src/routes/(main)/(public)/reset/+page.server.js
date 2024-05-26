@@ -7,6 +7,9 @@ import { client as prismaClient } from "$lib/server/prisma"
 // Import hashing functions to hash & verify hashes
 import { stringHasher } from "$lib/server/argon"
 
+// Import settings
+import { settings }  from "$lib/settings"
+
 // UPDATE: Streaming promises do not work on safari
 // This seems like a sveltekit issue: https://github.com/sveltejs/kit/issues/10315
 
@@ -90,10 +93,11 @@ export const load = async ({ url }) => {
             }
         }
 
-        // Get the DateTime of when the last password reset code was sent
+        // Get the time the last password reset code was sent
         const { codeSentAt } = password
-        // If last link was sent more than an hour ago
-        if (!codeSentAt || codeSentAt.setTime(codeSentAt.getTime() + 1 * 60 * 60 * 1000) <= new Date()) {
+        // If last link was sent more than `password.duration` ago
+        console.log(!codeSentAt || codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.password.duration) <= new Date())
+        if (!codeSentAt || codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.password.duration) <= new Date()) {
             // Return appropriate response object
             return {
                 status: 401,
@@ -148,9 +152,9 @@ export const actions = {
             }
         }
 
-        // Get DateTime one hour in the past to filter out expired codes
+        // Get time `password.duration` in the past to filter out expired codes
         const unexpired = new Date()
-        unexpired.setTime(unexpired.getTime() - 1 * 60 * 60 * 1000)
+        unexpired.setTime(unexpired.getTime() - 1000 * 60 * 60 * settings.password.duration)
         try {
             await prismaClient.User.update({
                 // Set filter feilds
@@ -169,7 +173,6 @@ export const actions = {
                         update: {
                             hash: await stringHasher.hash(formData.password),
                             resetCode: null,
-                            codeSentAt: null
                         }
                     }
                 }

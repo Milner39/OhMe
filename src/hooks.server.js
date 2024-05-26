@@ -13,6 +13,9 @@ import { sequence } from "@sveltejs/kit/hooks"
 // Import prisma client instance to modify db
 import { client as prismaClient } from "$lib/server/prisma"
 
+// Import settings
+import { settings }  from "$lib/settings"
+
 // Define hook to handle client authentication
 const authHandle = async ({ event, resolve }) => {
     // Get user and session id from client's cookies
@@ -129,15 +132,15 @@ const authHandle = async ({ event, resolve }) => {
         return resolve(event)
     }
 
-    // Get date 7 days from now
-    const renewDate = new Date()
-    renewDate.setDate(renewDate.getDate() +7)
+    // Get date `session.renewalLead` number of days from now
+    const renewBefore = new Date()
+    renewBefore.setDate(renewBefore.getDate() + settings.session.renewalLead)
 
-    // If Session expires in less than 7 days
-    if (session.expiresAt < renewDate) {
-        // Get date 21 days from now
+    // If Session expires sooner than `renewBefore` date
+    if (session.expiresAt < renewBefore) {
+        // Get date `session.duration` number of days from now
         const expiryDate = new Date()
-        expiryDate.setDate(expiryDate.getDate() +21)
+        expiryDate.setDate(expiryDate.getDate() + settings.session.duration)
 
         // Extend `expiresAt` date
         try {

@@ -30,6 +30,9 @@ import { stringHasher, failHash } from "$lib/server/argon"
 // Import mailer to send emails
 import { mail } from "$lib/server/mailer"
 
+// Import settings
+import { settings }  from "$lib/settings"
+
 // Define function to check if errors have been caught
 const formHasErrors = (obj) => {
     if (Object.keys(obj).length > 0) {
@@ -131,9 +134,9 @@ export const actions = {
             }
         }
 
-        // Create date 21 days from now
-        const expireyDate = new Date()
-        expireyDate.setDate(expireyDate.getDate() +21)
+        // Create date `session.duration` days from now
+        const expiryDate = new Date()
+        expiryDate.setDate(expiryDate.getDate() + settings.session.duration)
 
         // Update User entry in db
         try {
@@ -146,7 +149,7 @@ export const actions = {
                 data: {
                     sessions: {
                         create: {
-                            expiresAt: expireyDate
+                            expiresAt: expiryDate
                         }
                     }
                 },
@@ -186,14 +189,14 @@ export const actions = {
         // Set cookies in client's browser so login persists refreshes
         await cookies.set("session", sessions.at(-1).id, {
             path: "/",
-            maxAge: 50 * 24 * 60 * 60,    // 50 days
+            maxAge: 1000000000,
             httpOnly: true,
             sameSite: "strict",
             secure: false
         })
         await cookies.set("user", user.id, {
             path: "/",
-            maxAge: 50 * 24 * 60 * 60,    // 50 days
+            maxAge: 1000000000,  
             httpOnly: true,
             sameSite: "strict",
             secure: false
@@ -302,9 +305,9 @@ export const actions = {
             }
         }
 
-        // Create date 21 days from now
-        const expireyDate = new Date()
-        expireyDate.setDate(expireyDate.getDate() +21)
+        // Create date `session.duration` days from now
+        const expiryDate = new Date()
+        expiryDate.setDate(expiryDate.getDate() + settings.session.duration)
 
         // Create User entry in db
         try {
@@ -326,7 +329,7 @@ export const actions = {
                     },
                     sessions: {
                         create: {
-                            expiresAt: expireyDate
+                            expiresAt: expiryDate
                         }
                     }
                 },
@@ -374,14 +377,14 @@ export const actions = {
         // Set cookies in client's browser so login persists refreshes
         await cookies.set("session", sessions.at(-1).id, {
             path: "/",
-            maxAge: 50 * 24 * 60 * 60,    // 50 days
+            maxAge: 1000000000, 
             httpOnly: true,
             sameSite: "strict",
             secure: false
         })
         await cookies.set("user", user.id, {
             path: "/",
-            maxAge: 50 * 24 * 60 * 60,    // 50 days
+            maxAge: 1000000000,  
             httpOnly: true,
             sameSite: "strict",
             secure: false
@@ -462,14 +465,14 @@ export const actions = {
             }
         }
 
-        // Get the DateTime of when the last password reset code was sent
+        // Get the time the last password reset code was sent
         const { codeSentAt } = password
-        // If last link was sent less than an hour ago
-        if (codeSentAt && codeSentAt.setTime(codeSentAt.getTime() + 1 * 60 * 60 * 1000) > new Date()) {
+        // If last link was sent less than `password.cooldown` ago
+        if (codeSentAt && codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.password.cooldown) > new Date()) {
             // Return appropriate response object
             return {
                 status: 422,
-                errors: { email: "Wait an hour between resets"},
+                errors: { email: "Wait between requesting resets"},
                 notice
             }
         }

@@ -1,6 +1,9 @@
 // Import prisma client instance to modify db
 import { client as prismaClient } from "$lib/server/prisma"
 
+// Import settings
+import { settings }  from "$lib/settings"
+
 // UPDATE: Streaming promises do not work on safari
 // This seems like a sveltekit issue: https://github.com/sveltejs/kit/issues/10315
 
@@ -93,10 +96,10 @@ export const load = async ({ url }) => {
             }
         }
 
-        // Get the DateTime of when the last email verify code was sent
+        // Get the time the last email verify code was sent
         const { codeSentAt } = email
-        // If last link was sent more than an hour ago
-        if (!codeSentAt || codeSentAt.setTime(codeSentAt.getTime() + 1 * 60 * 60 * 1000) <= new Date()) {
+        // If last link was sent more than `email.duration` ago
+        if (!codeSentAt || codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.email.duration) <= new Date()) {
             // Return appropriate response object
             return {
                 status: 401,
