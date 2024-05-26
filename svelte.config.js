@@ -6,7 +6,7 @@ import adapter from "@sveltejs/adapter-node"
 
 // https://kit.svelte.dev/docs/integrations#preprocessors
 // "Preprocessors transform your .svelte files before passing them to the compiler."
-//  Import preproceeser to allow the use of scss
+// Import preproceeser to allow the use of scss
 import sveltePreprocess from "svelte-preprocess"
 
 // https://kit.svelte.dev/docs/configuration
@@ -19,14 +19,39 @@ const config = {
 	],
 	kit: {
 		adapter: adapter({
+			// Controlls the directory to build the server to
+			out: "build",
+			
 			// Controlls the prefix of the enviroment variables used by the Node server
-			envPrefix: "NODE_SERVER_"
+			envPrefix: "NODE_SERVER_",
 		}),
+
+		// The directory that SvelteKit writes files to during dev and build
+		outDir: ".svelte-kit",
+
 		env: {
 			// Controlls the prefix of the enviroment variables used in runtime
 			publicPrefix: "PUBLIC_",
 			privatePrefix: "PRIVATE_"
+		},
+
+		// Prevent scripts loading from external sites, stopping XSS attacks
+		csp: {
+			directives: {
+				"script-src": ["self"]
+			},
+			// Optionaly report CSP violations
+			// reportOnly: {
+			// 	"script-src": ["self"],
+			// 	"report-uri": ["/csp-report"]
+			// }
+		},
+
+		// Check origin of requests, stopping CSRF attacks
+		csrf: {
+			checkOrigin: true
 		}
 	}
 }
+
 export default config
