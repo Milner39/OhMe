@@ -3,6 +3,16 @@
 // Import function to create mail transporter to send emails
 import nodemailer from "nodemailer"
 
+// Configure urls based on eviroment variables
+const envUrls = {
+    development: `${process.env.DEV_PROTO}://192.168.0.63:${process.env.DEV_PORT}`,
+    preview: `${process.env.PREV_PROTO}://192.168.0.63:${process.env.PREV_PORT}`,
+    production: process.env.NODE_SERVER_ORIGIN
+}
+
+// Select url based on node enviroment
+const url = envUrls[process.env.NODE_ENV] || null
+
 // Create mail transporter for a gmail account,
 // using credentials from .env
 const transporter = nodemailer.createTransport({
@@ -17,11 +27,6 @@ const transporter = nodemailer.createTransport({
 // Create `mail` object to be used in server-side form actions
 const mail = {
     sendVerification: (to, userId, code) => {
-        // Select url based on enviromental variables
-        const url = process.env.NODE_ENV === "development" ? 
-        "http://"+process.env.NODE_SERVER_HOST+":5173" :
-        process.env.NODE_SERVER_ORIGIN
-
         // Send email with verification link
         try {
             transporter.sendMail({
@@ -38,11 +43,6 @@ const mail = {
         }
     },
     sendReset: (to, userId, code) => {
-        // Select url based on enviromental variables
-        const url = process.env.NODE_ENV === "development" ? 
-        "http://"+process.env.NODE_SERVER_HOST+":5173" :
-        process.env.NODE_SERVER_ORIGIN
-
         // Send email with reset link
         try {
             transporter.sendMail({
