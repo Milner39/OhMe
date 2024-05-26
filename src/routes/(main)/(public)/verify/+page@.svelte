@@ -1,17 +1,17 @@
 <script>
     // Import styles
     import "$lib/styles/global.scss"
-    
-    // https://kit.svelte.dev/docs/modules#$app-stores
-    // Import `page` to get page data
-    import { page } from "$app/stores"
-
-    // Import components
-    import LoadingAnimation from "$lib/components/LoadingAnimation.svelte"
 
     // Import svgs
     import Checkmark from "$lib/assets/svgs/Checkmark.svelte"
     import Close from "$lib/assets/svgs/Close.svelte"
+
+    // Import components
+    import LoadingAnimation from "$lib/components/LoadingAnimation.svelte"
+
+    // https://kit.svelte.dev/docs/modules#$app-stores
+    // Import `page` to get page data
+    import { page } from "$app/stores"
 </script>
 
 <div class="page">
