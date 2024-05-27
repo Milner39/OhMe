@@ -14,6 +14,7 @@ const sanitizer = {
             // (?:[A-Za-z0-9 !?%&_:;()@#~,.=+-]*...)?    If string contains more of these chars...
             // [A-Za-z0-9!?%&_:;()@#~,.=+-]              it must end with one of these chars
             // $                                         End string
+            // Prevents strings starting or ending in spaces
             /^[A-Za-z0-9!?%&_:;()@#~,.=+-](?:[A-Za-z0-9 !?%&_:;()@#~,.=+-]*[A-Za-z0-9!?%&_:;()@#~,.=+-])?$/.test(input)
         ) 
     },
@@ -26,6 +27,7 @@ const sanitizer = {
             // (?:[A-Za-z0-9 !?%&_:;()@#~,.=+-]*...)?    If string contains more of these chars...
             // [A-Za-z0-9!?%&_:;()@#~,.=+-]              it must end with one of these chars
             // $                                         End string
+            // Prevents strings starting or ending in spaces
             /^[A-Za-z0-9!?%&_:;()@#~,.=+-](?:[A-Za-z0-9 !?%&_:;()@#~,.=+-]*[A-Za-z0-9!?%&_:;()@#~,.=+-])?$/.test(input)
         ) 
     },
@@ -33,12 +35,15 @@ const sanitizer = {
         return (
             typeof input === "string" &&
             input.length <= 100 &&
-            // ^[A-Za-z0-9!?%&_:;()@#~,.=+-]+    String must start with 1 or more of these chars
-            // @                                 Single "@" must follow
-            // [A-Za-z0-9!?%&_:;()@#~,=+-]+      1 or more of these chars must follow
-            // [.]                               Single "." must follow
-            // [A-Za-z-]{2,}$                    String must end with 2 or more of these chars must follow
-            /^[A-Za-z0-9!?%&_:;()@#~,.=+-]+@[A-Za-z0-9!?%&_:;()@#~,=+-]+[.][A-Za-z-]{2,}$/.test(input)
+            // ^                                Start string
+            // [A-Za-z0-9_(),.+-]+    String starts with 1 or more of these chars
+            // @                                Single "@" must follow
+            // [A-Za-z0-9-]+                    1 domain (1 or more of these chars)
+            // (?:\.[a-zA-Z0-9-]+)*             0 or more subdomains
+            // \.                               Single "." before TLD
+            // [A-Za-z]{2,}                     TLD (2 or more of these chars)
+            // $                                End string
+            /^[A-Za-z0-9!?%&_:;()@#~,.=+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(input)
         )
     }
 }
