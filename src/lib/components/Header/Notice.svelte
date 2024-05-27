@@ -1,6 +1,7 @@
 <script>
     // Import svgs
     import Close from "$lib/assets/svgs/Close.svelte"
+    import Alert from "$lib/assets/svgs/Alert.svelte"
 
     // Import components
     import AutoScroll from "$lib/components//AutoScroll.svelte"
@@ -13,10 +14,15 @@
 {#if $notice}
     <div class="notice">
         <!-- Button to close notice -->
-        <button title="Close notice" class="button-slim" type="button" on:click={notice.close}><Close/></button>
+        <button title="Close notice" class="icon button-slim" type="button" on:click={notice.close}>
+            <Close/>
+        </button>
         <AutoScroll>
             <h6>{$notice}</h6>
         </AutoScroll>
+        <div class="icon">
+            <Alert/>
+        </div>
     </div>
 {/if}
 
@@ -31,10 +37,7 @@
         align-items: center;
         justify-content: center;
       
-        grid-template-columns: 1rem 1fr;
-        // To center notice use:
-        // grid-template-columns: 1rem 1fr 1rem;
-        // need to add something like a decorative svg for an even UI
+        grid-template-columns: 1rem 1fr 1rem;
         
         gap: 1rem;
 
@@ -44,8 +47,8 @@
         border: solid var(--bg-4);
         border-width: 1px 0 0 0;
 
-        >button {
-            height: 1rem;
+        >.icon {
+            height: 1.25rem;
 
             >:global(svg) {
                 height: 100%;
