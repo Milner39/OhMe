@@ -29,7 +29,7 @@
 <style lang="scss">
     
     .notice {
-        padding: 0.75rem;
+        padding: 0.5rem 1rem;
 
         display: grid;
         align-items: center;

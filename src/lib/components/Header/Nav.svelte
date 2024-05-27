@@ -39,6 +39,9 @@
         // Get element containing the nav links
         const navLinksEl = collapseEl.getElementsByClassName("navLinks")[0]
 
+        // Get element containing extra elements
+        const extraEl = collapseEl.getElementsByClassName("extra")[0]
+
         // Get element containing static elements
         const staticEl = nav.getElementsByClassName("static")[0]
 
@@ -54,11 +57,14 @@
         // Get gap betweem `navLinks` and `static`
         const collapsibleGap = Number(window.getComputedStyle(collapseEl).columnGap.slice(0,-2))
 
-        // Get gap between items in `navLinksEl`
+        // Get gap between items in `navLinks`
         const navLinksGap = Number(window.getComputedStyle(navLinksEl).columnGap.slice(0,-2))
 
+        // Get gap between items in `extra`
+        const extraGap = Number(window.getComputedStyle(extraEl).columnGap.slice(0,-2))
+
         // Calculate the extra spacing required to fit all items in `collapsibleItems`
-        const spacingWidth = collapsibleGap + navLinksGap * (navLinksEl.childElementCount -1)   
+        const spacingWidth = collapsibleGap + (navLinksGap * (navLinksEl.childElementCount -1)) + (extraGap * (extraEl.childElementCount -1))
 
         // Get gap between items in `static`
         const staticGap = Number(window.getComputedStyle(staticEl).columnGap.slice(0,-2))
@@ -218,7 +224,7 @@
         padding: 1rem;
 
         display: flex;
-        align-items: center;
+        align-self: stretch;
         justify-content: space-between;
 
         gap: var(--item-gap);
@@ -228,19 +234,21 @@
         >.brand {
             display: flex;
             align-items: center;
+            justify-content: center;
 
             color: var(--br-3);
             font-weight: 300;
         }
 
         >.collapse {
+            flex-grow: 1;
             overflow: hidden;
 
-            flex-grow: 1;
-
             display: flex;
-            align-items: center;
-            column-gap: var(--group-gap);
+            align-items: stretch;
+            justify-content: center;
+
+            gap: var(--group-gap);
             margin-left: calc(var(--group-gap) - var(--item-gap));
 
             &.hide {
@@ -249,24 +257,58 @@
 
             >.navLinks {
                 flex-grow: 1;
+
                 display: flex;
+                align-items: center;
                 justify-content: flex-start;
+
                 gap: var(--item-gap);
 
                 >.navLink {
+                    height: 100%;
+
                     padding: 0;
 
-                    transition: color 200ms ease-in-out;
-                    &:hover {
-                        color: var(--br-3);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+
+                    >:global(a) {
+                        transition: color 200ms ease-in-out;
+                        &:hover {
+                            color: var(--br-3);
+                        }
+                    }
+
+                    position: relative;
+                    & + .navLink::before {
+                        content: "";
+                        position: absolute;
+                        height: 100%;
+
+                        --size: 1px;
+                        width: var(--size);
+                        left: calc(-1 * (var(--item-gap) /2 + var(--size) / 2));
+
+                        background-color: var(--br-3);
                     }
                 }
+            }
+
+            >.extra {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+
+                gap: var(--item-gap);
             }
         }
 
         >.static {
             display: flex;
             align-items: center;
+            justify-content: center;
+
             gap: var(--item-gap);
 
             >.dropdown-button {
@@ -350,6 +392,7 @@
                     }
 
                     display: flex;
+                    align-items: center;
                     justify-content: center;
                 }
             }
