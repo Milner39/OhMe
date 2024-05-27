@@ -27,8 +27,16 @@
         padding-top: 0.75rem;
         padding-bottom: 0.75rem;
 
-        display: flex;
+        display: grid;
         align-items: center;
+        justify-content: center;
+      
+        grid-template-columns: 1rem 1fr;
+        // To center notice use:
+        // grid-template-columns: 1rem 1fr 1rem;
+        // need to add something like a decorative svg for an even UI
+        
+        gap: 1rem;
 
         background-color: var(--bg-3);
         color: var(--tx-4);
@@ -37,12 +45,15 @@
         border-width: 1px 0 0 0;
 
         >button {
-            margin-right: 0.75rem;
             height: 1rem;
 
             >:global(svg) {
                 height: 100%;
             }
+        }
+
+        >:global(.scroller) {
+            text-align: center;
         }
     }
 
