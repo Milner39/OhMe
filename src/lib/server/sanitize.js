@@ -44,7 +44,7 @@ const sanitizer = {
             // [A-Za-z]{2,}            TLD (2 or more of these chars)
             // $                       End string
             // Standard email address format
-            /^[A-Za-z0-9!?%&_:;()@#~,.=+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(input)
+            /^[A-Za-z0-9_(),.+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(input)
         )
     }
 }
