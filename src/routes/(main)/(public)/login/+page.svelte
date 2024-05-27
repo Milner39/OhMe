@@ -31,6 +31,8 @@
 
     // Reactive statement to indicate which form to show
     $: mode = $page.data.mode
+
+    // TODO: hide passwords while typing, use button to toggle show password
 </script>
 
 <Banner>
