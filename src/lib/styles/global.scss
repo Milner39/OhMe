@@ -48,6 +48,10 @@ html {
     font-family: "Roboto", sans-serif;
 
     background-color: var(--bg-3);
+
+    // Prevent font scaling in landscape safari
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 body {
