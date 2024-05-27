@@ -15,3 +15,5 @@ export const load = async ({locals}) => {
         redirect(302, loginUrl)
     }
 }
+
+// TODO: change notice to prompt user to login on redirect
