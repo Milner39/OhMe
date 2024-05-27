@@ -21,39 +21,54 @@
     // Get `links` prop from parent
     export let links
 
-    // The html element containing collapsible content
-    let collapsible
+    // The nav html element
+    let nav
 
     // The html element that toggles the dropdown
     let dropdownButton
 
-    // Variables indicating collapsible and dropdown state
+    // Variables indicating collapsed and dropdown state
     let collapsed = true
     let dropdown = false
 
     // Define function to be ran on mount and resize
     const onResize = () => {
-        // Get width of `collapsible`
-        const containerWidth = collapsible.clientWidth
+        // Get element containing collapsible content
+        const collapseEl = nav.getElementsByClassName("collapse")[0]
 
-        // Get width of `dropdownButton`
-        const dropdownButtonWidth = dropdownButton.clientWidth
+        // Get element containing the nav links
+        const navLinksEl = collapseEl.getElementsByClassName("navLinks")[0]
 
-        // Get all elements with the "collapsibleTarget" class in `collapsible`
-        const collapsibleItems = [...collapsible.getElementsByClassName("collapsibleTarget")]
+        // Get element containing static elements
+        const staticEl = nav.getElementsByClassName("static")[0]
+
+        // Get width of `collapse`
+        const containerWidth = collapseEl.clientWidth
+
+        // Get all elements with the "collapsibleTarget" class in `collapse`
+        const collapsibleItems = [...collapseEl.getElementsByClassName("collapsibleTarget")]
         
         // Calculate total width of all items in `collapsibleItems`
         const totalItemWidth = collapsibleItems.reduce((total, item) => total + item.clientWidth, 0)
 
-        // Get gap between items in `collapsible`
-        const collapsibleGap = Number(window.getComputedStyle(collapsible).columnGap.slice(0,-2))
+        // Get gap betweem `navLinks` and `static`
+        const collapsibleGap = Number(window.getComputedStyle(collapseEl).columnGap.slice(0,-2))
+
+        // Get gap between items in `navLinksEl`
+        const navLinksGap = Number(window.getComputedStyle(navLinksEl).columnGap.slice(0,-2))
 
         // Calculate the extra spacing required to fit all items in `collapsibleItems`
-        const spacingWidth = collapsibleGap * (collapsibleItems.length -1)   
+        const spacingWidth = collapsibleGap + navLinksGap * (navLinksEl.childElementCount -1)   
+
+        // Get gap between items in `static`
+        const staticGap = Number(window.getComputedStyle(staticEl).columnGap.slice(0,-2))
+
+        // Get width of `dropdownButton`
+        const dropdownButtonWidth = dropdownButton.clientWidth
 
         // Calcualte the extra width taken up by elements that only appear when `collapsed === true`
-        // `collapsed` will be [ `true` or `flase` ] therefore static difference will be [ `dropdownButtonWidth` or 0 ]
-        const staticDifference = (dropdownButtonWidth) * collapsed
+        // `collapsed` will be [ `true` or `flase` ] therefore static difference will be [ somePixels or 0 ]
+        const staticDifference = (staticGap + dropdownButtonWidth) * collapsed
 
         // Set boolean to control `collapsible` is collapsed
         collapsed = (containerWidth + staticDifference < totalItemWidth + spacingWidth)
@@ -76,7 +91,7 @@
         })
 
         // Observe the `collapsible` element
-        resizeObserver.observe(collapsible)
+        resizeObserver.observe(nav.getElementsByClassName("collapse")[0])
 
         // When component is unmounted
         return () => {
@@ -98,7 +113,8 @@
 </script>
 
 <div class="zIndex">
-    <nav>
+    <!-- Bind nav to `nav` so it can be accesed by the script -->
+    <nav bind:this={nav}>
         <!-- If the `brand` slot was passed in -->
         {#if $$slots.brand}
             <a class="brand" href="/">
@@ -106,8 +122,7 @@
                 <slot name="brand"/>
             </a>
         {/if}
-        <!-- Bind div to `collapsible` so it can be accesed by the script -->
-        <div class="collapse" class:collapsed={collapsed} bind:this={collapsible}>
+        <div class="collapse" class:hide={collapsed}>
             <ul class="navLinks">
                 <!-- Create a link for every item in `links` -->
                 {#each links as link}
@@ -126,14 +141,14 @@
                 </div>
             {/if}
         </div>
-        <div class="static" class:collapsed={collapsed}>
+        <div class="static">
             <!-- If the `static` slot was passed in -->
             {#if $$slots.static}
                 <!-- Children in `static` slot go here -->
                 <slot name="static"/>
             {/if}
             <!-- Bind button to `dropdown` so it can be accesed by the script -->
-            <button class="dropdown-button button-slim" class:collapsed={!collapsed} type="button" 
+            <button class="dropdown-button button-slim" class:hide={!collapsed} type="button" 
                 title={dropdown ? "Close dropdown" : "Open dropdown"}
                 on:click={toggleDropdown}
                 bind:this={dropdownButton}
@@ -196,21 +211,21 @@
     }
 
     nav {
+        --group-gap: 2rem;
+        --item-gap: 1rem;
+
         position: relative;
-        padding: 0 0.75rem;
+        padding: 1rem;
 
         display: flex;
         align-items: center;
         justify-content: space-between;
 
-        padding-top: 0.75rem;
-        padding-bottom: 0.75rem;
+        gap: var(--item-gap);
 
         background-color: var(--bg-3);
 
         >.brand {
-            margin-right: 1rem;
-
             display: flex;
             align-items: center;
 
@@ -225,19 +240,18 @@
 
             display: flex;
             align-items: center;
-            column-gap: 1rem;
+            column-gap: var(--group-gap);
+            margin-left: calc(var(--group-gap) - var(--item-gap));
 
-            &.collapsed {
-                >* {
-                    visibility: hidden;
-                }
+            &.hide {
+                visibility: hidden;
             }
 
             >.navLinks {
                 flex-grow: 1;
                 display: flex;
-                justify-content: center;
-                gap: 1rem;
+                justify-content: flex-start;
+                gap: var(--item-gap);
 
                 >.navLink {
                     padding: 0;
@@ -251,21 +265,14 @@
         }
 
         >.static {
-            padding: 0rem 0;
-            margin-left: 1rem;
-
             display: flex;
             align-items: center;
-            gap: 1rem;
-
-            &.collapsed {
-                margin-left: 0;
-            }
+            gap: var(--item-gap);
 
             >.dropdown-button {
                 height: 1.5rem;
 
-                &.collapsed {
+                &.hide {
                     visibility: hidden;
                     position: absolute;
                     top: 0;
