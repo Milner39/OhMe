@@ -250,55 +250,10 @@ export const actions = {
             }
         }
 
-        // Get hashed password of User entry to be updated
-        try {
-            let dbResponse = await prismaClient.User.findUnique({
-                // Set filter feilds
-                where: {
-                    id: user.id
-                },
-                // Set return feilds
-                select: {
-                    password: {
-                        select: {
-                            hash: true
-                        }
-                    }
-                }
-            })
-            // If `dbResponse` is not undefined
-            if (dbResponse) {
-                // Get `password` object
-                var { password } = dbResponse
-            }
-        } catch (err) {
-            // Catch errors
-            switch (err.code) {
-                // Match error code to appropriate error message
-                default:
-                    console.error("Error at settings/+page.server.js")
-                    console.error(err)
-                    errors.server = "Unable to change information"
-                    break
-            }
-            // Return appropriate response object if hashed password of User entry cannot be fetched
-            return {
-                status: 503,
-                errors,
-                notice: "We couldn't update your password, try again later..."
-            }
-        }
-        // If User entry with matching credentials does not exist, null will be returned
-        // in which case instead of verifing `User.hashedPassword` a hashed empty string is used,
-        // therefore "validPassword" will always be false
-        const hashedPassword = password?.hash || failHash
-
-        // This is done becasue returning immediately allows malicious users to figure out
-        // valid usernames from response times, allowing them to only focus on guessing passwords 
-        // in brute-force attacks. As a preventive measure, verifiy passwords even for non-existing users  
-        const correctPassword = await stringHasher.verify(hashedPassword, formData.password)
-
         // Check if password is correct
+        const correctPassword = await stringHasher.verify(user.password.hash, formData.password)
+
+        // If password is incorrect
         if (!correctPassword) {
             // Return appropriate response object
             return {

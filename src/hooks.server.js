@@ -55,9 +55,6 @@ const authHandle = async ({ event, resolve }) => {
                 }
             }
         })
-        // TODO: remove all the unnecessary duplicate requests
-        // now that all data is availible
-
         // If `dbResponse` is not null (Matching Session found)
         if (dbResponse) {
             var { user, ...session} = dbResponse
