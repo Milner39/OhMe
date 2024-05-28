@@ -350,7 +350,7 @@ export const actions = {
             return {
                 status: 503,
                 errors,
-                notice: "We couldn't update your username, try again later..."
+                notice: "We couldn't update your password, try again later..."
             }
         }
 
