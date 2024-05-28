@@ -72,7 +72,7 @@ export const POST = async ({ request, locals }) => {
         })
 
         // Combine results and filter out undefined
-        var users = [exactMatch, ...partialMatch].filter((user) => {return user})
+        var users = [exactMatch, ...partialMatch].filter((user) => { return user })
 
     } catch (err) {
         // Catch errors

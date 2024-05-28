@@ -36,7 +36,7 @@ const userDelete = {
 // Define load function
 export const load = async ({ locals }) => {
     // Get `user` from locals
-    const user = locals.user || null
+    const { user } = locals || null
 
     // Delete keys containing sensitive data
     // to avoid client-side data leaks
