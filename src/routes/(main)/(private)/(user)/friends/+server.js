@@ -20,10 +20,19 @@ export const POST = async ({ request, locals }) => {
     // Get User entries that start with the search from the request
     try {
         // Get User entry with exactly matching username
-        let exactMatch = await prismaClient.User.findUnique({
+        let exactMatch = await prismaClient.User.findFirst({
             // Set filter feilds
             where: {
-                username: search
+                AND: [
+                    {
+                        username: search
+                    },
+                    {
+                        username: {
+                            not: locals.user.username
+                        }
+                    }
+                ]
             },
             // Set return feilds
             select: {
@@ -38,12 +47,23 @@ export const POST = async ({ request, locals }) => {
             take: exactMatch ? 9 : 10,
             // Set filter feilds
             where: {
-                username: {
-                    startsWith: search, 
-                },
-                NOT: {
-                    username: search
-                }
+                AND: [
+                    {
+                        username: {
+                            startsWith: search, 
+                        }
+                    },
+                    {
+                        username: {
+                            not: search
+                        }
+                    },
+                    {
+                        username: {
+                            not: locals.user.username
+                        }
+                    }
+                ]
             },
             // Set return feilds
             select: {

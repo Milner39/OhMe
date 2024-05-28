@@ -30,6 +30,8 @@ model User {
     web3Wallet        String?     
 
     // Relations
+    //   TODO: Use email id instead,
+    //   Change the effected search to `findFirst` instead of `findUnique`
     //   Use `emailAddress` as the foreign key so User entries can be filtered by email address
     emailAddress      String       @unique 
     email             Email        @relation(references: [address], fields: [emailAddress], onDelete: Restrict, onUpdate: Cascade)
