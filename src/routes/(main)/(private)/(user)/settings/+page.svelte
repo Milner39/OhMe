@@ -24,7 +24,7 @@
     // Define a function to shrink strings to fit in input placeholder
     const shrinkString = (string) => {
         // If `string` contains less than 16 chars, exit the function
-        if (string.length < 16) {return string} 
+        if (string.length < 16) return string
         // Return a concatenated string
         return (string.slice(0,8) + "..." + string.slice(-8))
     }
