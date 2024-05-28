@@ -8,9 +8,12 @@ const loginUrl = "/login"
 
 // https://kit.svelte.dev/docs/load#layout-data
 // Define load function
-export const load = async ({locals}) => {
+export const load = async ({ locals }) => {
     // If `locals.session` is undefined (Client not logged in)
     if (!locals.session) {
+        // Set notice message
+        locals.notice = "You must be logged in to access that page."
+
         // Redirect to login page
         redirect(302, loginUrl)
     }

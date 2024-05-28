@@ -25,13 +25,22 @@
     //  before the component markup is rendered
     //  whenever the values that they depend on have changed."
 
+    // https://kit.svelte.dev/docs/load#$page-data
+    // "...has access to its own data plus all the data from its parents."
+    // Get data from load functions
+    $: data = $page.data
+
+    // Reactive statement to set the notice if the load functions return one
+    $: if (data.notice) notice.set(data.notice)
+
+
     // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
     // "...the action can respond with data that will be available through the form property"
     // Get data returned from form actions
     $: form = $page.form
 
     // Reactive statement to set the notice if the form action returns one
-    $: if (form?.notice) {notice.set(form?.notice)}
+    $: if (form?.notice) notice.set(form?.notice)
 </script>
 
 <!-- Make child components usable -->
@@ -66,8 +75,8 @@
         <a class="button-slim" href="/settings"><h6 class="collapsibleTarget">Settings</h6></a>
         <!-- Pass children to `static` slot -->
         <svelte:fragment slot="static">
-            <!-- If `$page.data.user` is defined -->
-            {#if $page.data.user}
+            <!-- If `data.user` is defined -->
+            {#if data.user}
                 <!-- Display a "Log Out" button -->
                 <form method="POST"
                     use:enhance={() => {
