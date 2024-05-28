@@ -1,21 +1,18 @@
 // https://kit.svelte.dev/docs/load#page-data
 // Define load function
+// MARK: Load
 export const load = async ({ url }) => {
     // https://kit.svelte.dev/docs/web-standards#url-apis
     // Get URL parameter
-    const mode = url.searchParams.get("mode")
+    let mode = url.searchParams.get("mode")
 
     // Define the options for the different forms
     const options = ["login", "register", "reset"]
 
     // Check that the `mode` URL param is one of the items in `options`
-    if (options.includes(mode)) {
-        // Return `mode`
-        return {mode}
-    } else {
-        // Return object with `mode: "login"` key-value pair
-        return {mode: "login"}
-    }
+    mode = options.includes(mode) ? mode : "login"
+
+    return { mode }
 }
 
 // Import sanitizer to ensure all user inputs are valid
