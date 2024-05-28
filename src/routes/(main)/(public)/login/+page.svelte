@@ -24,13 +24,15 @@
     //  before the component markup is rendered
     //  whenever the values that they depend on have changed."
 
+    // https://kit.svelte.dev/docs/load#$page-data
+    // "...has access to its own data plus all the data from its parents."
+    // Get data from load functions
+    $: data = $page.data
+
     // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
     // "...the action can respond with data that will be available through the form property"
     // Get data returned from form actions
     $: form = $page.form
-
-    // Reactive statement to indicate which form to show
-    $: mode = $page.data.mode
 
     // TODO: hide passwords while typing, use button to toggle show password
 </script>
@@ -45,8 +47,8 @@
 
 <div class="page">
     <div class="widthCtrl">
-        <div class="block" class:success={$page.data.user && form} class:returned={$page.data.user && !form}>
-            {#if $page.data.user}
+        <div class="block" class:success={data.user && form} class:returned={data.user && !form}>
+            {#if data.user}
                 {#if form}
                     <Checkmark/>
                     <h4 class="title">Success</h4>
@@ -71,12 +73,12 @@
             {:else}
                 <h4 class="title">
                     {
-                    mode === "login" ? "Login" :
-                    mode === "register" ? "Register" :
+                    data.mode === "login" ? "Login" :
+                    data.mode === "register" ? "Register" :
                     "Reset Password"
                     }
                 </h4>
-                {#if mode === "login"}
+                {#if data.mode === "login"}
                     <h6>Enter your account details below.</h6>
                     <form class="form" method="POST" action="?/login" use:enhance>
                         <div>
@@ -102,7 +104,7 @@
                     <a href="?mode=register" class="button-slim">
                         <h6>Register</h6>
                     </a>
-                {:else if mode === "register"}
+                {:else if data.mode === "register"}
                     <h6>Enter your email address and choose a password.</h6>
                     <form class="form" method="POST" action="?/register" use:enhance>
                         <div>
@@ -132,7 +134,7 @@
                     <a href="?mode=login" class="button-slim">
                         <h6>Login</h6>
                     </a>
-                {:else if mode === "reset"}
+                {:else if data.mode === "reset"}
                     <h6>Sent a password reset link via email.</h6>
                     <form class="form" method="POST" action="?/reset" use:enhance>
                         <div>
