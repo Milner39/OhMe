@@ -55,10 +55,6 @@ const authHandle = async ({ event, resolve }) => {
                 }
             }
         })
-        // ISSUE: This version is totally insecure
-        // TODO: Filter out sensitive data from `user`
-        // Try limit database ids that get send client-side, user id is fine
-
         // TODO: remove all the unnecessary duplicate requests
         // now that all data is availible
 
