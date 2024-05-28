@@ -1,7 +1,7 @@
 // https://kit.svelte.dev/docs/load#redirects
 // "To redirect users, use the redirect helper from @sveltejs/kit to specify the location
 //  to which they should be redirected..."
-import { redirect } from '@sveltejs/kit'
+import { redirect } from "@sveltejs/kit"
 
 // Define redirect url
 const loginUrl = "/login"

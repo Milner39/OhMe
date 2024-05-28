@@ -22,7 +22,7 @@
         if (!scroller) {return}
 
         // Scroll to new position
-        scroller.scrollTo({ left: scroll, behavior: 'smooth' })
+        scroller.scrollTo({ left: scroll, behavior: "smooth" })
 
         // If scroll position is larger than the maximum scroll distance
         if (scroll > scroller.scrollWidth - scroller.clientWidth) {

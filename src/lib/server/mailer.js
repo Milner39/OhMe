@@ -36,7 +36,7 @@ const mail = {
                 },
                 to: to,
                 subject: "Verify Email",
-                html: `Click <a href='${url + "/verify?user="+userId+"&code="+code}'>here</a> to verify your email address.`
+                html: `Click <a href="${url + "/verify?user="+userId+"&code="+code}">here</a> to verify your email address.`
             })
         } catch (err) {
             throw err
@@ -52,7 +52,7 @@ const mail = {
                 },
                 to: to,
                 subject: "Reset password",
-                html: `Click <a href='${url + "/reset?user="+userId+"&code="+code}'>here</a> to reset your password.`
+                html: `Click <a href="${url + "/reset?user="+userId+"&code="+code}">here</a> to reset your password.`
             })
         } catch (err) {
             throw err

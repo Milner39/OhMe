@@ -40,7 +40,7 @@
             <input class="search" name="search" placeholder="Search for friends..."
                 bind:value={search.value}
                 on:input={async () => {
-                    // Get the 'searchValue' when the input was made
+                    // Get the `searchValue` when the input was made
                     const initVal = search.value
 
                     // If the value is empty, return
@@ -65,7 +65,7 @@
                             search: search.value
                         }),
                         headers: {
-                            'Content-Type': "application/json"
+                            "Content-Type": "application/json"
                         }
                     })
 
