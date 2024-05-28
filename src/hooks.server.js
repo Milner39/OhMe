@@ -45,43 +45,19 @@ const authHandle = async ({ event, resolve }) => {
                 userId: userId
             },
             // Set Session return feilds
-            select: {
-                id: true,
-                expiresAt: true,
-                userId: true,
-                // Set User return feilds
+            include: {
                 user: {
-                    select: {
-                        id: true,
-                        username: true,
-                        web3Wallet: true,
-                        // Set Email return feilds
-                        email: {
-                            select: {
-                                // NOTE: do not return `verifyCode`,
-                                // possible security concerns but unlikely
-                                id: true,
-                                address: true,
-                                verified: true,
-                                codeSentAt: true
-                            }
-                        },
-                        // Set Password return feilds
-                        password: {
-                            select: {
-                                // NOTE: DO NOT return `hash`
-                                // NEVER EVER make hashed passwords visible client-side
-
-                                // NOTE: do not return `resetCode`,
-                                // possible security concerns but unlikely
-                                id: true,
-                                codeSentAt: true
-                            }
-                        }
+                    include: {
+                        email: true,
+                        password: true,
+                        sessions: true
                     }
                 }
             }
         })
+        // ISSUE: This version is totally insecure
+        // TODO: Filter out sensitive data from `user`
+        // Try limit database ids that get send client-side, user id is fine
         // If `dbResponse` is not null (Matching Session found)
         if (dbResponse) {
             var { user, ...session} = dbResponse
