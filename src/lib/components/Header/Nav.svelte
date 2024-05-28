@@ -285,13 +285,22 @@
                         content: "";
                         position: absolute;
 
-                        --size: 0.25rem;
+                        // Blue dots
+                        // --size: 0.25rem;
+                        // width: var(--size);
+                        // aspect-ratio: 1/1;
+                        // border-radius: 1000px;
+                        // left: calc(-1 * (var(--item-gap) /2 + var(--size) / 2));
+
+                        // background-color: var(--br-3);
+
+                        // Gray lines
+                        --size: 1px;
                         width: var(--size);
-                        aspect-ratio: 1/1;
-                        border-radius: 1000px;
+                        height: 100%;
                         left: calc(-1 * (var(--item-gap) /2 + var(--size) / 2));
 
-                        background-color: var(--br-3);
+                        background-color: var(--bg-4);
                     }
                 }
             }
