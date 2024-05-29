@@ -18,16 +18,16 @@ const removeKeys = (obj, removeRule) => {
 // Define keys to delete from `user` object
 const userDelete = {
     id: true,
-    emailId: true,
-    passwordId: true,
     email: {
         id: true,
-        verifyCode: true
+        verifyCode: true,
+        userId: true
     },
     password: {
         id: true,
         hash: true,
-        resetCode: true
+        resetCode: true,
+        userId: true
     },
     sessions: true
 }

@@ -59,7 +59,7 @@ export const load = async ({ url }) => {
             })
             // If `dbResponse` is not undefined
             if (dbResponse) {
-                // Get `email` object
+                // Get data from object
                 var { email } = dbResponse
             }
         } catch (err) {
@@ -92,12 +92,14 @@ export const load = async ({ url }) => {
         if (email.verified) {
             return {
                 // Return appropriate response object
-                status: 409
+                status: 409,
+                errors
             }
         }
 
         // Get the time the last email verify code was sent
         const { codeSentAt } = email
+        
         // If last link was sent more than `email.duration` ago
         if (!codeSentAt || codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.email.duration) <= new Date()) {
             // Return appropriate response object

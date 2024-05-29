@@ -50,17 +50,17 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // Check `formData.email` fits email requirements
+        // If `formData.email` does not fit email requirements
         if (!sanitizer.email(formData.email)) {
             errors.email = "Invalid email"
         }
 
-        // Check `formData.password` fits password requirements
+        // If `formData.password` does not fit password requirements
         if (!sanitizer.password(formData.password)) {
             errors.password = "Invalid password"
         }
 
-        // Check if form inputs have failed sanitization checks
+        // If form inputs have failed sanitization checks
         if (formHasErrors(errors)) {
             // Return appropriate response object
             return {
@@ -70,15 +70,18 @@ export const actions = {
             }
         }
 
-        // Get hashed password of User entry to be logged into
+        // Get User entry to be logged into
         try {
-            let dbResponse = await prismaClient.User.findUnique({
+            let dbResponse = await prismaClient.User.findFirst({
                 // Set filter feilds
                 where: {
-                    emailAddress: formData.email.toLowerCase()
+                    email: {
+                        address: formData.email.toLowerCase()
+                    }
                 },
                 // Set return feilds
                 select: {
+                    id: true,
                     password: {
                         select: {
                             hash: true
@@ -88,8 +91,8 @@ export const actions = {
             })
             // If `dbResponse` is not undefined
             if (dbResponse) {
-                // Get `password` object
-                var { password } = dbResponse
+                // Get data from object
+                var { password, ...user } = dbResponse
             }
         } catch (err) {
             // Catch errors
@@ -101,7 +104,7 @@ export const actions = {
                     errors.server = "Unable to login client"
                     break
             }
-            // Return appropriate response object if hashed password of User entry cannot be fetched
+            // Return appropriate response object if User entry cannot be fetched
             return {
                 status: 503,
                 errors,
@@ -118,7 +121,7 @@ export const actions = {
         // in brute-force attacks. As a preventive measure, verifiy passwords even for non-existing users  
         const correctPassword = await stringHasher.verify(hashedPassword, formData.password)
 
-        // Check if password is correct
+        // If password is incorrect
         if (!correctPassword) {
             // Return appropriate response object
             return {
@@ -140,7 +143,7 @@ export const actions = {
             let dbResponse = await prismaClient.User.update({
                 // Set filter feilds
                 where: {
-                    emailAddress: formData.email.toLowerCase()
+                    id: user.id
                 },
                 // Set update feilds
                 data: {
@@ -152,7 +155,6 @@ export const actions = {
                 },
                 // Set return feilds
                 select: {
-                    id: true,
                     sessions: {
                         select: {
                             id: true
@@ -162,8 +164,8 @@ export const actions = {
             })
             // If `dbResponse` is not undefined
             if (dbResponse) {
-                // Get `sessions` and `user` object
-                var { sessions, ...user } = dbResponse
+                // Get data from object
+                var { sessions } = dbResponse
             }
         } catch (err) {
             // Catch errors
@@ -215,22 +217,22 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // Check `formData.username` fits username requirements
+        // If `formData.username` does not fit username requirements
         if (!sanitizer.username(formData.username)) {
             errors.username = "Invalid username"
         }
 
-        // Check `formData.email` fits email requirements
+        // If `formData.email` does not fit email requirements
         if (!sanitizer.email(formData.email)) {
             errors.email = "Invalid email"
         }
 
-        // Check `formData.password` fits password requirements
+        // If `formData.password` does not fit password requirements
         if (!sanitizer.password(formData.password)) {
             errors.password = "Invalid password"
         }
 
-        // Check if form inputs have failed sanitization checks
+        // If form inputs have failed sanitization checks
         if (formHasErrors(errors)) {
             // Return appropriate response object
             return {
@@ -240,7 +242,7 @@ export const actions = {
             }
         }
 
-        // Get User entries with the username and email from `formData`
+        // Get User entries with the same username or email from `formData`
         try {
             let dbResponse = await prismaClient.User.findMany({
                 // Set filter feilds
@@ -285,7 +287,7 @@ export const actions = {
                     errors.server = "Unable to register user"
                     break
             }
-            // Return appropriate response object if hashed password of User entries cannot be fetched
+            // Return appropriate response object if User entries cannot be fetched
             return {
                 status: 503,
                 errors,
@@ -293,7 +295,7 @@ export const actions = {
             }
         }
 
-        // Return appropriate response object if username or email taken
+        // Return appropriate response object if username or email is taken
         if (formHasErrors(errors)) {
             return {
                 status: 409,
@@ -348,7 +350,7 @@ export const actions = {
             })
             // If `dbResponse` is not undefined
             if (dbResponse) {
-                // Get `sessions`, `email` and `user` object
+                // Get data from object
                 var { sessions, email, ...user } = dbResponse
                 // Send email with link to verify email
                 mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
@@ -403,7 +405,7 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // Check `formData.email` fits email requirements
+        // If `formData.email` does not fit email requirements
         if (!sanitizer.email(formData.email)) {
             // Return appropriate response object
             return {
@@ -415,13 +417,16 @@ export const actions = {
 
         // Get User entry to send password reset email
         try {
-            let dbResponse = await prismaClient.User.findUnique({
+            let dbResponse = await prismaClient.User.findFirst({
                 // Set filter feilds
                 where: {
-                    emailAddress: formData.email.toLowerCase()
+                    email: {
+                        address: formData.email.toLowerCase()
+                    }
                 },
                 // Set return feilds
                 select: {
+                    id: true,
                     password: {
                         select: {
                             codeSentAt: true
@@ -432,7 +437,7 @@ export const actions = {
             // If `dbResponse` is not undefined
             if (dbResponse) {
                 // Get `password` object
-                var { password } = dbResponse
+                var { password, ...user } = dbResponse
             }
         } catch (err) {
             // Catch errors
@@ -452,8 +457,8 @@ export const actions = {
             }
         }
 
-        // Check if password is undefined
-        if (!password) {
+        // If `user` is undefined
+        if (!user) {
             // Return appropriate response object
             return {
                 status: 401,
@@ -479,7 +484,7 @@ export const actions = {
             let dbResponse = await prismaClient.User.update({
                 // Set filter feilds
                 where: {
-                    emailAddress: formData.email.toLowerCase()
+                    id: user.id
                 },
                 // Set update feilds
                 data: {
@@ -492,7 +497,6 @@ export const actions = {
                 },
                 // Set return feilds
                 select: {
-                    id: true,
                     password: {
                         select: {
                             resetCode: true
@@ -503,7 +507,7 @@ export const actions = {
             // If `dbResponse` is not undefined
             if (dbResponse) {
                 // Get `password` and `user` object
-                let { password, ...user} = dbResponse
+                let { password } = dbResponse
                 // Send email with link to reset password
                 mail.sendReset("finn.milner@outlook.com", user.id, password.resetCode)
             }

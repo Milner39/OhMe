@@ -23,23 +23,18 @@ datasource db {
 // Define database "Models" (Tables)
 model User {
     // Key
-    id                String       @id @unique @default(uuid())
+    id            String       @id @unique @default(uuid())
 
     // User information
-    username          String       @unique   
-    web3Wallet        String?     
+    username      String       @unique   
+    web3Wallet    String?     
 
     // Relations
-    //   TODO: Use email id instead,
-    //   Change the effected search to `findFirst` instead of `findUnique`
-    //   Use `emailAddress` as the foreign key so User entries can be filtered by email address
-    emailAddress      String       @unique 
-    email             Email        @relation(references: [address], fields: [emailAddress], onDelete: Restrict, onUpdate: Cascade)
+    email         Email?        
 
-    passwordId        String       @unique
-    password          Password     @relation(references: [id], fields: [passwordId]) 
+    password      Password?      
 
-    sessions          Session[]    
+    sessions      Session[]        
 }
 
 model Email {
@@ -50,10 +45,11 @@ model Email {
     address       String       @unique
     verified      Boolean      @default(false)
     verifyCode    String?      @unique
-    codeSentAt    DateTime?  
+    codeSentAt    DateTime?      
 
     // Relations
-    user          User?     
+    userId        String       @unique
+    user          User         @relation(references: [id], fields: [userId], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Password {
@@ -63,10 +59,11 @@ model Password {
     // Password information
     hash          String
     resetCode     String?      @unique 
-    codeSentAt    DateTime?
+    codeSentAt    DateTime?        
 
     // Relations
-    user              User?
+    userId        String       @unique
+    user          User         @relation(references: [id], fields: [userId], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Session {
@@ -74,9 +71,9 @@ model Session {
     id           String      @id @unique @default(uuid())
 
     // Session information
-    expiresAt    DateTime
+    expiresAt    DateTime    
 
     // Relations
     userId       String
-    user         User        @relation(references: [id], fields: [userId], onDelete: Cascade)
+    user         User        @relation(references: [id], fields: [userId], onDelete: Cascade, onUpdate: Cascade)
 }

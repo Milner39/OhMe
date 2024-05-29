@@ -43,7 +43,7 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
         
-        // Check `formData.username` fits username requirements
+        // If `formData.username` does not fit username requirements
         if (!sanitizer.username(formData.username)) {
             // Return appropriate response object
             return {
@@ -53,7 +53,7 @@ export const actions = {
             }
         }
 
-        // Check `formData.username` is different from current username
+        // If `formData.username` is current username
         if (user.username === formData.username) {
             // Return appropriate response object
             return {
@@ -126,7 +126,7 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
         
-        // Check `formData.email` fits email requirements
+        // If `formData.email` does not fit email requirements
         if (!sanitizer.email(formData.email)) {
             // Return appropriate response object
             return {
@@ -136,7 +136,7 @@ export const actions = {
             }
         }
 
-        // Check `formData.email` is different from current email
+        // If `formData.email` is current email
         if (user.email.address === formData.email) {
             // Return appropriate response object
             return {
@@ -232,7 +232,7 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
         
-        // Check `formData.password` and `formData.newPassword` fits password requirements
+        // If `formData.password` / `formData.newPassword` do not fit password requirements
         if (!sanitizer.password(formData.password)) {
             errors.password = "Invalid password"
         }
@@ -240,7 +240,7 @@ export const actions = {
             errors.newPassword = "Invalid password"
         }
 
-        // Check if form inputs have failed sanitization checks
+        // If form inputs have failed sanitization checks
         if (formHasErrors(errors)) {
             // Return appropriate response object
             return {

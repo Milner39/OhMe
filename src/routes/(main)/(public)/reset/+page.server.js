@@ -25,14 +25,14 @@ export const load = async ({ url }) => {
     // https://kit.svelte.dev/docs/load#streaming-with-promises
     // Wrap main script in a function so it can be streamed as a promise
     const checkCode = async () => {
-        // Variables to hold error information
-        let errors = {}
-
         ////////                                                                      ////////
         // Not needed, just showcases loading animation                                     //
         // Cannot include due to safari not supporting the current promise streaming method //
         // await new Promise(resolve => setTimeout(resolve, 2500))                          //
         ////////                                                                      ////////
+
+        // Variables to hold error information
+        let errors = {}
 
         // If url does not have both search params
         if (!userId || !resetCode) {
@@ -64,7 +64,7 @@ export const load = async ({ url }) => {
             })
             // If `dbResponse` is not undefined
             if (dbResponse) {
-                // Get `password` object
+                // Get data from object
                 var { password } = dbResponse
             }
         } catch (err) {
@@ -84,7 +84,7 @@ export const load = async ({ url }) => {
             }
         }
 
-        // If `email` is undefined
+        // If `password` is undefined
         if (!password) {
             // Return appropriate response object
             return {
@@ -95,8 +95,8 @@ export const load = async ({ url }) => {
 
         // Get the time the last password reset code was sent
         const { codeSentAt } = password
+
         // If last link was sent more than `password.duration` ago
-        console.log(!codeSentAt || codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.password.duration) <= new Date())
         if (!codeSentAt || codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.password.duration) <= new Date()) {
             // Return appropriate response object
             return {
@@ -143,7 +143,7 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // Check `formData.password` fits password requirements
+        // If `formData.password` does not fit password requirements
         if (!sanitizer.password(formData.password)) {
             // Return appropriate response object
             return {
@@ -155,6 +155,8 @@ export const actions = {
         // Get time `password.duration` in the past to filter out expired codes
         const unexpired = new Date()
         unexpired.setTime(unexpired.getTime() - 1000 * 60 * 60 * settings.password.duration)
+
+        // Update User entry in db
         try {
             await prismaClient.User.update({
                 // Set filter feilds
