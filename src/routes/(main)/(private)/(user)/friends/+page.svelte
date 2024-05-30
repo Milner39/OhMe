@@ -52,10 +52,10 @@
                     // Set to true so loading indicator is displayed
                     search.loading = true
 
-                    // Wait 1 second to allow the user to continue typing
+                    // Wait 1 second to allow the client to continue typing
                     await new Promise(resolve => setTimeout(resolve, 1000))
 
-                    // If the value has changed, the user is not finished typing so return
+                    // If the value has changed, the client is not finished typing so return
                     if (initVal !== search.value) return
 
                     // Send a request to fetch search results from api endpoint

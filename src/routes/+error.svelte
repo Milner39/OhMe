@@ -12,7 +12,7 @@
     import { onMount } from "svelte"
 
     // https://kit.svelte.dev/docs/modules#$app-navigation-goto
-    // Import function to redirect user
+    // Import function to redirect client
     import { goto } from "$app/navigation"
 
     // When component is mounted

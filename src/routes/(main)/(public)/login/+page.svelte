@@ -17,6 +17,10 @@
     // "...updates form and $page.form to result.data (regardless of where you are submitting from, in contrast to update from enhance)"
     import { enhance, applyAction } from "$app/forms"
 
+    // https://kit.svelte.dev/docs/modules#$app-navigation-goto
+    // Import function to redirect client
+    import { goto } from "$app/navigation"
+
     // Reactive statements are indicated by the `$:` label
     // https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
     // "Reactive statements run
@@ -29,10 +33,21 @@
     // Get data from load functions
     $: data = $page.data
 
+
     // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
     // "...the action can respond with data that will be available through the form property"
     // Get data returned from form actions
     $: form = $page.form
+
+
+    // https://kit.svelte.dev/docs/state-management#storing-state-in-the-url
+    // Get url data from `page`
+    $: url = $page.url
+
+    // Reactive statement to redirect the client on login if a redirect location is set
+    $: if (form?.status === 200 && url.searchParams.get("redirectTo")) {
+        goto(url.searchParams.get("redirectTo"))
+    }
 
     // TODO: hide passwords while typing, use button to toggle show password
 </script>
