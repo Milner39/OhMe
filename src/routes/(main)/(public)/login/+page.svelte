@@ -78,7 +78,7 @@
                         use:enhance={() => {
                             return async ({ result, update }) => {
                                 await applyAction(result)
-                                update()
+                                await update()
                             }
                         }}
                     >

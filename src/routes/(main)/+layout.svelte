@@ -78,15 +78,15 @@
             <!-- If `data.user` is defined -->
             {#if data.user}
                 <!-- Display a "Log Out" button -->
-                <form method="POST"
+                <form method="POST" action="/logout"
                     use:enhance={() => {
                         return async ({ result, update }) => {
                             await applyAction(result)
-                            update()
+                            await update()
                         }
                     }}
                 >
-                    <button class="button-pill" type="submit" formaction="/logout"><h6>Log Out</h6></button>
+                    <button class="button-pill" type="submit"><h6>Log Out</h6></button>
                 </form>
             <!-- Else -->
             {:else}
