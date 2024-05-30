@@ -9,8 +9,15 @@ import { json } from "@sveltejs/kit"
 // "...you can also use +server.js files to expose (for example) a JSON API."
 // Define POST function
 export const POST = async ({ request, locals }) => {
+    // Get `user` object from locals
+    const { user } = locals
 
     // IMPROVE: stop users with unverified email making requests
+    // If `user` is undefined
+    if (!user) {
+        // Return appropriate response object
+        json({ status: 401 })
+    }
 
     // Get request data sent by client
     const { search } = await request.json()
@@ -84,7 +91,7 @@ export const POST = async ({ request, locals }) => {
                 break
         }
         // Return appropriate response object if users cannot be fetched
-        return json({ status: 503})
+        return json({ status: 503 })
     }
     
     // Return appropriate response object if users fetched
