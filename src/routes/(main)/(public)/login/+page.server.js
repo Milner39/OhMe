@@ -168,7 +168,7 @@ export const actions = {
                 // Get data from object
                 var { sessions } = dbResponse
             } else {
-                throw
+                throw new Exception()
             }
         } catch (err) {
             // Catch errors
@@ -358,7 +358,7 @@ export const actions = {
                 // Send email with link to verify email
                 mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             } else {
-                throw
+                throw new Exception()
             }
         } catch (err) {
             // Catch errors
@@ -516,7 +516,7 @@ export const actions = {
                 // Send email with link to reset password
                 mail.sendReset("finn.milner@outlook.com", user.id, password.resetCode)
             } else {
-                throw
+                throw new Exception()
             }
         } catch (err) {
             // Catch errors
