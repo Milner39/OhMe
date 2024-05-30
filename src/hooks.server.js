@@ -10,11 +10,13 @@
 // "A helper function for sequencing multiple handle calls in a middleware-like manner."
 import { sequence } from "@sveltejs/kit/hooks"
 
-// Import prisma client instance to modify db
-import { client as prismaClient } from "$lib/server/prisma"
-
 // Import settings
 import { settings }  from "$lib/settings"
+
+
+
+// Import prisma client instance to modify db
+import { client as prismaClient } from "$lib/server/prisma"
 
 // Define hook to handle client authentication
 const authHandle = async ({ event, resolve }) => {
@@ -144,5 +146,26 @@ const authHandle = async ({ event, resolve }) => {
     return resolve(event)
 }
 
+
+
+// https://kit.svelte.dev/docs/load#redirects
+// "To redirect users, use the redirect helper from @sveltejs/kit to specify the location
+//  to which they should be redirected..."
+import { redirect } from "@sveltejs/kit"
+
+const privateGuard = async ({ event, resolve }) => {
+    // Get if the route the client is requesting is in the private group
+    const privateRoute = event.route.id.startsWith("/(main)/(private)/")
+
+    // If the client requesting a private route and is not logged in
+    if (privateRoute && !event.locals.session) {
+        // Redirect the client with search params
+        redirect(302, `${settings.urls.login}?protected=login&redirectTo=${event.url.pathname}`)
+    }
+
+    // Allow the client to access the route
+    return await resolve(event)
+}
+
 // Export handle sequence to be run on events
-export const handle = sequence(authHandle)
+export const handle = sequence(authHandle, privateGuard)

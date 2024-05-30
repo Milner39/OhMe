@@ -1,5 +1,8 @@
 // Settings to control values accross the app
 export const settings = {
+    urls: {
+        login: "/login"
+    },
     session: {
         // How long a session persists before expiring
         duration: 21, // Days
