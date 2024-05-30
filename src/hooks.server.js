@@ -160,7 +160,7 @@ const privateGuard = async ({ event, resolve }) => {
     // If the client requesting a private route and is not logged in
     if (privateRoute && !event.locals.session) {
         // Redirect the client with search params
-        redirect(302, `${settings.urls.login}?protected=login&redirectTo=${event.url.pathname}`)
+        redirect(302, `${settings.urls.login}?protected=login&redirectTo=${event.url.pathname+event.url.search}`)
     }
 
     // Allow the client to access the route
