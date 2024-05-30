@@ -5,7 +5,7 @@ import { sanitizer } from "$lib/server/sanitize.js"
 import { client as prismaClient } from "$lib/server/prisma"
 
 // Import hashing functions to hash & verify hashes
-import { stringHasher, failHash } from "$lib/server/argon"
+import { stringHasher } from "$lib/server/argon"
 
 // Import mailer to send emails
 import { mail } from "$lib/server/mailer"
@@ -21,7 +21,7 @@ const formHasErrors = (obj) => {
 // "A +page.server.js file can export actions, which allow you to POST data to the server using the <form> element."
 // Define actions
 export const actions = {
-    // MARK: Usernmae
+    // MARK: Username
     username: async ({ request, locals }) => {
         // Variables to hold error information and set notice message
         let errors = {}
@@ -180,6 +180,8 @@ export const actions = {
                 let { email } = dbResponse
                 // Send email with link to verify updated email
                 mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
+            } else {
+                throw
             }
         } catch (err) {
             // Catch errors
