@@ -12,6 +12,7 @@ export const load = async ({ url }) => {
     // Check that the `mode` URL param is one of the items in `options`
     mode = options.includes(mode) ? mode : "login"
 
+    // Return `mode`
     return { mode }
 }
 
