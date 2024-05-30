@@ -46,7 +46,7 @@
 
     // Reactive statement to redirect the client on login if a redirect location is set
     $: if (form?.status === 200 && url.searchParams.get("redirectTo")) {
-        goto(url.searchParams.get("redirectTo"))
+        goto(`/${url.searchParams.get("redirectTo").slice(1)}`)
     }
 
     // TODO: hide passwords while typing, use button to toggle show password
