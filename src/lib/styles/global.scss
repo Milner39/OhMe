@@ -213,6 +213,12 @@ button {
     &.button-svg {
         padding: 0.5em;
     }
+
+    &.disabled {
+        filter: grayscale(1);
+        color: var(--tx-3);
+        cursor: not-allowed; 
+    }
 }
 
 .button-svg {

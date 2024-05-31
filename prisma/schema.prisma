@@ -30,11 +30,14 @@ model User {
     web3Wallet    String?     
 
     // Relations
-    email         Email?        
-
+    email         Email?       
     password      Password?      
 
-    sessions      Session[]        
+    sessions      Session[]
+
+    friended      Friends[]    @relation("sent")  
+    friendOf      Friends[]    @relation("received")
+
 }
 
 model Email {
@@ -76,4 +79,14 @@ model Session {
     // Relations
     userId       String
     user         User        @relation(references: [id], fields: [userId], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model Friends {
+    senderId       String
+    sender         User      @relation(name: "sent", references: [id], fields: [senderId], onDelete: Cascade, onUpdate: Cascade)
+
+    recipientId    String
+    recipient      User      @relation(name: "received", references: [id], fields: [recipientId], onDelete: Cascade, onUpdate: Cascade)
+
+    @@id(name: "users",[senderId, recipientId])
 }

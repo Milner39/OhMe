@@ -13,6 +13,10 @@
     // Import `page` to get page data
     import { page } from "$app/stores"
 
+    // https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
+    // "Without an argument, use:enhance will emulate the browser-native behaviour, just without the full-page reloads."
+    import { enhance } from "$app/forms"
+
     // Variable containing all search information
     const search = {
         value: "",
@@ -83,15 +87,57 @@
             {#if search.result.length > 0}
                 <div class="block users" class:loading={search.loading}>
                     <!-- Create a user for every item in `search.result` -->
-                    {#each search.result as user}
+                    {#each search.result as user, index}
                         <div class="user">
                             <div class="profile">
                                 <h6>{user.username}</h6>
                             </div>
-                            <button class="button-pill" type="submit">
-                                <UserAdd/>
-                                <h6>Add</h6>
-                            </button>
+                            {#if !user.friendSent}
+                                <form method="POST" action="?/friend"
+                                    use:enhance={({ formData }) => {
+                                        // Add username to `formData`
+                                        formData.append("username", user.username)
+                                        // Submit form
+                                        return async ({ result, update }) => {
+                                            // If success
+                                            if (result.data.status === 200) {
+                                                // Update search results to reflect change
+                                                search.result[index].friendSent = true
+                                            }
+                                            await update()
+                                        }
+                                    }}
+                                >
+                                    <button class="button-pill" type="submit">
+                                        <UserAdd/>
+                                        <h6>Add</h6>
+                                    </button>
+                                </form>
+                            {:else}
+                                <form method="POST" action="?/unfriend"
+                                    use:enhance={({ formData }) => {
+                                        // Add username to `formData`
+                                        formData.append("username", user.username)
+                                        // Submit form
+                                        return async ({ result, update }) => {
+                                            // If success
+                                            if (result.data.status === 200) {
+                                                // Update search results to reflect change
+                                                search.result[index].friendSent = false
+                                            }
+                                            await update()
+                                        }
+                                    }}
+                                >
+                                    <button class="button-slim button-svg" type="submit">
+                                        <Close/>
+                                    </button>
+                                </form>
+                                <button class="button-pill disabled" type="button">
+                                    <UserAdd/>
+                                    <h6>Add</h6>
+                                </button>
+                            {/if}
                         </div>
                     {/each}
                 </div>
@@ -254,6 +300,12 @@
                 background-color: var(--bg-4);
             }
         }
+    }
+
+    form {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
 

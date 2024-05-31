@@ -41,18 +41,20 @@ const authHandle = async ({ event, resolve }) => {
     // with random UUIDs this should be very secure.
     try {
         let dbResponse = await prismaClient.Session.findUnique({
-            // Set filter feilds
+            // Set filter fields
             where: {
                 id: sessionId,
                 userId: userId
             },
-            // Set Session return feilds
+            // Set Session return fields
             include: {
                 user: {
                     include: {
                         email: true,
                         password: true,
-                        sessions: true
+                        sessions: true,
+                        friended: true,
+                        friendOf: true
                     }
                 }
             }

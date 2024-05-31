@@ -13,6 +13,7 @@ export const POST = async ({ request, locals }) => {
     const { user } = locals
 
     // IMPROVE: stop users with unverified email making requests
+    
     // If `user` is undefined
     if (!user) {
         // Return appropriate response object
@@ -74,12 +75,23 @@ export const POST = async ({ request, locals }) => {
             },
             // Set return fields
             select: {
-                username: true
+                username: true,
+                friended: true,
+                friendOf: true
             }
         })
 
         // Combine results and filter out undefined
-        var users = [exactMatch, ...partialMatch].filter((user) => { return user })
+        var users = [exactMatch, ...partialMatch].filter((match) => { return match })
+
+        // Structure the results with booleans to indicate which users are friends
+        users = users.map((match) => {
+            return {
+                username: match.username,
+                friendSent: match.friendOf.some(entry => entry.senderId === user.id),
+                friendReceived: match.friended.some(entry => entry.recipientId === user.id)
+            }
+        })
 
     } catch (err) {
         // Catch errors
