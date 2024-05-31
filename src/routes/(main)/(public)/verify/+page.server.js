@@ -40,14 +40,14 @@ export const load = async ({ url }) => {
         // Get User entry to have email verified
         try {
             let dbResponse = await prismaClient.User.findUnique({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     id: userId,
                     email: {
                         verifyCode: verifyCode
                     }
                 },
-                // Set return feilds
+                // Set return fields
                 select: {
                     email: {
                         select: {
@@ -112,11 +112,11 @@ export const load = async ({ url }) => {
         // Update user entry in db
         try {
             await prismaClient.User.update({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     id: userId,
                 },
-                // Set update feilds
+                // Set update fields
                 data: {
                     email: {
                         update: {

@@ -74,13 +74,13 @@ export const actions = {
         // Get User entry to be logged into
         try {
             let dbResponse = await prismaClient.User.findFirst({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     email: {
                         address: formData.email.toLowerCase()
                     }
                 },
-                // Set return feilds
+                // Set return fields
                 select: {
                     id: true,
                     password: {
@@ -142,11 +142,11 @@ export const actions = {
         // Update User entry in db
         try {
             let dbResponse = await prismaClient.User.update({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     id: user.id
                 },
-                // Set update feilds
+                // Set update fields
                 data: {
                     sessions: {
                         create: {
@@ -154,7 +154,7 @@ export const actions = {
                         }
                     }
                 },
-                // Set return feilds
+                // Set return fields
                 select: {
                     sessions: {
                         select: {
@@ -248,7 +248,7 @@ export const actions = {
         // Get User entries with the same username or email from `formData`
         try {
             let dbResponse = await prismaClient.User.findMany({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     OR: [
                         {
@@ -261,7 +261,7 @@ export const actions = {
                         }
                     ]
                 },
-                // Set return feilds
+                // Set return fields
                 select: {
                     username: true,
                     email: {
@@ -314,7 +314,7 @@ export const actions = {
         // Create User entry in db
         try {
             let dbResponse = await prismaClient.User.create({
-                // Set data feilds
+                // Set data fields
                 data: {
                     username: formData.username,
                     email: {
@@ -335,7 +335,7 @@ export const actions = {
                         }
                     }
                 },
-                // Set return feilds
+                // Set return fields
                 select: {
                     id: true,
                     email: {
@@ -423,13 +423,13 @@ export const actions = {
         // Get User entry to send password reset email
         try {
             let dbResponse = await prismaClient.User.findFirst({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     email: {
                         address: formData.email.toLowerCase()
                     }
                 },
-                // Set return feilds
+                // Set return fields
                 select: {
                     id: true,
                     password: {
@@ -487,11 +487,11 @@ export const actions = {
         // Update User entry in db
         try {
             let dbResponse = await prismaClient.User.update({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     id: user.id
                 },
-                // Set update feilds
+                // Set update fields
                 data: {
                     password: {
                         update: {
@@ -500,7 +500,7 @@ export const actions = {
                         }
                     }
                 },
-                // Set return feilds
+                // Set return fields
                 select: {
                     password: {
                         select: {

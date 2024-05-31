@@ -46,14 +46,14 @@ export const load = async ({ url }) => {
         // Get User entry to have password reset
         try {
             let dbResponse = await prismaClient.User.findUnique({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     id: userId,
                     password: {
                         resetCode: resetCode
                     }
                 },
-                // Set return feilds
+                // Set return fields
                 select: {
                     password: {
                         select: {
@@ -159,7 +159,7 @@ export const actions = {
         // Update User entry in db
         try {
             await prismaClient.User.update({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     id: userId,
                     password: {
@@ -169,7 +169,7 @@ export const actions = {
                         }
                     }
                 },
-                // Set update feilds
+                // Set update fields
                 data: {
                     password: {
                         update: {

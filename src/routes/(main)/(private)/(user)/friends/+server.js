@@ -28,7 +28,7 @@ export const POST = async ({ request, locals }) => {
     try {
         // Get User entry with exactly matching username
         let exactMatch = await prismaClient.User.findFirst({
-            // Set filter feilds
+            // Set filter fields
             where: {
                 AND: [
                     {
@@ -41,7 +41,7 @@ export const POST = async ({ request, locals }) => {
                     }
                 ]
             },
-            // Set return feilds
+            // Set return fields
             select: {
                 username: true
             }
@@ -52,7 +52,7 @@ export const POST = async ({ request, locals }) => {
             // Set quantity of results
             // If an exact match is found, get 9, else 10
             take: exactMatch ? 9 : 10,
-            // Set filter feilds
+            // Set filter fields
             where: {
                 AND: [
                     {
@@ -72,7 +72,7 @@ export const POST = async ({ request, locals }) => {
                     }
                 ]
             },
-            // Set return feilds
+            // Set return fields
             select: {
                 username: true
             }

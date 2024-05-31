@@ -22,7 +22,7 @@ export const actions = {
         // Delete Session entry from db
         try {
             await prismaClient.Session.delete({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     id: session.id
                 }

@@ -120,11 +120,11 @@ const authHandle = async ({ event, resolve }) => {
         // Extend `expiresAt` date
         try {
             await prismaClient.Session.update({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     id: sessionId
                 },
-                // Set update feilds
+                // Set update fields
                 data: {
                     expiresAt: expiryDate
                 }

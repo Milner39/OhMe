@@ -66,11 +66,11 @@ export const actions = {
         // Update User entry in db
         try {
             await prismaClient.User.update({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     id:  user.id
                 },
-                // Set update feilds
+                // Set update fields
                 data: {
                     username: formData.username
                 }
@@ -149,11 +149,11 @@ export const actions = {
         // Update User entry in db
         try {
             let dbResponse = await prismaClient.User.update({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     id:  user.id
                 },
-                // Set update feilds
+                // Set update fields
                 data: {
                     email: {
                         update: {
@@ -164,7 +164,7 @@ export const actions = {
                         }
                     }
                 },
-                // Set return feilds
+                // Set return fields
                 select: {
                     email: {
                         select: {
@@ -280,11 +280,11 @@ export const actions = {
         // Update User entry in db
         try {
             await prismaClient.User.update({
-                // Set filter feilds
+                // Set filter fields
                 where: {
                     id: user.id
                 },
-                // Set update feilds
+                // Set update fields
                 data: {
                     password: {
                         update: {
