@@ -8,6 +8,9 @@
 		"preview": "set NODE_ENV=preview&& vite preview",
 		"host": "set NODE_ENV=production&& node -r dotenv/config build"
 	},
+	"prisma": {
+		"seed": "node prisma/seed.js"
+	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "^5.0.1",
 		"@sveltejs/kit": "^2.5.10",
