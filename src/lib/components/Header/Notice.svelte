@@ -35,7 +35,7 @@
         align-items: center;
         justify-content: center;
       
-        grid-template-columns: 1rem 1fr 1rem;
+        grid-template-columns: 1.25rem 1fr 1.25rem;
         
         gap: 1rem;
 
@@ -46,9 +46,11 @@
         border-width: 1px 0 0 0;
 
         >.icon {
-            height: 1.25rem;
-
+            display: grid;
+            align-items: center;
+            justify-content: center;
             >:global(svg) {
+                width: 100%;
                 height: 100%;
             }
         }
