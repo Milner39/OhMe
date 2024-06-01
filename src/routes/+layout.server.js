@@ -1,5 +1,8 @@
 // Define function to delete keys from an object
-const removeKeys = (obj, removeRule) => {
+const removeKeys = (object, removeRule) => {
+    // Clone the object to not make changes to the original object
+    const obj = structuredClone(object)
+
     // Iterate over key-value pairs
     for (const [key, value] of Object.entries(removeRule)) {
         // If value is true, delete the key from `obj`
@@ -8,11 +11,14 @@ const removeKeys = (obj, removeRule) => {
 
         // If value is another object, recurse
         } else if (typeof value === "object") {
-            removeKeys(obj[key], value)
+            obj[key] = removeKeys(obj[key], value)
         }
         // This recursion allows the object to be traversed,
         // deleting nested keys
     }
+
+    // Return the new object
+    return obj
 }
 
 // Define keys to delete from `user` object
@@ -36,11 +42,11 @@ const userDelete = {
 // Define load function
 export const load = async ({ locals }) => {
     // Get `user` from locals
-    const { user } = locals || null
+    let { user } = locals || null
 
     // Delete keys containing sensitive data
     // to avoid client-side data leaks
-    if (user) removeKeys(user, userDelete)
+    if (user) user = removeKeys(user, userDelete)
 
     // Return only the `user` object
     return { user }
