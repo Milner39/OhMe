@@ -94,7 +94,7 @@
                     }
                 </h4>
                 {#if data.mode === "login"}
-                    <h6>Enter your account details below.</h6>
+                    <h6>Enter your existing account details below.</h6>
                     <form class="form" method="POST" action="?/login" use:enhance>
                         <div>
                             <label for="email"><small>Email Address*</small></label>
@@ -120,7 +120,7 @@
                         <h6>Register</h6>
                     </a>
                 {:else if data.mode === "register"}
-                    <h6>Enter your email address and choose a password.</h6>
+                    <h6>Enter your new account details below.</h6>
                     <form class="form" method="POST" action="?/register" use:enhance>
                         <div>
                             <label for="username"><small>Username*</small></label>
