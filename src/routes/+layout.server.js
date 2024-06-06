@@ -35,7 +35,9 @@ const userDelete = {
         resetCode: true,
         userId: true
     },
-    sessions: true
+    sessions: true,
+    friended: true,
+    friendOf: true
 }
 
 // https://kit.svelte.dev/docs/load#layout-data

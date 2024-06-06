@@ -3,6 +3,8 @@
     import UserAdd from "$lib/assets/svgs/UserAdd.svelte"
     import Search from "$lib/assets/svgs/Search.svelte"
     import Close from "$lib/assets/svgs/Close.svelte"
+    import ArrowPrev from "$lib/assets/svgs/ArrowPrev.svelte"
+    import ArrowNext from "$lib/assets/svgs/ArrowNext.svelte"
 
     // Import components
     import Banner from "$lib/components/Banner.svelte"
@@ -20,12 +22,24 @@
     // Variable containing all search information
     const search = {
         value: "",
-        result: [],
+        result: null,
         loading: false
     }
 
-    // Dummy data
-    const receivedRequests = ["Molly", "Henry", "Shae", "Bailey", "Jess"]
+    // Variable controlling which pane to show
+    let showReceived = true
+
+    // Reactive statements are indicated by the `$:` label
+    // https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
+    // "Reactive statements run
+    //  after other script code
+    //  before the component markup is rendered
+    //  whenever the values that they depend on have changed."
+
+    // https://kit.svelte.dev/docs/load#$page-data
+    // "...has access to its own data plus all the data from its parents."
+    // Get data from load functions
+    $: data = $page.data
 </script>
 
 <Banner>
@@ -49,7 +63,7 @@
 
                     // If the value is empty, return
                     if (initVal === "") {
-                        search.result = []
+                        search.result = null
                         return
                     }
 
@@ -74,7 +88,7 @@
                     })
 
                     // Set `search.result` to the returned users or an empty array
-                    search.result = (await response.json()).users || []
+                    search.result = (await response.json()) || null
 
                     // Set false when search has loaded
                     search.loading = false
@@ -84,25 +98,26 @@
         <!-- Display if client has entered a value in the search input  -->
         {#if search.value}
             <!-- Display if server has returned a search result  -->
-            {#if search.result.length > 0}
+            {#if Object.entries(search.result?.users || {}).length > 0}
                 <div class="block users" class:loading={search.loading}>
                     <!-- Create a user for every item in `search.result` -->
-                    {#each search.result as user, index}
+                    {#each Object.entries(search.result.users) as [username, status]}
                         <div class="user">
                             <div class="profile">
-                                <h6>{user.username}</h6>
+                                <h6>{username}</h6>
                             </div>
-                            {#if !user.friendSent}
+                            <!-- Display if client has not sent friend request to this user  -->
+                            {#if !status.sent}
                                 <form method="POST" action="?/friend"
                                     use:enhance={({ formData }) => {
                                         // Add username to `formData`
-                                        formData.append("username", user.username)
+                                        formData.append("username", username)
                                         // Submit form
                                         return async ({ result, update }) => {
                                             // If success
                                             if (result.data.status === 200) {
                                                 // Update search results to reflect change
-                                                search.result[index].friendSent = true
+                                                search.result.users[username].sent = true
                                             }
                                             await update()
                                         }
@@ -113,17 +128,18 @@
                                         <h6>Add</h6>
                                     </button>
                                 </form>
+                            <!-- Display if client has sent friend request to this user  -->
                             {:else}
                                 <form method="POST" action="?/unfriend"
                                     use:enhance={({ formData }) => {
                                         // Add username to `formData`
-                                        formData.append("username", user.username)
+                                        formData.append("username", username)
                                         // Submit form
                                         return async ({ result, update }) => {
                                             // If success
                                             if (result.data.status === 200) {
                                                 // Update search results to reflect change
-                                                search.result[index].friendSent = false
+                                                search.result.users[username].sent = false
                                             }
                                             await update()
                                         }
@@ -153,27 +169,106 @@
                 </div>
             {/if}
         {/if}
-        <div class="title">
-            <h6>Requests received</h6>
-            <h6 class="dim">Requests sent ></h6>
+        <!-- Buttons to select which pane to show -->
+        <div class="paneOptions">
+            <button on:click={() => { showReceived = true }} class:dim={!showReceived}>
+                <ArrowPrev/>
+                <h6>Requests received</h6>
+            </button>
+            <button on:click={() => { showReceived = false }} class:dim={showReceived}>
+                <h6>Requests sent</h6>
+                <ArrowNext/>
+            </button>
         </div>
-        <div class="block users">
-            <!-- Create a user for every item in `receivedRequests` -->
-            {#each receivedRequests as user}
-                <div class="user">
-                    <div class="profile">
-                        <h6>{user}</h6>
-                    </div>
-                    <button class="button-slim button-svg" type="submit">
-                        <Close/>
-                    </button>
-                    <button class="button-pill" type="submit">
-                        <UserAdd/>
-                        <h6>Add</h6>
-                    </button>
+        <!-- Display if `showReceived`  -->
+        {#if showReceived}
+            <!-- Display if client has received pending friend requests  -->
+            {#if data.friendRequests.pendingReceived > 0}
+                <div class="block users">
+                    <!-- Create a user for every item in `friendRequests.users` -->
+                    {#each Object.entries(data.friendRequests.users) as [username, status]}
+                        <!-- Display if client has not sent, but has recieved friend request from this user -->
+                        {#if !status.sent && status.received}
+                            <div class="user">
+                                <div class="profile">
+                                    <h6>{username}</h6>
+                                </div>
+                                <button class="button-slim button-svg" type="submit">
+                                    <Close/>
+                                </button>
+                                <form method="POST" action="?/friend"
+                                    use:enhance={({ formData }) => {
+                                        // Add username to `formData`
+                                        formData.append("username", username)
+                                        // Submit form
+                                        return async ({ result, update }) => {
+                                            // If success
+                                            if (result.data.status === 200) {
+                                                // Update search results to reflect change
+                                                const user = search.result?.users[username]
+                                                if (user) user.sent = true
+                                            }
+                                            await update()
+                                        }
+                                    }}
+                                >
+                                    <button class="button-pill" type="submit">
+                                        <UserAdd/>
+                                        <h6>Add</h6>
+                                    </button>
+                                </form>
+                            </div>
+                        {/if}
+                    {/each}
                 </div>
-            {/each}
-        </div>
+            {:else}
+                <h6>You haven't received any friend requests yet</h6>
+            {/if}
+        <!-- Display if not `showReceived`  -->
+        {:else}
+            <!-- Display if client has sent pending friend requests  -->
+            {#if data.friendRequests.pendingSent > 0}
+                <div class="block users">
+                    <!-- Create a user for every item in `friendRequests.users` -->
+                    {#each Object.entries(data.friendRequests.users) as [username, status]}
+                        <!-- Display if client has sent, but has not recieved friend request from this user -->
+                        {#if status.sent && !status.received}
+                            <div class="user">
+                                <div class="profile">
+                                    <h6>{username}</h6>
+                                </div>
+                                <form method="POST" action="?/unfriend"
+                                    use:enhance={({ formData }) => {
+                                        // Add username to `formData`
+                                        formData.append("username", username)
+                                        // Submit form
+                                        return async ({ result, update }) => {
+                                            // If success
+                                            if (result.data.status === 200) {
+                                                // Update search results to reflect change
+                                                const user = search.result?.users[username]
+                                                if (user) user.sent = false
+                                            }
+                                            await update()
+                                        }
+                                    }}
+                                >
+                                    <button class="button-slim button-svg" type="submit">
+                                        <Close/>
+                                    </button>
+                                </form>
+                                <button class="button-pill disabled" type="button">
+                                    <UserAdd/>
+                                    <h6>Add</h6>
+                                </button>
+                            </div>
+                        {/if}
+                    {/each}
+                </div>
+            {:else}
+                <h6>You haven't sent any friend requests yet</h6>
+            {/if}
+        {/if}
     </div>
 </div>
 
@@ -226,7 +321,7 @@
         }
     }
 
-    .title {
+    .paneOptions {
         width: 100%;
 
         display: flex;
@@ -236,7 +331,16 @@
 
         font-weight: 600;
 
-        >.dim {
+        >button {
+            display: flex;
+            align-items: center;
+
+            >:global(svg) {
+                height: 1rem;
+            }
+        }
+
+        .dim {
             color: var(--tx-4);
         }
     }

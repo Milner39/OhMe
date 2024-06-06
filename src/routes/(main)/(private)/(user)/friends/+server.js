@@ -44,7 +44,9 @@ export const POST = async ({ request, locals }) => {
             },
             // Set return fields
             select: {
-                username: true
+                username: true,
+                friended: true,
+                friendOf: true
             }
         })
 
@@ -85,13 +87,13 @@ export const POST = async ({ request, locals }) => {
         var users = [exactMatch, ...partialMatch].filter((match) => { return match })
 
         // Structure the results with booleans to indicate which users are friends
-        users = users.map((match) => {
-            return {
-                username: match.username,
-                friendSent: match.friendOf.some(entry => entry.senderId === user.id),
-                friendReceived: match.friended.some(entry => entry.recipientId === user.id)
-            }
-        })
+        users = users.reduce((prev, match) => {
+            const sent = match.friendOf.some(entry => entry.senderId === user.id)
+            const received = match.friended.some(entry => entry.recipientId === user.id)
+            return ({...prev, [match.username]: {
+                sent,
+                received
+        }})}, {})
 
     } catch (err) {
         // Catch errors

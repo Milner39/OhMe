@@ -38,6 +38,8 @@ model User {
     friended      Friends[]    @relation("sent")  
     friendOf      Friends[]    @relation("received")
 
+    // Attributes
+    @@unique([id, username])
 }
 
 model Email {
@@ -82,11 +84,14 @@ model Session {
 }
 
 model Friends {
-    senderId       String
-    sender         User      @relation(name: "sent", references: [id], fields: [senderId], onDelete: Cascade, onUpdate: Cascade)
+    senderId             String
+    senderUsername       String
+    sender               User      @relation(name: "sent", references: [id, username], fields: [senderId, senderUsername], onDelete: Cascade, onUpdate: Cascade)
 
-    recipientId    String
-    recipient      User      @relation(name: "received", references: [id], fields: [recipientId], onDelete: Cascade, onUpdate: Cascade)
+    recipientId          String
+    recipientUsername    String
+    recipient            User      @relation(name: "received", references: [id, username], fields: [recipientId, recipientUsername], onDelete: Cascade, onUpdate: Cascade)
 
-    @@id(name: "users",[senderId, recipientId])
+    // Attributes
+    @@id(name: "users", [senderId, recipientId])
 }
