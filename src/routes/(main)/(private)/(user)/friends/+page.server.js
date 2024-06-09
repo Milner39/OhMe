@@ -110,7 +110,7 @@ export const actions = {
                 // Get data from object
                 var friend = dbResponse
             } else {
-                throw new Exception()
+                throw new Error()
             }
         } catch (err) {
             // Catch errors
@@ -216,7 +216,7 @@ export const actions = {
                 // Get data from object
                 var friend = dbResponse
             } else {
-                throw new Exception()
+                throw new Error()
             }
         } catch (err) {
             // Catch errors

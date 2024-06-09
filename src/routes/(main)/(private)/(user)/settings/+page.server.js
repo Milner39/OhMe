@@ -181,7 +181,7 @@ export const actions = {
                 // Send email with link to verify updated email
                 mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             } else {
-                throw new Exception()
+                throw new Error()
             }
         } catch (err) {
             // Catch errors
