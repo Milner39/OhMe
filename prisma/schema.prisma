@@ -95,3 +95,13 @@ model Friends {
     // Attributes
     @@id(name: "users", [senderId, recipientId])
 }
+
+
+
+model Error {
+    // Key
+    id      Int         @id @unique @default(autoincrement())
+
+    // Error information
+    json    String
+}
