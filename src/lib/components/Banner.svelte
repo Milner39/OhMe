@@ -10,7 +10,7 @@
             <!-- Children in `svg` slot go here -->
             <slot name="svg"/>
         </div>
-        <!-- Bind div's clientHeight to `textHeight` so it can be accesed by the script -->
+        <!-- Bind div's clientHeight to `textHeight` so it can be accessed by the script -->
         <div class="text" bind:clientHeight={textHeight}>
             <!-- Other children go here -->
             <slot/>

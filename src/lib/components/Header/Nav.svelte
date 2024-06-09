@@ -54,7 +54,7 @@
         // Calculate total width of all items in `collapsibleItems`
         const totalItemWidth = collapsibleItems.reduce((total, item) => total + item.clientWidth, 0)
 
-        // Get gap betweem `navLinks` and `static`
+        // Get gap between `navLinks` and `static`
         const collapsibleGap = Number(window.getComputedStyle(collapseEl).columnGap.slice(0,-2))
 
         // Get gap between items in `navLinks`
@@ -72,8 +72,8 @@
         // Get width of `dropdownButton`
         const dropdownButtonWidth = dropdownButton.clientWidth
 
-        // Calcualte the extra width taken up by elements that only appear when `collapsed === true`
-        // `collapsed` will be [ `true` or `flase` ] therefore static difference will be [ somePixels or 0 ]
+        // Calculate the extra width taken up by elements that only appear when `collapsed === true`
+        // `collapsed` will be [ `true` or `false` ] therefore static difference will be [ somePixels or 0 ]
         const staticDifference = (staticGap + dropdownButtonWidth) * collapsed
 
         // Set boolean to control `collapsible` is collapsed
@@ -83,7 +83,7 @@
         //   set `dropdown` to its current value
         // If  `collapsed === false`:
         //   set `dropdown` to `false`
-        // This logic closes the dropdown if there is enough space for `collaspible`,
+        // This logic closes the dropdown if there is enough space for `collapsible`,
         // meaning the dropdown can be closed
         dropdown = collapsed ? dropdown : false
     }
@@ -119,7 +119,7 @@
 </script>
 
 <div class="zIndex">
-    <!-- Bind nav to `nav` so it can be accesed by the script -->
+    <!-- Bind nav to `nav` so it can be accessed by the script -->
     <nav bind:this={nav}>
         <!-- If the `brand` slot was passed in -->
         {#if $$slots.brand}
@@ -153,7 +153,7 @@
                 <!-- Children in `static` slot go here -->
                 <slot name="static"/>
             {/if}
-            <!-- Bind button to `dropdown` so it can be accesed by the script -->
+            <!-- Bind button to `dropdown` so it can be accessed by the script -->
             <button class="dropdown-button button-slim" class:hide={!collapsed} type="button" 
                 title={dropdown ? "Close dropdown" : "Open dropdown"}
                 on:click={toggleDropdown}

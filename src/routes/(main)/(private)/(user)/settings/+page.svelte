@@ -154,12 +154,12 @@
 </Banner>
 
 <div class="page">
-    <!-- Bind div's clientWidth to `contentWidth` so it can be accesed by the script -->
+    <!-- Bind div's clientWidth to `contentWidth` so it can be accessed by the script -->
     <div class="widthCtrl" bind:clientWidth={contentWidth}>
         <!-- Display the widescreen version of the layout if `contentWidth` is wider than `wideModeSize`  -->
         {#if contentWidth > wideModeSize}
             <div class="block wide">
-                <!-- Bind `selectedPane` to `selectedFormGroup` so it can be accesed by the script -->
+                <!-- Bind `selectedPane` to `selectedFormGroup` so it can be accessed by the script -->
                 <SidebarPane bind:selectedPane={selectedFormGroup} sideItemCount={FORM_GROUPS.length}>
                     <svelte:fragment slot="sidebar" let:index>
                         <h5>{FORM_GROUPS[index].title?.text}</h5>

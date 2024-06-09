@@ -51,7 +51,7 @@
             </li>
         {/each}
     </ul>
-    <!-- Bind div to `pane` so it can be accesed by the script -->
+    <!-- Bind div to `pane` so it can be accessed by the script -->
     <div class="pane" bind:this={pane} class:pullScrollBar={paneScrollBar}>
         <slot/>
     </div>
