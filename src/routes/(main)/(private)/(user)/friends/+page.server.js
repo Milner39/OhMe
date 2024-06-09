@@ -5,7 +5,7 @@ export const load = async ({ locals }) => {
     // Get `user` object form locals
     const { user } = locals
 
-    // If `user` is undefined
+    // If `user` is `undefined`
     if (!user) {
         // End load
         return
@@ -57,6 +57,7 @@ export const load = async ({ locals }) => {
 
 
     // Return friend request data
+    // End load
     return { 
         friendRequests: {
             users: friends,
