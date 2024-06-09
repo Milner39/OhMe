@@ -22,7 +22,7 @@ import { settings }  from "$lib/settings"
 
 
 // MARK: auth
-// Import prisma client instance to modify db
+// Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
 // Import error logger to record error details

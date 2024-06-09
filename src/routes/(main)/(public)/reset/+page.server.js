@@ -1,7 +1,7 @@
 // Import sanitizer to ensure all user inputs are valid
 import { sanitizer } from "$lib/server/sanitize.js"
 
-// Import prisma client instance to modify db
+// Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
 // Import hashing functions to hash & verify hashes

@@ -1,39 +1,39 @@
-// Import prisma client instance to modify db
-import { client as prismaClient } from "$lib/server/prisma"
-
+// MARK: Load
 // https://kit.svelte.dev/docs/load#page-data
 // Define load function
 export const load = async ({ locals }) => {
-    // MARK: Load
     // Get `user` object form locals
     const { user } = locals
 
     // If `user` is undefined
     if (!user) {
+        // End load
         return
     }
 
-    // Initialize object to hold usernames and friend status
+
+    // Define object to hold usernames and friend status
     const friends = {}
 
-    // Set all of the User entries that the client has friended
+    // Set all of the `User`s that the client has friended
     for (const { recipientUsername } of user.friended) {
-        // Set default values if `friends[recipientUsername]` is undefined
+        // Set default values if key is undefined
         friends[recipientUsername] ??= {
             sent: false,
             received: false
         }
         friends[recipientUsername].sent = true
     }
-    // Set all of the User entries that have friended the client
+    // Set all of the `User`s that have friended the client
     for (const { senderUsername } of user.friendOf) {
-        // Set default values if `friends[senderUsername]` is undefined
+        // Set default values if key is undefined
         friends[senderUsername] ??= {
             sent: false,
             received: false
         }
         friends[senderUsername].received = true 
     }
+
 
     // Variables to store number of pending friend requests
     let pendingSent = 0
@@ -53,7 +53,8 @@ export const load = async ({ locals }) => {
         }
     }
 
-    // Return `friendRequests` object
+
+    // Return friend request data
     return { 
         friendRequests: {
             users: friends,
@@ -62,6 +63,14 @@ export const load = async ({ locals }) => {
         } 
     }
 }
+
+
+
+
+
+// Import prisma client instance to interact with db
+import { client as prismaClient } from "$lib/server/prisma"
+
 
 // https://kit.svelte.dev/docs/form-actions
 // "A +page.server.js file can export actions, which allow you to POST data to the server using the <form> element."
