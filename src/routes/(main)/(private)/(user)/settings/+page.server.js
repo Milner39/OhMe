@@ -181,6 +181,7 @@ export const actions = {
                     }
                 }
             })
+            
             // If `dbResponse` is not `undefined`
             if (dbResponse) {
                 let { email } = dbResponse
@@ -222,7 +223,7 @@ export const actions = {
             }
         }
 
-        
+
         // End action
         return {
             status: 200,
