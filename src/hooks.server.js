@@ -63,7 +63,7 @@ const auth = async ({ event, resolve }) => {
     // TODO: Sanitize cookies
 
 
-    // Fetch `Session` and connected `User` entries with matching ids from db
+    // Get `Session` and connected `User` entries with matching ids from db
     // Only get the session if both ids match the client's cookies
     // This means in order for a malicious client to set their own cookie values,
     // they would have to correctly guess a valid `Session.id` and the corresponding `User.id`,

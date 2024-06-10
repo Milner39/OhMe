@@ -34,7 +34,7 @@ export const POST = async ({ request, locals }) => {
     // Get `User` entries which usernames contain `search`
     // Not including the client's username
     try {
-        // Get User entry with exactly matching username
+        // Get `User` entry with exactly matching username
         let exactMatch = await prismaClient.User.findFirst({
             // Set field filters
             where: {
@@ -57,7 +57,7 @@ export const POST = async ({ request, locals }) => {
             }
         })
 
-        // Get User entry with partially matching username
+        // Get `User` entry with partially matching username
         let partialMatch = await prismaClient.User.findMany({
             // Set quantity of results
             // If an exact match is found, get 9, else 10

@@ -104,7 +104,7 @@ export const actions = {
         // TODO: sanitize username
 
 
-        // Fetch id of `User` entry to send friend request
+        // Get id of `User` entry to send friend request
         try {
             let dbResponse = await prismaClient.User.findUnique({
                 // Set field filters
@@ -216,7 +216,7 @@ export const actions = {
         // TODO: sanitize username
 
 
-        // Fetch id of `User` entry to cancel friend request
+        // Get id of `User` entry to cancel friend request
         try {
             let dbResponse = await prismaClient.User.findUnique({
                 // Set field filters
