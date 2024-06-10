@@ -22,6 +22,10 @@ import { settings }  from "$lib/settings"
 
 
 // MARK: auth
+// https://kit.svelte.dev/docs/modules#sveltejs-kit-isredirect
+// "Checks whether this is a redirect thrown by `redirect`"
+import { isRedirect } from "@sveltejs/kit"
+
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
@@ -102,16 +106,19 @@ const auth = async ({ event, resolve }) => {
 
     // Catch errors
     } catch (error) {
-        // Log error details
-        logError({
-            filepath: "src/hooks.server.js",
-            message: "Error while fetching Session entry from db using client's cookies",
-            arguments: {
-                sessionId,
-                userId
-            },
-            error
-        })
+        // If error was not caused by a redirect
+        if (!isRedirect(error)) {
+            // Log error details
+            logError({
+                filepath: "src/hooks.server.js",
+                message: "Error while fetching Session entry from db using client's cookies",
+                arguments: {
+                    sessionId,
+                    userId
+                },
+                error
+            })
+        }
 
         // End handle
         return await resolve(event)
