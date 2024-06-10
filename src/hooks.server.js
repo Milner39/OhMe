@@ -30,13 +30,13 @@ import { logError } from "$lib/server/errorLogger"
 
 
 // Define function to delete auth cookies
-const deleteAuthCookies = async (event) => {
+const deleteAuthCookies = async (cookies) => {
     // Delete client's cookies
-    await event.cookies.delete("user", {
+    await cookies.delete("user", {
         path: "/",
         secure: false
     })
-    await event.cookies.delete("session", {
+    await cookies.delete("session", {
         path: "/",
         secure: false
     })
@@ -94,7 +94,7 @@ const auth = async ({ event, resolve }) => {
             var { user, ...session } = dbResponse
         } else {
             // Delete client's cookies
-            await deleteAuthCookies(event)
+            await deleteAuthCookies(event.cookies)
 
             // End handle
             return await resolve(event)
@@ -121,7 +121,7 @@ const auth = async ({ event, resolve }) => {
     // If `session` is expired
     if (session.expiresAt < new Date()) {
         // Delete client's cookies
-        await deleteAuthCookies(event)
+        await deleteAuthCookies(event.cookies)
 
         // End handle
         return await resolve(event)
