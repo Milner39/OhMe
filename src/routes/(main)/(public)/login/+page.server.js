@@ -136,7 +136,7 @@ export const actions = {
         }
 
         
-        // If User entry with matching credentials does not exist, null will be returned
+        // If `User` entry with matching credentials does not exist, null will be returned
         // in which case instead of verifying `User.password.hash` a hashed empty string is used,
         // therefore `correctPassword` will always be false
         const hashedPassword = password?.hash || failHash
