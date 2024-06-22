@@ -12,34 +12,35 @@
     // https://kit.svelte.dev/docs/modules#$app-stores
     // Import `page` to get page data
     import { page } from "$app/stores"
+
+    // Reactive statements are indicated by the `$:` label
+    // https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
+    // "Reactive statements run
+    //  after other script code
+    //  before the component markup is rendered
+    //  whenever the values that they depend on have changed."
+
+    // https://kit.svelte.dev/docs/load#$page-data
+    // "...has access to its own data plus all the data from its parents."
+    // Get data from load functions
+    $: data = $page.data
+
 </script>
 
 <div class="page">
-    {#await $page.data.streamed}
+    {#await data.streamed}
         <div class="loading">
             <LoadingAnimation/>
         </div>
-    {:then data} 
-        <div class="block loaded" class:valid={data.status === 200}>
-            {#if data.status === 200}
+    {:then streamed} 
+        <div class="block loaded" class:valid={streamed.status === 200}>
+            {#if streamed.status === 200}
                 <Checkmark/>
                 <h4 class="title">Email has been verified</h4>
                 <a class="button-pill" href="/"><h5>Return Home</h5></a>
             {:else}
                 <Close/>
-                {#if data.status === 400}
-                    <h5>Invalid verification request</h5>
-                {:else if data.status === 401}
-                    <h5>Verification code expired</h5>
-                {:else if data.status === 409}
-                    <h5>Email already verified</h5>
-                {:else if data.status === 422}
-                    <h5>Incorrect verification code</h5>
-                {:else if data.status === 503}
-                    <h5>Failed to fetch from database</h5>
-                {:else}
-                    <h5>Something went wrong</h5>
-                {/if}
+                <h5>{streamed.errors?.client || "Something went wrong, try again later..."}</h5>
                 <a class="button-pill" href="/"><h5>Return Home</h5></a>
             {/if}
         </div>
