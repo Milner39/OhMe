@@ -1,11 +1,11 @@
 // Define function to delete keys from an object
 const removeKeys = (object, removeRule) => {
-    // Clone the object to not make changes to the original object
+    // Clone the object to not make changes to the original
     const obj = structuredClone(object)
 
     // Iterate over key-value pairs
     for (const [key, value] of Object.entries(removeRule)) {
-        // If value is true, delete the key from `obj`
+        // If value is true, delete the key
         if (value === true) {
             delete obj[key]
 
@@ -21,7 +21,8 @@ const removeKeys = (object, removeRule) => {
     return obj
 }
 
-// Define keys to delete from `user` object
+
+// Define keys to delete from the `user` object
 const userDelete = {
     id: true,
     email: {
@@ -36,9 +37,10 @@ const userDelete = {
         userId: true
     },
     sessions: true,
-    friended: true,
-    friendOf: true
+    frRqSent: true,
+    frRqReceived: true
 }
+
 
 // https://kit.svelte.dev/docs/load#layout-data
 // Define load function
@@ -50,6 +52,6 @@ export const load = async ({ locals }) => {
     // to avoid client-side data leaks
     if (user) user = removeKeys(user, userDelete)
 
-    // Return only the `user` object
+    // Return the filtered `user` object
     return { user }
 }

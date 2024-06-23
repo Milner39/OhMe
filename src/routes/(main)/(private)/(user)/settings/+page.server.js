@@ -1,8 +1,8 @@
+// Import prisma client instance to interact with db
+import { client as prismaClient } from "$lib/server/prisma"
+
 // Import sanitizer to ensure all user inputs are valid
 import { sanitizer } from "$lib/server/sanitize.js"
-
-// Import prisma client instance to modify db
-import { client as prismaClient } from "$lib/server/prisma"
 
 // Import hashing functions to hash & verify hashes
 import { stringHasher } from "$lib/server/argon"
@@ -10,12 +10,9 @@ import { stringHasher } from "$lib/server/argon"
 // Import mailer to send emails
 import { mail } from "$lib/server/mailer"
 
-// Define function to check if errors have been caught
-const formHasErrors = (obj) => {
-    if (Object.keys(obj).length > 0) {
-        return true
-    }
-}
+// Import error logger to record error details
+import { logError } from "$lib/server/errorLogger"
+
 
 // https://kit.svelte.dev/docs/form-actions
 // "A +page.server.js file can export actions, which allow you to POST data to the server using the <form> element."
@@ -27,69 +24,78 @@ export const actions = {
         let errors = {}
         let notice
         
+
         // Get `user` object from locals
         const { user } = locals
 
-        // If `user` is undefined
+        // If `user` is `undefined`
         if (!user) {
-            // Return appropriate response object
+            // End action
             return {
-                status: 401,
-                errors: {server: "Client not logged in"},
-                notice
+                status: 401
             }
         }
+
 
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
         
         // If `formData.username` does not fit username requirements
         if (!sanitizer.username(formData.username)) {
-            // Return appropriate response object
+            // End action
             return {
                 status: 422,
-                errors: {username: "Invalid username"},
-                notice
+                errors: { username: "Invalid username" }
             }
         }
+
 
         // If `formData.username` is current username
         if (user.username === formData.username) {
-            // Return appropriate response object
+            // End action
             return {
-                status: 200,
-                errors,
-                notice
+                status: 200
             }
         }
 
-        // Update User entry in db
+
+        // Update `User.username` in db for current user
         try {
             await prismaClient.User.update({
-                // Set filter fields
+                // Set field filters
                 where: {
                     id:  user.id
                 },
-                // Set update fields
+                // Set field data
                 data: {
                     username: formData.username
                 }
             })
-        } catch (err) {
-            // Catch errors
-            switch (err.code) {
-                // Match error code to appropriate error message
+
+        // Catch errors
+        } catch (error) {
+            // Match error code
+            switch (error.code) {
+                // Code for prisma unique constraint failing
                 case "P2002":
                     errors.username = "Username taken"
                     break
+
                 default:
-                    console.error("Error at settings/+page.server.js")
-                    console.error(err)
-                    errors.server = "Unable to change information"
+                    // Log error details
+                    logError({
+                        filepath: "src/routes/(main)/(private)/(user)/settings/+page.server.js",
+                        message: "Error while updating username for User entry in db",
+                        arguments: {
+                            username: formData.username
+                        },
+                        error
+                    })
+
                     notice = "We couldn't update your username, try again later..."
-                    break
             }
-            // Return appropriate response object if User entry cannot be updated
+
+            // End action
             return {
                 status: 503,
                 errors,
@@ -97,63 +103,64 @@ export const actions = {
             }
         }
 
-        // Return appropriate response object if no errors
+
+        // End action
         return {
             status: 200,
-            errors,
             notice: "Successfully updated your username!"
         }
     },
+
+
     // MARK: Email
     email: async ({ request, locals }) => {
         // Variables to hold error information and set notice message
         let errors = {}
         let notice
 
+
         // Get `user` object from locals
         const { user } = locals
 
-        // If `user` is undefined
+        // If `user` is `undefined`
         if (!user) {
-            // Return appropriate response object
+            // End action
             return {
-                status: 401,
-                errors: {server: "Client not logged in"},
-                notice
+                status: 401
             }
         }
+
 
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
         
         // If `formData.email` does not fit email requirements
         if (!sanitizer.email(formData.email)) {
-            // Return appropriate response object
+            // End action
             return {
                 status: 422,
-                errors: {email: "Invalid email"},
-                notice
+                errors: { email: "Invalid email" }
             }
         }
+
 
         // If `formData.email` is current email
         if (user.email.address === formData.email) {
-            // Return appropriate response object
+            // End action
             return {
-                status: 200,
-                errors,
-                notice
+                status: 200
             }
         }
 
-        // Update User entry in db
+
+        // Update `User.email.address` in db for current user
         try {
             let dbResponse = await prismaClient.User.update({
-                // Set filter fields
+                // Set field filters
                 where: {
                     id:  user.id
                 },
-                // Set update fields
+                // Set field data
                 data: {
                     email: {
                         update: {
@@ -164,7 +171,7 @@ export const actions = {
                         }
                     }
                 },
-                // Set return fields
+                // Set fields to return
                 select: {
                     email: {
                         select: {
@@ -174,30 +181,41 @@ export const actions = {
                     }
                 }
             })
-            // If `dbResponse` is not undefined
+            
+            // If `dbResponse` is not `undefined`
             if (dbResponse) {
-                // Get `email` object
                 let { email } = dbResponse
+
                 // Send email with link to verify updated email
                 mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             } else {
                 throw new Error()
             }
-        } catch (err) {
-            // Catch errors
-            switch (err.code) {
-                // Match error code to appropriate error message
+        
+        // Catch errors
+        } catch (error) {
+            // Match error code
+            switch (error.code) {
+                // Code for prisma unique constraint failing
                 case "P2002":
                     errors.email = "Email taken"
                     break
+
                 default:
-                    console.error("Error at settings/+page.server.js")
-                    console.error(err)
-                    errors.server = "Unable to change information"
+                    // Log error details
+                    logError({
+                        filepath: "src/routes/(main)/(private)/(user)/settings/+page.server.js",
+                        message: "Error while updating email address for User entry in db",
+                        arguments: {
+                            emailAddress: formData.email
+                        },
+                        error
+                    })
+
                     notice = "We couldn't update your email address, try again later..."
-                    break
             }
-            // Return appropriate response object if User entry cannot be updated
+
+            // End action
             return {
                 status: 503,
                 errors,
@@ -205,65 +223,68 @@ export const actions = {
             }
         }
 
-        // Return appropriate response object if no errors
+
+        // End action
         return {
             status: 200,
-            errors,
             notice: "Successfully updated your email address!"
         }
     },
+
+
     // MARK: Password
     password: async ({ request, locals }) => {
         // Variables to hold error information and set notice message
         let errors = {}
         let notice
 
+
         // Get `user` object from locals
         const { user } = locals
 
-        // If `user` is undefined
+        // If `user` is `undefined`
         if (!user) {
-            // Return appropriate response object
+            // End action
             return {
-                status: 401,
-                errors: {server: "Client not logged in"},
-                notice
+                status: 401
             }
         }
+
 
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
         
-        // If `formData.password` / `formData.newPassword` do not fit password requirements
+        // If `formData.password` does not fit password requirements
         if (!sanitizer.password(formData.password)) {
             errors.password = "Invalid password"
         }
+        // If `formData.newPassword` does not fit password requirements
         if (!sanitizer.password(formData.newPassword)) {
             errors.newPassword = "Invalid password"
         }
 
         // If form inputs have failed sanitization checks
-        if (formHasErrors(errors)) {
-            // Return appropriate response object
+        if (Object.keys(errors).length > 0) {
+            // End action
             return {
                 status: 422,
-                errors,
-                notice
+                errors
             }
         }
+
 
         // Check if password is correct
         const correctPassword = await stringHasher.verify(user.password.hash, formData.password)
 
         // If password is incorrect
         if (!correctPassword) {
-            // Return appropriate response object
+            // End action
             return {
                 status: 422,
-                errors: {password: "Password incorrect"},
-                notice
+                errors: { password: "Password incorrect" }
             }
         }
+
 
         // Check `formData.password` is different from `formData.newPassword`
         if (formData.password === formData.newPassword) {
@@ -272,19 +293,19 @@ export const actions = {
                 errors: {
                     password: "Must not match",
                     newPassword: "Must not match"
-                },
-                notice
+                }
             }
         }
 
-        // Update User entry in db
+
+        // Update `User.password.hash` in db for current user
         try {
             await prismaClient.User.update({
-                // Set filter fields
+                // Set field filters
                 where: {
                     id: user.id
                 },
-                // Set update fields
+                // Set field data
                 data: {
                     password: {
                         update: {
@@ -293,28 +314,30 @@ export const actions = {
                     }
                 }
             })
-        } catch (err) {
-            // Catch errors
-            switch (err.code) {
-                // Match error code to appropriate error message
-                default:
-                    console.error("Error at settings/+page.server.js")
-                    console.error(err)
-                    errors.server = "Unable to change information"
-                    break
-            }
-            // Return appropriate response object if User entry cannot be updated
+
+        // Catch errors
+        } catch (error) {
+            // Log error details
+            logError({
+                filepath: "src/routes/(main)/(private)/(user)/settings/+page.server.js",
+                message: "Error while updating password hash for User entry in db",
+                arguments: {
+                    passwordHash: await stringHasher.hash(formData.newPassword)
+                },
+                error
+            })
+
+            // End action
             return {
                 status: 503,
-                errors,
                 notice: "We couldn't update your password, try again later..."
             }
         }
 
-        // Return appropriate response object if no errors
+
+        // End action
         return {
             status: 200,
-            errors,
             notice: "Successfully updated your password!"
         }
     }

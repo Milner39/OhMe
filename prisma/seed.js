@@ -1,5 +1,6 @@
-// Import prisma client instance to modify db
+// Import prisma client instance to interact with db
 import { client as prismaClient } from "../src/lib/server/prisma.js"
+
 
 // Define test data
 const usernames = [
@@ -19,6 +20,7 @@ const usernames = [
     "Tarika",
     "Toni"
 ]
+
 
 // Loop over test data creating users
 for (const username of usernames) {
@@ -40,12 +42,17 @@ for (const username of usernames) {
                 }
             }
         })
-    } catch (err) {
+    
+    // Catch errors
+    } catch (error) {
         // Continue to next username if username taken
-        if (err.code === "P2002") {
+        if (error.code === "P2002") {
             continue
+        } else {
+            throw error
         }
     }
 }
+
 
 // Run with `npx prisma db seed`

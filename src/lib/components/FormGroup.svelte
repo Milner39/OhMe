@@ -50,7 +50,7 @@
 
 <!-- Create a form for every item in `forms` -->
 {#each forms as form, i}
-    <!-- Bind form to `formElements[i]` so it can be accesed by the script -->
+    <!-- Bind form to `formElements[i]` so it can be accessed by the script -->
     <form
         {...form.attributes} 
         bind:this={formElements[i]} 
@@ -66,7 +66,7 @@
                     style="width: {labelWidth}px" 
                     for={input.id}
                 >
-                    <!-- Bind h6 to `labelTexts[i][j]` so it can be accesed by the script -->
+                    <!-- Bind h6 to `labelTexts[i][j]` so it can be accessed by the script -->
                     <h6 bind:this={labelTexts[i][j]}>
                         {input.label?.text}
                     </h6>
@@ -123,7 +123,7 @@
                 max-width: 40ch;
                 min-width: 15ch;
                 // Inputs have a default "size" property that gives it a width of ~100px
-                // It must be overriden by setting a width
+                // It must be overridden by setting a width
                 width: 0;
             }
         }

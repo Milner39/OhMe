@@ -7,7 +7,7 @@
     // The html element that will scroll
     let scroller
 
-    // The scroll position messured in px, starting at 0
+    // The scroll position measured in px, starting at 0
     let scroll = 0
 
     // Define function to scroll across div
@@ -47,7 +47,7 @@
     })
 </script>
 
-<!-- Bind div to `scroller` so it can be accesed by the script -->
+<!-- Bind div to `scroller` so it can be accessed by the script -->
 <div class="scroller" bind:this={scroller}>
     <!-- Children go here -->
     <slot/>

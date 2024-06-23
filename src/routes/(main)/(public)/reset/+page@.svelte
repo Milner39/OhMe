@@ -24,6 +24,11 @@
     //  before the component markup is rendered
     //  whenever the values that they depend on have changed."
 
+    // https://kit.svelte.dev/docs/load#$page-data
+    // "...has access to its own data plus all the data from its parents."
+    // Get data from load functions
+    $: data = $page.data
+
     // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
     // "...the action can respond with data that will be available through the form property"
     // Get data returned from form actions
@@ -32,17 +37,17 @@
 </script>
 
 <div class="page">
-    {#await $page.data.streamed}
+    {#await data.streamed}
         <div class="loading">
             <LoadingAnimation/>
         </div>
-    {:then data} 
+    {:then streamed} 
         <div class="block loaded" class:valid={form?.status === 200}>
             {#if form?.status === 200}
                 <Checkmark/>
                 <h4 class="title">Password has been reset</h4>
                 <a class="button-pill" href="/"><h5>Return Home</h5></a>
-            {:else if data.status === 200}
+            {:else if streamed.status === 200}
                 <h4 class="title">Reset Your Password</h4>
                 <form method="POST" use:enhance>
                     <div>
@@ -54,19 +59,9 @@
                     </div>
                     <button class="button-pill" type="submit"><h6>Submit</h6></button>
                 </form>
-            {:else if form?.status !== 200}
+            {:else}
                 <Close/>
-                {#if data.status === 400}
-                    <h5>Invalid reset request</h5>
-                {:else if data.status === 401}
-                    <h5>Reset code expired</h5>
-                {:else if data.status === 422}
-                    <h5>Incorrect reset code</h5>
-                {:else if data.status === 503}
-                    <h5>Failed to fetch from database</h5>
-                {:else}
-                    <h5>Something went wrong</h5>
-                {/if}
+                <h5>{streamed.errors?.client || "Something went wrong, try again later..."}</h5>
                 <a class="button-pill" href="/"><h5>Return Home</h5></a>
             {/if}
         </div>

@@ -1,53 +1,51 @@
-// Import prisma client instance to modify db
+// Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
+
+// Import sanitizer to ensure all user inputs are valid
+import { sanitizer } from "$lib/server/sanitize.js"
+
+// Import error logger to record error details
+import { logError } from "$lib/server/errorLogger"
 
 // Import settings
 import { settings }  from "$lib/settings"
 
-// UPDATE: Streaming promises do not work on safari
-// This seems like a sveltekit issue: https://github.com/sveltejs/kit/issues/10315
 
+// MARK: Load
 // https://kit.svelte.dev/docs/load#page-data
 // Define load function
 export const load = async ({ url }) => {
-
-    // https://kit.svelte.dev/docs/web-standards#url-apis
-    // Get URL parameters
-    const userId = url.searchParams.get("user")
-    const verifyCode = url.searchParams.get("code")
-
     // https://kit.svelte.dev/docs/load#streaming-with-promises
     // Wrap main script in a function so it can be streamed as a promise
     const verify = async () => {
-        ////////                                                                      ////////
-        // Not needed, just showcases loading animation                                     //
-        // Cannot include due to safari not supporting the current promise streaming method //
-        // await new Promise(resolve => setTimeout(resolve, 2500))                          //
-        ////////                                                                      ////////
+        // Get URL parameters
+        const userId = url.searchParams.get("user")
+        const verifyCode = url.searchParams.get("code")
 
-        // Variables to hold error information
-        let errors = {}
 
         // If url does not have both search params
         if (!userId || !verifyCode) {
-            // Return appropriate response object
+            // End function
             return {
                 status: 400,
-                errors: { client: "Missing URL parameters" }
+                errors: { client: "This is not a valid verification link..." }
             }
         }
 
-        // Get User entry to have email verified
+        // TODO: sanitize url params
+
+
+        // Get `User` entry to have email verified
         try {
             let dbResponse = await prismaClient.User.findUnique({
-                // Set filter fields
+                // Set field filters
                 where: {
                     id: userId,
                     email: {
                         verifyCode: verifyCode
                     }
                 },
-                // Set return fields
+                // Set fields to return
                 select: {
                     email: {
                         select: {
@@ -57,66 +55,72 @@ export const load = async ({ url }) => {
                     }
                 }
             })
-            // If `dbResponse` is not undefined
+
+            // If `dbResponse` is not `undefined`
             if (dbResponse) {
-                // Get data from object
                 var { email } = dbResponse
+            } else {
+                // End function
+                return {
+                    status: 422,
+                    errors: { client: "Incorrect verification code..." }
+                }
             }
-        } catch (err) {
-            // Catch errors
-            switch (err.code) {
-                // Match error code to appropriate error message
-                default:
-                    console.error("Error at verify/+page.server.js")
-                    console.error(err)
-                    errors.server = "Unable to verify address"
-                    break
-            }
-            // Return appropriate response object if User entry cannot be updated
+
+        // Catch errors
+        } catch (error) {
+            // Log error details
+            logError({
+                filepath: "src/routes/(main)/(public)/verify/+page.server.js",
+                message: "Error while fetching User entry from db using user id and verification code from url param",
+                arguments: {
+                    userId,
+                    verifyCode
+                },
+                error
+            })
+
+            // End function
             return {
                 status: 503,
-                errors,
+                errors: { client: "Something went wrong, try again later..."},
             }
         }
 
-        // If `email` is undefined
-        if (!email) {
-            // Return appropriate response object
-            return {
-                status: 422,
-                errors: { client: "Invalid URL parameters" }
-            }
-        }
 
         // If email is already verified
         if (email.verified) {
+            // End function
             return {
-                // Return appropriate response object
                 status: 409,
-                errors
+                errors: { client: "Your email address if already verified..." }
             }
         }
 
-        // Get the time the last email verify code was sent
+
+        // Get the time the last email verification code was sent
         const { codeSentAt } = email
-        
-        // If last link was sent more than `email.duration` ago
-        if (!codeSentAt || codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.email.duration) <= new Date()) {
-            // Return appropriate response object
+        // If last link was sent more than set number of hours ago
+        if (!codeSentAt || codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.email.duration) < new Date()) {
+            // End function
             return {
                 status: 401,
-                errors: { client: "Verification code expired" }
+                errors: { client: "Verification code expired..." }
             }
         }
 
-        // Update user entry in db
+
+        // Update `User` entry in db
         try {
             await prismaClient.User.update({
-                // Set filter fields
+                // Set field filters
                 where: {
                     id: userId,
+                    email: {
+                        verifyCode: verifyCode
+                    }
                 },
-                // Set update fields
+                // Set field data
                 data: {
                     email: {
                         update: {
@@ -127,31 +131,37 @@ export const load = async ({ url }) => {
                     }
                 }
             })
-        } catch (err) {
-            // Catch errors
-            switch (err.code) {
-                // Match error code to appropriate error message
-                default:
-                    console.error("Error at verify/+page.server.js")
-                    console.error(err)
-                    errors.server = "Unable to verify address"
-                    break
-            }
-            // Return appropriate response object if User entry cannot be updated
+
+        // Catch errors
+        } catch (error) {
+            // Log error details
+            logError({
+                filepath: "src/routes/(main)/(public)/verify/+page.server.js",
+                message: "Error while updating verified status to true for User entry in db",
+                arguments: {
+                    userId,
+                    verifyCode
+                },
+                error
+            })
+
+            // End function
             return {
                 status: 503,
-                errors,
+                errors: { client: "Something went wrong, try again later..." }
             }
         }
 
-        // Return appropriate response object if no errors
+
+        // End function
         return {
-            status: 200,
-            errors: {}
+            status: 200
         }
     }
 
+
+    // End load
     return {
-        streamed: verify()
+        streamed: verify(url)
     }
 }

@@ -1,46 +1,48 @@
-// Import prisma client instance to modify db
-import { client as prismaClient } from "$lib/server/prisma"
-
+// MARK: Load
 // https://kit.svelte.dev/docs/load#page-data
 // Define load function
 export const load = async ({ locals }) => {
-    // MARK: Load
     // Get `user` object form locals
     const { user } = locals
 
-    // If `user` is undefined
+    // If `user` is `undefined`
     if (!user) {
+        // End load
         return
     }
 
-    // Initialize object to hold usernames and friend status
-    const friends = {}
+    // IMPROVE: stop users with unverified email making requests
 
-    // Set all of the User entries that the client has friended
-    for (const { recipientUsername } of user.friended) {
-        // Set default values if `friends[recipientUsername]` is undefined
-        friends[recipientUsername] ??= {
+
+    // Define object to hold usernames and friend status
+    const userFrRqs = {}
+
+    // Set all of the `User`s that the client has friended
+    for (const { recipientUsername } of user.frRqSent) {
+        // Set default values if key is undefined
+        userFrRqs[recipientUsername] ??= {
             sent: false,
             received: false
         }
-        friends[recipientUsername].sent = true
+        userFrRqs[recipientUsername].sent = true
     }
-    // Set all of the User entries that have friended the client
-    for (const { senderUsername } of user.friendOf) {
-        // Set default values if `friends[senderUsername]` is undefined
-        friends[senderUsername] ??= {
+    // Set all of the `User`s that have friended the client
+    for (const { senderUsername } of user.frRqReceived) {
+        // Set default values if key is undefined
+        userFrRqs[senderUsername] ??= {
             sent: false,
             received: false
         }
-        friends[senderUsername].received = true 
+        userFrRqs[senderUsername].received = true 
     }
+
 
     // Variables to store number of pending friend requests
     let pendingSent = 0
     let pendingReceived = 0
 
     // Use the status of friend requests to increment pending variables
-    for (const status of Object.values(friends)) {
+    for (const status of Object.values(userFrRqs)) {
         switch (`${status.sent}-${status.received}`) {
             // If a request has been sent but has not been received
             case "true-false":
@@ -53,223 +55,246 @@ export const load = async ({ locals }) => {
         }
     }
 
-    // Return `friendRequests` object
+
+    // Return friend request data
+    // End load
     return { 
         friendRequests: {
-            users: friends,
+            users: userFrRqs,
             pendingSent,
             pendingReceived
         } 
     }
 }
 
+
+
+
+
+// Import prisma client instance to interact with db
+import { client as prismaClient } from "$lib/server/prisma"
+
+// Import error logger to record error details
+import { logError } from "$lib/server/errorLogger"
+
+
 // https://kit.svelte.dev/docs/form-actions
 // "A +page.server.js file can export actions, which allow you to POST data to the server using the <form> element."
 // Define actions
 export const actions = {
-    // MARK: Friend
-    friend: async ({ request, locals }) => {
-        // Variables to hold error information and set notice message
-        let errors = {}
-        let notice
-        
-        // IMPROVE: stop users with unverified email making requests
-        
+    // MARK: Send
+    sendFriendRequest: async ({ request, locals }) => {
         // Get `user` object from locals
         const { user } = locals
 
-        // If `user` is undefined
+        // If `user` is `undefined`
         if (!user) {
-            // Return appropriate response object
+            // End action
             return {
                 status: 401,
-                errors: {server: "Client not logged in"},
-                notice
             }
         }
+
+        // IMPROVE: stop users with unverified email making requests
+
 
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
         // TODO: sanitize username
 
-        // Get User entry to friend
+
+        // Get id of `User` entry to send friend request
         try {
             let dbResponse = await prismaClient.User.findUnique({
-                // Set filter fields
+                // Set field filters
                 where: {
                     username: formData.username
                 },
-                // Set return fields
+                // Set fields to return
                 select: {
                     id: true,
                 }
             })
-            // If `dbResponse` is not undefined
+
+            // If `dbResponse` is not `undefined`
             if (dbResponse) {
-                // Get data from object
-                var friend = dbResponse
+                var recipient = dbResponse
             } else {
                 throw new Error()
             }
-        } catch (err) {
-            // Catch errors
-            switch (err.code) {
-                // Match error code to appropriate error message
-                default:
-                    console.error("Error at friends/+page.server.js")
-                    console.error(err)
-                    errors.server = "Unable to get user"
-                    break
-            }
-            // Return appropriate response object if User entry cannot be fetched
+
+        // Catch errors
+        } catch (error) {
+            // Log error details
+            logError({
+                filepath: "src/routes/(main)/(private)/(user)/friends/+page.server.js",
+                message: "Error while fetching User entry from db using form-submitted username",
+                arguments: {
+                    username: formData.username
+                },
+                error
+            })
+
+            // End action
             return {
                 status: 503,
-                errors,
-                notice: "We couldn't add your friend, try again later..."
+                notice: "We couldn't send a friend request, try again later..."
             }
         }
 
-        // Update User entry in db
+
+        // Create `FriendRequest` entry connected to two `User`s in db
         try {
             await prismaClient.User.update({
-                // Set filter fields
+                // Set field filters
                 where: {
                     id: user.id
                 },
-                // Set update fields
+                // Set field data
                 data: {
-                    friended : {
+                    frRqSent : {
                         create: {
                             recipient: {
                                 connect: {
-                                    id: friend.id
+                                    id: recipient.id
                                 }
                             }
                         }
                     }
                 }
             })
-        } catch (err) {
-            // Catch errors
-            switch (err.code) {
-                // Match error code to appropriate error message
-                default:
-                    console.error("Error at friends/+page.server.js")
-                    console.error(err)
-                    errors.server = "Unable to friend user"
-                    break
-            }
-            // Return appropriate response object if User entry cannot be updated
+        
+        // Catch errors
+        } catch (error) {
+            // Log error details
+            logError({
+                filepath: "src/routes/(main)/(private)/(user)/friends/+page.server.js",
+                message: "Error while creating FriendRequest entry in db",
+                arguments: {
+                    senderId: user.id,
+                    recipientId: recipient.id
+                },
+                error
+            })
+
+            // End action
             return {
                 status: 503,
-                errors,
-                notice: "We couldn't add your friend, try again later..."
+                notice: "We couldn't send a friend request, try again later..."
             }
         }
 
-        // Return appropriate response object if no errors
+
+        // End action
         return {
             status: 200,
-            errors,
             notice: "Successfully friended user!"
         }
     },
-    // MARK: Unfriend
-    unfriend: async ({ request, locals }) => {
-        // Variables to hold error information and set notice message
-        let errors = {}
-        let notice
-        
+
+
+    // MARK: Cancel
+    cancelFriendRequest: async ({ request, locals }) => {
         // Get `user` object from locals
         const { user } = locals
 
-        // If `user` is undefined
+        // If `user` is `undefined`
         if (!user) {
-            // Return appropriate response object
+            // End action
             return {
                 status: 401,
-                errors: {server: "Client not logged in"},
-                notice
             }
         }
+
+        // IMPROVE: stop users with unverified email making requests
+
 
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
         // TODO: sanitize username
 
-        // Get User entry to unfriend
+
+        // Get id of `User` entry to cancel friend request
         try {
             let dbResponse = await prismaClient.User.findUnique({
-                // Set filter fields
+                // Set field filters
                 where: {
                     username: formData.username
                 },
-                // Set return fields
+                // Set fields to return
                 select: {
                     id: true,
                 }
             })
-            // If `dbResponse` is not undefined
+
+            // If `dbResponse` is not `undefined`
             if (dbResponse) {
-                // Get data from object
-                var friend = dbResponse
+                var recipient = dbResponse
             } else {
                 throw new Error()
             }
-        } catch (err) {
-            // Catch errors
-            switch (err.code) {
-                // Match error code to appropriate error message
-                default:
-                    console.error("Error at friends/+page.server.js")
-                    console.error(err)
-                    errors.server = "Unable to get user"
-                    break
-            }
-            // Return appropriate response object if User entry cannot be fetched
+
+        // Catch errors
+        } catch (error) {
+            // Log error details
+            logError({
+                filepath: "src/routes/(main)/(private)/(user)/friends/+page.server.js",
+                message: "Error while fetching User entry from db using form-submitted username",
+                arguments: {
+                    username: formData.username
+                },
+                error
+            })
+
+            // End action
             return {
                 status: 503,
-                errors,
-                notice: "We couldn't unfriend that user, try again later..."
+                notice: "We couldn't cancel a friend request, try again later..."
             }
         }
 
-        // Delete Friends entry in db
+        // Delete `FriendRequest` entry in db
         try {
-            await prismaClient.Friends.delete({
-                // Set filter fields
+            await prismaClient.FriendRequest.delete({
+                // Set field filters
                 where: {
                     users: {
                         senderId: user.id,
-                        recipientId: friend.id
+                        recipientId: recipient.id
                     }
-                },
+                }
             })
-        } catch (err) {
-            // Catch errors
-            switch (err.code) {
-                // Match error code to appropriate error message
-                default:
-                    console.error("Error at friends/+page.server.js")
-                    console.error(err)
-                    errors.server = "Unable to unfriend user"
-                    break
-            }
-            // Return appropriate response object if User entry cannot be fetched
+
+        // Catch errors
+        } catch (error) {
+            // Log error details
+            logError({
+                filepath: "src/routes/(main)/(private)/(user)/friends/+page.server.js",
+                message: "Error while deleting FriendRequest entry in db",
+                arguments: {
+                    senderId: user.id,
+                    recipientId: recipient.id
+                },
+                error
+            })
+
+            // End action
             return {
                 status: 503,
-                errors,
-                notice: "We couldn't unfriend that user, try again later..."
+                notice: "We couldn't cancel a friend request, try again later..."
             }
         }
 
-        // Return appropriate response object if no errors
+        // End action
         return {
             status: 200,
-            errors,
             notice: "Successfully unfriended user!"
         }
     }
+
+
+    // MARK: Decline
+    // TODO: Make a decline friend request action
 }

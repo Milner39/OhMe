@@ -9,6 +9,6 @@ export const load = async ({ url }) => {
     // Set `notice` based on URL parameter
     const notice = notices[url.searchParams.get("protected")] || null
 
-    // Return `notice` 
+    // Return the `notice` 
     return { notice }
 }

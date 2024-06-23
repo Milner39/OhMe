@@ -1,4 +1,4 @@
-// Settings to control values accross the app
+// Settings to control values across the app
 export const settings = {
     urls: {
         login: "/login"

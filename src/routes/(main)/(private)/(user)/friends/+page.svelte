@@ -54,7 +54,7 @@
     <div class="widthCtrl">
         <div class="searchBar">
             <Search/>
-            <!-- Bind value to `search.value` so it can be accesed by the script -->
+            <!-- Bind value to `search.value` so it can be accessed by the script -->
             <input class="search" name="search" placeholder="Search for friends..."
                 bind:value={search.value}
                 on:input={async () => {
@@ -108,7 +108,7 @@
                             </div>
                             <!-- Display if client has not sent friend request to this user  -->
                             {#if !status.sent}
-                                <form method="POST" action="?/friend"
+                                <form method="POST" action="?/sendFriendRequest"
                                     use:enhance={({ formData }) => {
                                         // Add username to `formData`
                                         formData.append("username", username)
@@ -130,7 +130,7 @@
                                 </form>
                             <!-- Display if client has sent friend request to this user  -->
                             {:else}
-                                <form method="POST" action="?/unfriend"
+                                <form method="POST" action="?/cancelFriendRequest"
                                     use:enhance={({ formData }) => {
                                         // Add username to `formData`
                                         formData.append("username", username)
@@ -187,7 +187,7 @@
                 <div class="block users">
                     <!-- Create a user for every item in `friendRequests.users` -->
                     {#each Object.entries(data.friendRequests.users) as [username, status]}
-                        <!-- Display if client has not sent, but has recieved friend request from this user -->
+                        <!-- Display if client has not sent, but has received friend request from this user -->
                         {#if !status.sent && status.received}
                             <div class="user">
                                 <div class="profile">
@@ -196,7 +196,7 @@
                                 <button class="button-slim button-svg" type="submit">
                                     <Close/>
                                 </button>
-                                <form method="POST" action="?/friend"
+                                <form method="POST" action="?/sendFriendRequest"
                                     use:enhance={({ formData }) => {
                                         // Add username to `formData`
                                         formData.append("username", username)
@@ -206,7 +206,7 @@
                                             if (result.data.status === 200) {
                                                 // Update search results to reflect change
                                                 const user = search.result?.users[username]
-                                                if (user) user.sent = true
+                                                if (user) search.result.users[username].sent = true
                                             }
                                             await update()
                                         }
@@ -231,13 +231,13 @@
                 <div class="block users">
                     <!-- Create a user for every item in `friendRequests.users` -->
                     {#each Object.entries(data.friendRequests.users) as [username, status]}
-                        <!-- Display if client has sent, but has not recieved friend request from this user -->
+                        <!-- Display if client has sent, but has not received friend request from this user -->
                         {#if status.sent && !status.received}
                             <div class="user">
                                 <div class="profile">
                                     <h6>{username}</h6>
                                 </div>
-                                <form method="POST" action="?/unfriend"
+                                <form method="POST" action="?/cancelFriendRequest"
                                     use:enhance={({ formData }) => {
                                         // Add username to `formData`
                                         formData.append("username", username)
@@ -247,7 +247,7 @@
                                             if (result.data.status === 200) {
                                                 // Update search results to reflect change
                                                 const user = search.result?.users[username]
-                                                if (user) user.sent = false
+                                                if (user) search.result.users[username].sent = false
                                             }
                                             await update()
                                         }
