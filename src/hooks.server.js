@@ -36,11 +36,11 @@ import { logError } from "$lib/server/errorLogger"
 // Define function to delete auth cookies
 const deleteAuthCookies = async (cookies) => {
     // Delete client's cookies
-    await cookies.delete("user", {
+    cookies.delete("user", {
         path: "/",
         secure: false
     })
-    await cookies.delete("session", {
+    cookies.delete("session", {
         path: "/",
         secure: false
     })
