@@ -38,14 +38,14 @@ import { settings }  from "$lib/settings"
 // Define function to set auth cookies
 const setAuthCookies = async (cookies, userId, sessionId) => {
     // Set client's cookies
-    await cookies.set("user", userId, {
+    cookies.set("user", userId, {
         path: "/",
         maxAge: 1000000000,  
         httpOnly: true,
         sameSite: "strict",
         secure: false
     })
-    await cookies.set("session", sessionId, {
+    cookies.set("session", sessionId, {
         path: "/",
         maxAge: 1000000000,
         httpOnly: true,
