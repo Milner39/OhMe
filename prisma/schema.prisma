@@ -24,20 +24,20 @@ datasource db {
 // Define database "Models" (Tables)
 model User {
     // Key
-    id               String       @id @unique @default(uuid())
+    id              String             @id @unique @default(uuid())
 
     // User information
-    username         String       @unique   
-    web3Wallet       String?     
+    username        String             @unique   
+    web3Wallet      String?     
 
     // Relations
-    email            Email?       
-    password         Password?      
+    email           Email?       
+    password        Password?      
 
-    sessions         Session[]
+    sessions        Session[]
 
-    frRqSent         FriendRequest[]    @relation("sent")  
-    frRqReceived     FriendRequest[]    @relation("received")
+    frRqSent        FriendRequest[]    @relation("sent")  
+    frRqReceived    FriendRequest[]    @relation("received")
 
     // Attributes
     @@unique([id, username])
