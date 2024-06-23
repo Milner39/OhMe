@@ -19,7 +19,7 @@ export const POST = async ({ request, locals }) => {
     // If `user` is `undefined`
     if (!user) {
         // End interface
-        json({ status: 401 })
+        return json({ status: 401 })
     }
 
     // IMPROVE: stop users with unverified email making requests
