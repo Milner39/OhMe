@@ -52,8 +52,8 @@ export const POST = async ({ request, locals }) => {
             // Set fields to return
             select: {
                 username: true,
-                friended: true,
-                friendOf: true
+                frRqSent: true,
+                frRqReceived: true
             }
         })
 
@@ -85,8 +85,8 @@ export const POST = async ({ request, locals }) => {
             // Set fields to return
             select: {
                 username: true,
-                friended: true,
-                friendOf: true
+                frRqSent: true,
+                frRqReceived: true
             }
         })
 
@@ -95,8 +95,8 @@ export const POST = async ({ request, locals }) => {
 
         // Structure the results with booleans to indicate which users are friends
         users = users.reduce((prev, match) => {
-            const sent = match.friendOf.some(entry => entry.senderId === user.id)
-            const received = match.friended.some(entry => entry.recipientId === user.id)
+            const sent = match.frRqReceived.some(entry => entry.senderId === user.id)
+            const received = match.frRqSent.some(entry => entry.recipientId === user.id)
             return ({...prev, [match.username]: {
                 sent,
                 received

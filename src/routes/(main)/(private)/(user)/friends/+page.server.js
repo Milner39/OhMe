@@ -15,25 +15,25 @@ export const load = async ({ locals }) => {
 
 
     // Define object to hold usernames and friend status
-    const friends = {}
+    const userFrRqs = {}
 
     // Set all of the `User`s that the client has friended
-    for (const { recipientUsername } of user.friended) {
+    for (const { recipientUsername } of user.frRqSent) {
         // Set default values if key is undefined
-        friends[recipientUsername] ??= {
+        userFrRqs[recipientUsername] ??= {
             sent: false,
             received: false
         }
-        friends[recipientUsername].sent = true
+        userFrRqs[recipientUsername].sent = true
     }
     // Set all of the `User`s that have friended the client
-    for (const { senderUsername } of user.friendOf) {
+    for (const { senderUsername } of user.frRqReceived) {
         // Set default values if key is undefined
-        friends[senderUsername] ??= {
+        userFrRqs[senderUsername] ??= {
             sent: false,
             received: false
         }
-        friends[senderUsername].received = true 
+        userFrRqs[senderUsername].received = true 
     }
 
 
@@ -42,7 +42,7 @@ export const load = async ({ locals }) => {
     let pendingReceived = 0
 
     // Use the status of friend requests to increment pending variables
-    for (const status of Object.values(friends)) {
+    for (const status of Object.values(userFrRqs)) {
         switch (`${status.sent}-${status.received}`) {
             // If a request has been sent but has not been received
             case "true-false":
@@ -60,7 +60,7 @@ export const load = async ({ locals }) => {
     // End load
     return { 
         friendRequests: {
-            users: friends,
+            users: userFrRqs,
             pendingSent,
             pendingReceived
         } 
@@ -153,7 +153,7 @@ export const actions = {
                 },
                 // Set field data
                 data: {
-                    friended : {
+                    frRqSent : {
                         create: {
                             recipient: {
                                 connect: {
@@ -257,7 +257,7 @@ export const actions = {
 
         // Delete `FriendRequest` entry in db
         try {
-            await prismaClient.Friends.delete({
+            await prismaClient.FriendRequest.delete({
                 // Set field filters
                 where: {
                     users: {

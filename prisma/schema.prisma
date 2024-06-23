@@ -14,6 +14,7 @@ datasource db {
 }
 
 
+
 // https://www.prisma.io/docs/orm/prisma-schema/data-model/models
 // "Models:
 //  Represent the entities of your application domain
@@ -23,20 +24,20 @@ datasource db {
 // Define database "Models" (Tables)
 model User {
     // Key
-    id            String       @id @unique @default(uuid())
+    id               String       @id @unique @default(uuid())
 
     // User information
-    username      String       @unique   
-    web3Wallet    String?     
+    username         String       @unique   
+    web3Wallet       String?     
 
     // Relations
-    email         Email?       
-    password      Password?      
+    email            Email?       
+    password         Password?      
 
-    sessions      Session[]
+    sessions         Session[]
 
-    friended      Friends[]    @relation("sent")  
-    friendOf      Friends[]    @relation("received")
+    frRqSent         FriendRequest[]    @relation("sent")  
+    frRqReceived     FriendRequest[]    @relation("received")
 
     // Attributes
     @@unique([id, username])
@@ -83,7 +84,8 @@ model Session {
     user         User        @relation(references: [id], fields: [userId], onDelete: Cascade, onUpdate: Cascade)
 }
 
-model Friends {
+model FriendRequest {
+    // Relations
     senderId             String
     senderUsername       String
     sender               User      @relation(name: "sent", references: [id, username], fields: [senderId, senderUsername], onDelete: Cascade, onUpdate: Cascade)

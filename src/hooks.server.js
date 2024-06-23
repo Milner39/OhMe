@@ -9,6 +9,7 @@
 
 
 
+
 // MARK: Imports
 // https://kit.svelte.dev/docs/modules#sveltejs-kit-hooks
 // "A helper function for sequencing multiple handle calls in a middleware-like manner."
@@ -86,8 +87,8 @@ const auth = async ({ event, resolve }) => {
                         email: true,
                         password: true,
                         sessions: true,
-                        friended: true,
-                        friendOf: true
+                        frRqSent: true,
+                        frRqReceived: true
                     }
                 }
             }

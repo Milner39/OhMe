@@ -37,8 +37,8 @@ const userDelete = {
         userId: true
     },
     sessions: true,
-    friended: true,
-    friendOf: true
+    frRqSent: true,
+    frRqReceived: true
 }
 
 
