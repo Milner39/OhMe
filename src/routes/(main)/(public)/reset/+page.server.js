@@ -23,7 +23,7 @@ export const load = async ({ url }) => {
     const checkCode = async (url) => {
         // Get URL parameters
         const userId = url.searchParams.get("user")
-        const resetCode = url.searchParams.get("code")                                                                  ////////
+        const resetCode = url.searchParams.get("code")
 
 
         // If url does not have both search params
