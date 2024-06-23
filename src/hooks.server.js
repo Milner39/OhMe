@@ -197,6 +197,9 @@ import { redirect } from "@sveltejs/kit"
 
 
 const privateGuard = async ({ event, resolve }) => {
+    // If the client has requested an non-existent route
+    if (!event.route.id) return await resolve(event)
+
     // Get if the route the client is requesting is in the private group
     const privateRoute = event.route.id.startsWith("/(main)/(private)/")
 
