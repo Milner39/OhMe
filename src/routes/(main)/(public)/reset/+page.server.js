@@ -1,8 +1,8 @@
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
-// Import sanitizer to ensure all user inputs are valid
-import { sanitizer } from "$lib/server/sanitize.js"
+// Import inputHandler to make sure validate and sanitize inputs
+import { inputHandler } from "$lib/server/inputHandler.js"
 
 // Import hashing functions to hash & verify hashes
 import { stringHasher } from "$lib/server/argon"
@@ -144,7 +144,7 @@ export const actions = {
         const formData = Object.fromEntries(await request.formData())
 
         // If `formData.password` does not fit password requirements
-        if (!sanitizer.password(formData.password)) {
+        if (!inputHandler.validate.password(formData.password)) {
             // End action
             return {
                 status: 422,

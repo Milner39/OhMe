@@ -19,8 +19,8 @@ export const load = async ({ url }) => {
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
-// Import sanitizer to ensure all user inputs are valid
-import { sanitizer } from "$lib/server/sanitize.js"
+// Import inputHandler to make sure validate and sanitize inputs
+import { inputHandler } from "$lib/server/inputHandler.js"
 
 // Import hashing functions to hash & verify hashes
 import { stringHasher, failHash } from "$lib/server/argon"
@@ -72,11 +72,11 @@ export const actions = {
         const formData = Object.fromEntries(await request.formData())
 
         // If `formData.email` does not fit email requirements
-        if (!sanitizer.email(formData.email)) {
+        if (!inputHandler.validate.email(formData.email)) {
             errors.email = "Invalid email"
         }
         // If `formData.password` does not fit password requirements
-        if (!sanitizer.password(formData.password)) {
+        if (!inputHandler.validate.password(formData.password)) {
             errors.password = "Invalid password"
         }
 
@@ -237,15 +237,15 @@ export const actions = {
         const formData = Object.fromEntries(await request.formData())
 
         // If `formData.username` does not fit username requirements
-        if (!sanitizer.username(formData.username)) {
+        if (!inputHandler.validate.username(formData.username)) {
             errors.username = "Invalid username"
         }
         // If `formData.email` does not fit email requirements
-        if (!sanitizer.email(formData.email)) {
+        if (!inputHandler.validate.email(formData.email)) {
             errors.email = "Invalid email"
         }
         // If `formData.password` does not fit password requirements
-        if (!sanitizer.password(formData.password)) {
+        if (!inputHandler.validate.password(formData.password)) {
             errors.password = "Invalid password"
         }
 
@@ -420,7 +420,7 @@ export const actions = {
         const formData = Object.fromEntries(await request.formData())
 
         // If `formData.email` does not fit email requirements
-        if (!sanitizer.email(formData.email)) {
+        if (!inputHandler.validate.email(formData.email)) {
             // End action
             return {
                 status: 422,
