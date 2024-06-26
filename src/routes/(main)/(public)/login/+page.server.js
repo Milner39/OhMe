@@ -71,23 +71,8 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // If `formData.email` does not fit email requirements
-        if (!inputHandler.validate.email(formData.email)) {
-            errors.email = "Invalid email"
-        }
-        // If `formData.password` does not fit password requirements
-        if (!inputHandler.validate.password(formData.password)) {
-            errors.password = "Invalid password"
-        }
-
-        // If form inputs have failed sanitization checks
-        if (Object.keys(errors).length > 0) {
-            // End action
-            return {
-                status: 422,
-                errors
-            }
-        }
+        // Do not validate form inputs as existing credentials may not conform to current validation checks
+        // However these users should still be able to log in
 
 
         // Get password hash of `User` entry to be logged into
@@ -249,7 +234,7 @@ export const actions = {
             errors.password = "Invalid password"
         }
 
-        // If form inputs have failed sanitization checks
+        // If form inputs have failed validation checks
         if (Object.keys(errors).length > 0) {
             // End action
             return {
@@ -419,14 +404,8 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // If `formData.email` does not fit email requirements
-        if (!inputHandler.validate.email(formData.email)) {
-            // End action
-            return {
-                status: 422,
-                errors: { email: "Invalid email" }
-            }
-        }
+        // Do not validate email as existing email addresses may not conform to current validation checks
+        // However these users should still be able to reset password
 
 
         // Get `User` entry to send password reset email

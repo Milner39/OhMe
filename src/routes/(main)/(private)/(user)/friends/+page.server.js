@@ -74,6 +74,9 @@ export const load = async ({ locals }) => {
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
+// Import inputHandler to make sure validate and sanitize inputs
+import { inputHandler } from "$lib/server/inputHandler.js"
+
 // Import error logger to record error details
 import { logError } from "$lib/server/errorLogger"
 
@@ -101,7 +104,8 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // TODO: sanitize username
+        // Do not validate search as existing usernames may not conform to current validation checks
+        // However these friend requests should still be able to be sent
 
 
         // Get id of `User` entry to send friend request
@@ -213,7 +217,8 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // TODO: sanitize username
+        // Do not validate search as existing usernames may not conform to current validation checks
+        // However these friend requests should still be able to be canceled
 
 
         // Get id of `User` entry to cancel friend request

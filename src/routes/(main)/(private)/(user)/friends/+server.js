@@ -1,6 +1,9 @@
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
+// Import inputHandler to make sure validate and sanitize inputs
+import { inputHandler } from "$lib/server/inputHandler.js"
+
 // Import error logger to record error details
 import { logError } from "$lib/server/errorLogger"
 
@@ -28,7 +31,8 @@ export const POST = async ({ request, locals }) => {
     // Get request data sent by client
     const { search } = await request.json()
 
-    // TODO: sanitize search
+    // Do not validate search as existing usernames may not conform to current validation checks
+    // However these users should still be able to be searched for
 
 
     // Get `User` entries which usernames contain `search`

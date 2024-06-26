@@ -254,16 +254,15 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
         
-        // If `formData.password` does not fit password requirements
-        if (!inputHandler.validate.password(formData.password)) {
-            errors.password = "Invalid password"
-        }
+        // Do not validate original password as existing passwords may not conform to current validation checks
+        // However these friend passwords should still be able to be changed
+
         // If `formData.newPassword` does not fit password requirements
         if (!inputHandler.validate.password(formData.newPassword)) {
             errors.newPassword = "Invalid password"
         }
 
-        // If form inputs have failed sanitization checks
+        // If form inputs have failed validation checks
         if (Object.keys(errors).length > 0) {
             // End action
             return {
