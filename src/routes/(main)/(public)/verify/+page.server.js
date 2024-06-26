@@ -1,7 +1,7 @@
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
-// Import inputHandler to make sure validate and sanitize inputs
+// Import inputHandler to validate and sanitize inputs
 import { inputHandler } from "$lib/server/inputHandler.js"
 
 // Import error logger to record error details
