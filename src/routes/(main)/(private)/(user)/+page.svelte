@@ -34,7 +34,7 @@
                     }
                 ]}
             />
-            <h6>Total Cashflow: <span>£241</span></h6>
+            <h6>Total Cashflow: <span class="thickFW">£241</span></h6>
         </div>
     </div>
 </div>
@@ -53,7 +53,6 @@
 
     span {
         color: var(--green);
-        font-weight: 600;
     }
 
 </style>

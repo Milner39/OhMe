@@ -66,13 +66,13 @@
             {#if data.user}
                 {#if form}
                     <Checkmark/>
-                    <h4 class="title">Success</h4>
+                    <h4 class="thickFW">Success</h4>
                     <h6>You have logged into your account. You can continue using the app as normal now.</h6>
                     <a class="button-pill" href="/">
                         <h6>Home</h6>
                     </a>
                 {:else}
-                    <h4 class="title">Logout?</h4>
+                    <h4 class="thickFW">Logout?</h4>
                     <h6>You are already logged into your account. You can logout here or continue to use the app as normal.</h6>
                     <form method="POST" action="/logout" 
                         use:enhance={() => {
@@ -86,7 +86,7 @@
                     </form>
                 {/if}
             {:else}
-                <h4 class="title">
+                <h4 class="thickFW">
                     {
                     data.mode === "login" ? "Login" :
                     data.mode === "register" ? "Register" :
@@ -184,10 +184,6 @@
         max-width: 500px;
 
         text-align: center;
-
-        >.title {
-            font-weight: 600;
-        }
 
         &.success {
             >a {

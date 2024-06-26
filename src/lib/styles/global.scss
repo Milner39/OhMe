@@ -109,6 +109,23 @@ small {
     font-size: 0.85rem;
 }
 
+.thinnerFW {
+    font-weight: 100;
+}
+.thinFW {
+    font-weight: 300;
+}
+.normalFW {
+    font-weight: 500;
+}
+.thickFW {
+    font-weight: 700;
+}
+.thickerFW {
+    font-weight: 900;
+}
+
+
 input {
     padding-top: 2px;
     padding-left: 2px;
@@ -121,7 +138,7 @@ input {
     font-family: inherit;
     color: inherit;
     font-size: 1rem;
-    font-weight: 400;
+    font-weight: 300;
 
     text-align: left;
     // Or center?
@@ -176,7 +193,7 @@ button {
 
 .button-slim {
     white-space: nowrap;
-    font-weight: 600;
+    font-weight: 700;
 
     transition: color 200ms ease-in-out;
     &:hover {
@@ -190,7 +207,7 @@ button {
 
 .button-pill {
     white-space: nowrap;
-    font-weight: 600;
+    font-weight: 700;
 
     background-color: var(--br-3);
     padding: 0.5em 0.75em;
