@@ -48,6 +48,7 @@ export const load = async ({ locals }) => {
     // Variables to store number of pending friend requests
     let pendingSent = 0
     let pendingReceived = 0
+    let friendCount = 0
 
     // Use the status of friend requests to increment pending variables
     for (const status of Object.values(userFrRqs)) {
@@ -60,6 +61,10 @@ export const load = async ({ locals }) => {
             case "false-true":
                 pendingReceived++
                 break
+            // If both users have sent friend requests to each other
+            case "true-true":
+                friendCount++
+                break
         }
     }
 
@@ -70,7 +75,8 @@ export const load = async ({ locals }) => {
         friendRequests: {
             users: userFrRqs,
             pendingSent,
-            pendingReceived
+            pendingReceived,
+            friendCount
         } 
     }
 }
