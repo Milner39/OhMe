@@ -103,7 +103,7 @@ export const POST = async ({ request, locals }) => {
         users = users.reduce((prev, match) => {
             const sent = match.frRqReceived.some(entry => entry.senderId === user.id)
             const received = match.frRqSent.some(entry => entry.recipientId === user.id)
-            return ({...prev, [match.username]: {
+            return ({...prev, [inputHandler.desanitize(match.username)]: {
                 sent,
                 received
         }})}, {})
