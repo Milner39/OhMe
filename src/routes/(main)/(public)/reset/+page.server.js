@@ -35,7 +35,14 @@ export const load = async ({ url }) => {
             }
         }
 
-        // TODO: sanitize url params
+        // If url params are not in valid format
+        if (!inputHandler.validate.uuid(userId) || !inputHandler.validate.uuid(resetCode)) {
+            // End function
+            return {
+                status: 400,
+                errors: { client: "This is not a valid reset link..." }
+            }
+        }
 
 
         // Get `User` entry to have password reset
@@ -131,13 +138,19 @@ export const actions = {
 
         // If url does not have both search params
         if (!userId || !resetCode) {
-            // End function
+            // End action
             return {
                 status: 400
             }
         }
 
-        // TODO: sanitize url params
+        // If url params are not in valid format
+        if (!inputHandler.validate.uuid(userId) || !inputHandler.validate.uuid(resetCode)) {
+            // End action
+            return {
+                status: 400
+            }
+        }
 
 
         // Get form data sent by client

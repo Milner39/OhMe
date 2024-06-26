@@ -47,7 +47,14 @@ const inputHandler = {
                 // Standard email address format
                 /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)*\.[A-Za-z]{2,}$/.test(input)
             )
-        } 
+        },
+        uuid: (input) => {
+            return (
+                typeof input === "string" &&
+                // Standard UUID format
+                /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(input)
+            )
+        }
     },
 
     // Prisma uses "Prepared statements" so input sanitation is not necessary as there is no risk of SQL injection attacks

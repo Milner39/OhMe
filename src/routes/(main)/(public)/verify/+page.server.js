@@ -32,7 +32,14 @@ export const load = async ({ url }) => {
             }
         }
 
-        // TODO: sanitize url params
+        // If url params are not in valid format
+        if (!inputHandler.validate.uuid(userId) || !inputHandler.validate.uuid(verifyCode)) {
+            // End function
+            return {
+                status: 400,
+                errors: { client: "This is not a valid verification link..." }
+            }
+        }
 
 
         // Get `User` entry to have email verified
