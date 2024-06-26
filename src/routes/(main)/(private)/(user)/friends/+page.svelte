@@ -115,7 +115,7 @@
                                         // Submit form
                                         return async ({ result, update }) => {
                                             // If success
-                                            if (result.data.status === 200) {
+                                            if (result.data?.status === 200) {
                                                 // Update search results to reflect change
                                                 search.result.users[username].sent = true
                                             }
@@ -137,7 +137,7 @@
                                         // Submit form
                                         return async ({ result, update }) => {
                                             // If success
-                                            if (result.data.status === 200) {
+                                            if (result.data?.status === 200) {
                                                 // Update search results to reflect change
                                                 search.result.users[username].sent = false
                                             }
@@ -203,7 +203,7 @@
                                         // Submit form
                                         return async ({ result, update }) => {
                                             // If success
-                                            if (result.data.status === 200) {
+                                            if (result.data?.status === 200) {
                                                 // Update search results to reflect change
                                                 const user = search.result?.users[username]
                                                 if (user) search.result.users[username].sent = true
@@ -244,7 +244,7 @@
                                         // Submit form
                                         return async ({ result, update }) => {
                                             // If success
-                                            if (result.data.status === 200) {
+                                            if (result.data?.status === 200) {
                                                 // Update search results to reflect change
                                                 const user = search.result?.users[username]
                                                 if (user) search.result.users[username].sent = false
