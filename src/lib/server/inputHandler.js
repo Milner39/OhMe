@@ -62,7 +62,6 @@ const inputHandler = {
     sanitize: (input) => {
         // Replace all special characters attacks with escape codes
         return input
-            // & is the symbol for the escape codes
             .replace(/&/g, "&amp")
             .replace(/#/g, "&hsh")
             .replace(/\$/g, "&dlr")
@@ -80,9 +79,10 @@ const inputHandler = {
             .replace(/_/g, "&uds")
             .replace(/:/g, "&fcn")
             .replace(/;/g, "&scn")
+            // & is the symbol for the escape codes
     },
 
-    translate: (sanitized) => {
+    desanitize: (sanitized) => {
         // Replace all escape codes with original characters
         return sanitized
             .replace(/&hsh/g, "#")
@@ -101,8 +101,8 @@ const inputHandler = {
             .replace(/&uds/g, "_")
             .replace(/&fcn/g, ":")
             .replace(/&scn/g, ";")
-            // & MUST come last as it is the symbol for the escape codes
             .replace(/&amp/g, "&")
+            // & MUST come last as it is the symbol for the escape codes
     }
 }
 

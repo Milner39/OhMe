@@ -49,9 +49,11 @@ export const actions = {
             }
         }
 
+        // Sanitize username
+        const sanitizedUsername = inputHandler.sanitize(formData.username)
 
-        // If `formData.username` is current username
-        if (user.username === formData.username) {
+        // If username has not changed
+        if (user.username === sanitizedUsername) {
             // End action
             return {
                 status: 200
@@ -68,7 +70,7 @@ export const actions = {
                 },
                 // Set field data
                 data: {
-                    username: formData.username
+                    username: sanitizedUsername
                 }
             })
 
@@ -143,9 +145,11 @@ export const actions = {
             }
         }
 
+        // Sanitize email
+        const sanitizedEmail = inputHandler.sanitize(formData.email.toLowerCase())
 
-        // If `formData.email` is current email
-        if (user.email.address === formData.email) {
+        // If email has not changed
+        if (user.email.address === sanitizedEmail) {
             // End action
             return {
                 status: 200
@@ -164,7 +168,7 @@ export const actions = {
                 data: {
                     email: {
                         update: {
-                            address: formData.email.toLowerCase(),
+                            address: sanitizedEmail,
                             verified: false,
                             verifyCode: crypto.randomUUID(),
                             codeSentAt: new Date()
@@ -187,6 +191,7 @@ export const actions = {
                 let { email } = dbResponse
 
                 // Send email with link to verify updated email
+                // inputHandler.desanitize(email.address)
                 mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             } else {
                 throw new Error()
@@ -234,11 +239,6 @@ export const actions = {
 
     // MARK: Password
     password: async ({ request, locals }) => {
-        // Variables to hold error information and set notice message
-        let errors = {}
-        let notice
-
-
         // Get `user` object from locals
         const { user } = locals
 
@@ -259,15 +259,10 @@ export const actions = {
 
         // If `formData.newPassword` does not fit password requirements
         if (!inputHandler.validate.password(formData.newPassword)) {
-            errors.newPassword = "Invalid password"
-        }
-
-        // If form inputs have failed validation checks
-        if (Object.keys(errors).length > 0) {
             // End action
             return {
                 status: 422,
-                errors
+                errors: { newPassword: "Invalid password" }
             }
         }
 

@@ -34,6 +34,8 @@ export const POST = async ({ request, locals }) => {
     // Do not validate search as existing usernames may not conform to current validation checks
     // However these users should still be able to be searched for
 
+    // Sanitize search
+    const sanitizedSearch = inputHandler.sanitize(search)
 
     // Get `User` entries which usernames contain `search`
     // Not including the client's username
@@ -44,7 +46,7 @@ export const POST = async ({ request, locals }) => {
             where: {
                 AND: [
                     {
-                        username: search
+                        username: sanitizedSearch
                     },
                     {
                         username: {
@@ -71,12 +73,12 @@ export const POST = async ({ request, locals }) => {
                 AND: [
                     {
                         username: {
-                            startsWith: search, 
+                            startsWith: sanitizedSearch
                         }
                     },
                     {
                         username: {
-                            not: search
+                            not: sanitizedSearch
                         }
                     },
                     {

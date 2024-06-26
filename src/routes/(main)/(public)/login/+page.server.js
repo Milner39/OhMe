@@ -81,7 +81,7 @@ export const actions = {
                 // Set field filters
                 where: {
                     email: {
-                        address: formData.email.toLowerCase()
+                        address: inputHandler.sanitize(formData.email.toLowerCase())
                     }
                 },
                 // Set fields to return
@@ -243,6 +243,10 @@ export const actions = {
             }
         }
 
+        // Sanitize username and email
+        const sanitizedUsername = inputHandler.sanitize(formData.username)
+        const sanitizedEmail = inputHandler.sanitize(formData.email.toLowerCase())
+
 
         // Get `User` entries with the same username or email from `formData`
         try {
@@ -251,11 +255,11 @@ export const actions = {
                 where: {
                     OR: [
                         {
-                            username: formData.username
+                            username: sanitizedUsername
                         },
                         {
                             email: {
-                                address: formData.email.toLowerCase()
+                                address: sanitizedEmail
                             }
                         }
                     ]
@@ -273,10 +277,10 @@ export const actions = {
 
             // Check if username or email match for each `User` entry returned
             for (const user of dbResponse) {
-                if (user.username === formData.username) {
+                if (user.username === sanitizedUsername) {
                     errors.username = "Username taken"
                 }
-                if (user.email.address === formData.email.toLowerCase()) {
+                if (user.email.address === sanitizedEmail) {
                     errors.email = "Email taken"
                 }
             }
@@ -320,10 +324,10 @@ export const actions = {
             let dbResponse = await prismaClient.User.create({
                 // Set field data
                 data: {
-                    username: formData.username,
+                    username: sanitizedUsername,
                     email: {
                         create: {
-                            address: formData.email.toLowerCase(),
+                            address: sanitizedEmail,
                             verifyCode: crypto.randomUUID(),
                             codeSentAt: new Date()
                         }
@@ -361,6 +365,7 @@ export const actions = {
                 var { sessions, email, ...user } = dbResponse
 
                 // Send email with link to verify email
+                // inputHandler.desanitize(email.address)
                 mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             } else {
                 throw new Error()
@@ -407,6 +412,9 @@ export const actions = {
         // Do not validate email as existing email addresses may not conform to current validation checks
         // However these users should still be able to reset password
 
+        // Sanitize email
+        const sanitizedEmail = inputHandler.sanitize(formData.email.toLowerCase())
+
 
         // Get `User` entry to send password reset email
         try {
@@ -414,7 +422,7 @@ export const actions = {
                 // Set field filters
                 where: {
                     email: {
-                        address: formData.email.toLowerCase()
+                        address: sanitizedEmail
                     }
                 },
                 // Set fields to return
@@ -490,6 +498,11 @@ export const actions = {
                 },
                 // Set fields to return
                 select: {
+                    email: {
+                        select: {
+                            address: true
+                        }
+                    },
                     password: {
                         select: {
                             resetCode: true
@@ -500,9 +513,10 @@ export const actions = {
 
             // If `dbResponse` is not `undefined`
             if (dbResponse) {
-                let { password } = dbResponse
+                let { email, password } = dbResponse
 
                 // Send email with link to reset password
+                // inputHandler.desanitize(email.address)
                 mail.sendReset("finn.milner@outlook.com", user.id, password.resetCode)
             } else {
                 throw new Error()

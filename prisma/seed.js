@@ -1,6 +1,9 @@
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "../src/lib/server/prisma.js"
 
+// Import inputHandler to validate and sanitize inputs
+import { inputHandler } from "../src/lib/server/inputHandler.js"
+
 
 // Define test data
 const usernames = [
@@ -31,7 +34,7 @@ for (const username of usernames) {
                 username,
                 email: {
                     create: {
-                        address: `${username}@example.com`
+                        address: inputHandler.sanitize(`${username}@example.com`)
                     }
                 },
                 password: {

@@ -1,3 +1,7 @@
+// Import inputHandler to validate and sanitize inputs
+import { inputHandler } from "$lib/server/inputHandler.js"
+
+
 // MARK: Load
 // https://kit.svelte.dev/docs/load#page-data
 // Define load function
@@ -19,21 +23,25 @@ export const load = async ({ locals }) => {
 
     // Set all of the `User`s that the client has friended
     for (const { recipientUsername } of user.frRqSent) {
+        // Get the username before sanitization
+        const desanitizedUsername = inputHandler.desanitize(recipientUsername)
         // Set default values if key is undefined
-        userFrRqs[recipientUsername] ??= {
+        userFrRqs[desanitizedUsername] ??= {
             sent: false,
             received: false
         }
-        userFrRqs[recipientUsername].sent = true
+        userFrRqs[desanitizedUsername].sent = true
     }
     // Set all of the `User`s that have friended the client
     for (const { senderUsername } of user.frRqReceived) {
+        // Get the username before sanitization
+        const desanitizedUsername = inputHandler.desanitize(senderUsername)
         // Set default values if key is undefined
-        userFrRqs[senderUsername] ??= {
+        userFrRqs[desanitizedUsername] ??= {
             sent: false,
             received: false
         }
-        userFrRqs[senderUsername].received = true 
+        userFrRqs[desanitizedUsername].received = true 
     }
 
 
@@ -74,9 +82,6 @@ export const load = async ({ locals }) => {
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
-// Import inputHandler to validate and sanitize inputs
-import { inputHandler } from "$lib/server/inputHandler.js"
-
 // Import error logger to record error details
 import { logError } from "$lib/server/errorLogger"
 
@@ -113,7 +118,7 @@ export const actions = {
             let dbResponse = await prismaClient.User.findUnique({
                 // Set field filters
                 where: {
-                    username: formData.username
+                    username: inputHandler.sanitize(formData.username)
                 },
                 // Set fields to return
                 select: {
@@ -226,7 +231,7 @@ export const actions = {
             let dbResponse = await prismaClient.User.findUnique({
                 // Set field filters
                 where: {
-                    username: formData.username
+                    username: inputHandler.sanitize(formData.username)
                 },
                 // Set fields to return
                 select: {
