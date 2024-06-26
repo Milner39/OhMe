@@ -60,12 +60,14 @@ const setAuthCookies = async (cookies, userId, sessionId) => {
 // Define actions
 export const actions = {
     // MARK: Login
-    login: async ({ request, cookies }) => {
-        // Variables to hold error information and set notice message
-        let errors = {}
-
-
-        // TODO: stop users who are already logged in from completing this request
+    login: async ({ request, cookies, locals }) => {
+        // If client is logged in
+        if (locals.user) {
+            // End action
+            return {
+                status: 401
+            }
+        }
 
 
         // Get form data sent by client
