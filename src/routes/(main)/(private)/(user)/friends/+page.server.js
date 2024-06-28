@@ -115,7 +115,7 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // Do not validate search as existing usernames may not conform to current validation checks
+        // Do not validate username as existing usernames may not conform to current validation checks
         // However these friend requests should still be able to be sent
 
 
@@ -228,7 +228,7 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // Do not validate search as existing usernames may not conform to current validation checks
+        // Do not validate username as existing usernames may not conform to current validation checks
         // However these friend requests should still be able to be canceled
 
 
