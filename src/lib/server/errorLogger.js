@@ -24,6 +24,7 @@ const logError = async (details) => {
                 })
             }
         })
+        console.log(chalk.green("Error logged"))
     
     // Catch errors
     } catch {
