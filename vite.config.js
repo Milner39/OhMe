@@ -2,10 +2,10 @@
 // Import sveltekit plugin for vite
 import { sveltekit } from "@sveltejs/kit/vite"
 
-// Import dotenv to get enviroment variables
+// Import dotenv to get environment variables
 import dotenv from "dotenv"
 
-// Load enviroment variables
+// Load environment variables
 dotenv.config()
 
 // https://vitejs.dev/config/
