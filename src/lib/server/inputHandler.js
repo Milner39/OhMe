@@ -10,6 +10,7 @@ const inputHandler = {
             return (
                 typeof input === "string" &&
                 input.length <= 25 &&
+                input.length >= 1 &&
                 // ^              Start string
                 // (?!\s)         Anything but whitespace
                 // (.*?)          Any character can follow 0 or more times
@@ -23,6 +24,7 @@ const inputHandler = {
             return (
                 typeof input === "string" &&
                 input.length <= 50 &&
+                input.length >= 1 &&
                 // ^              Start string
                 // (?!\s)         Anything but whitespace
                 // (.*?)          Any character can follow 0 or more times
