@@ -255,7 +255,7 @@ export const actions = {
         const formData = Object.fromEntries(await request.formData())
         
         // Do not validate original password as existing passwords may not conform to current validation checks
-        // However these friend passwords should still be able to be changed
+        // However these passwords should still be able to be changed
 
         // If `formData.newPassword` does not fit password requirements
         if (!inputHandler.validate.password(formData.newPassword)) {
