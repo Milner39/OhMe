@@ -30,7 +30,7 @@ const formatObject = {
 
         // Iterate over key-value pairs of the `rule`
         for (const [key, value] of Object.entries(rule)) {
-            // If value is true, delete the key
+            // If value is true, desanitize the key
             if (value === true) {
                 obj[key] = inputHandler.desanitize(obj[key])
 
