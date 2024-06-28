@@ -19,8 +19,8 @@ export const load = async ({ url }) => {
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
-// Import sanitizer to ensure all user inputs are valid
-import { sanitizer } from "$lib/server/sanitize.js"
+// Import inputHandler to validate and sanitize inputs
+import { inputHandler } from "$lib/server/inputHandler.js"
 
 // Import hashing functions to hash & verify hashes
 import { stringHasher, failHash } from "$lib/server/argon"
@@ -60,34 +60,21 @@ const setAuthCookies = async (cookies, userId, sessionId) => {
 // Define actions
 export const actions = {
     // MARK: Login
-    login: async ({ request, cookies }) => {
-        // Variables to hold error information and set notice message
-        let errors = {}
-
-
-        // TODO: stop users who are already logged in from completing this request
+    login: async ({ request, cookies, locals }) => {
+        // If client is logged in
+        if (locals.user) {
+            // End action
+            return {
+                status: 401
+            }
+        }
 
 
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // If `formData.email` does not fit email requirements
-        if (!sanitizer.email(formData.email)) {
-            errors.email = "Invalid email"
-        }
-        // If `formData.password` does not fit password requirements
-        if (!sanitizer.password(formData.password)) {
-            errors.password = "Invalid password"
-        }
-
-        // If form inputs have failed sanitization checks
-        if (Object.keys(errors).length > 0) {
-            // End action
-            return {
-                status: 422,
-                errors
-            }
-        }
+        // Do not validate form inputs as existing credentials may not conform to current validation checks
+        // However these users should still be able to log in
 
 
         // Get password hash of `User` entry to be logged into
@@ -96,7 +83,7 @@ export const actions = {
                 // Set field filters
                 where: {
                     email: {
-                        address: formData.email.toLowerCase()
+                        address: inputHandler.sanitize(formData.email.toLowerCase())
                     }
                 },
                 // Set fields to return
@@ -237,19 +224,19 @@ export const actions = {
         const formData = Object.fromEntries(await request.formData())
 
         // If `formData.username` does not fit username requirements
-        if (!sanitizer.username(formData.username)) {
+        if (!inputHandler.validate.username(formData.username)) {
             errors.username = "Invalid username"
         }
         // If `formData.email` does not fit email requirements
-        if (!sanitizer.email(formData.email)) {
+        if (!inputHandler.validate.email(formData.email)) {
             errors.email = "Invalid email"
         }
         // If `formData.password` does not fit password requirements
-        if (!sanitizer.password(formData.password)) {
+        if (!inputHandler.validate.password(formData.password)) {
             errors.password = "Invalid password"
         }
 
-        // If form inputs have failed sanitization checks
+        // If form inputs have failed validation checks
         if (Object.keys(errors).length > 0) {
             // End action
             return {
@@ -257,6 +244,10 @@ export const actions = {
                 errors
             }
         }
+
+        // Sanitize username and email
+        const sanitizedUsername = inputHandler.sanitize(formData.username)
+        const sanitizedEmail = inputHandler.sanitize(formData.email.toLowerCase())
 
 
         // Get `User` entries with the same username or email from `formData`
@@ -266,11 +257,11 @@ export const actions = {
                 where: {
                     OR: [
                         {
-                            username: formData.username
+                            username: sanitizedUsername
                         },
                         {
                             email: {
-                                address: formData.email.toLowerCase()
+                                address: sanitizedEmail
                             }
                         }
                     ]
@@ -288,10 +279,10 @@ export const actions = {
 
             // Check if username or email match for each `User` entry returned
             for (const user of dbResponse) {
-                if (user.username === formData.username) {
+                if (user.username === sanitizedUsername) {
                     errors.username = "Username taken"
                 }
-                if (user.email.address === formData.email.toLowerCase()) {
+                if (user.email.address === sanitizedEmail) {
                     errors.email = "Email taken"
                 }
             }
@@ -335,10 +326,10 @@ export const actions = {
             let dbResponse = await prismaClient.User.create({
                 // Set field data
                 data: {
-                    username: formData.username,
+                    username: sanitizedUsername,
                     email: {
                         create: {
-                            address: formData.email.toLowerCase(),
+                            address: sanitizedEmail,
                             verifyCode: crypto.randomUUID(),
                             codeSentAt: new Date()
                         }
@@ -376,6 +367,7 @@ export const actions = {
                 var { sessions, email, ...user } = dbResponse
 
                 // Send email with link to verify email
+                // inputHandler.desanitize(email.address)
                 mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             } else {
                 throw new Error()
@@ -419,14 +411,11 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // If `formData.email` does not fit email requirements
-        if (!sanitizer.email(formData.email)) {
-            // End action
-            return {
-                status: 422,
-                errors: { email: "Invalid email" }
-            }
-        }
+        // Do not validate email as existing email addresses may not conform to current validation checks
+        // However these users should still be able to reset password
+
+        // Sanitize email
+        const sanitizedEmail = inputHandler.sanitize(formData.email.toLowerCase())
 
 
         // Get `User` entry to send password reset email
@@ -435,7 +424,7 @@ export const actions = {
                 // Set field filters
                 where: {
                     email: {
-                        address: formData.email.toLowerCase()
+                        address: sanitizedEmail
                     }
                 },
                 // Set fields to return
@@ -511,6 +500,11 @@ export const actions = {
                 },
                 // Set fields to return
                 select: {
+                    email: {
+                        select: {
+                            address: true
+                        }
+                    },
                     password: {
                         select: {
                             resetCode: true
@@ -521,9 +515,10 @@ export const actions = {
 
             // If `dbResponse` is not `undefined`
             if (dbResponse) {
-                let { password } = dbResponse
+                let { email, password } = dbResponse
 
                 // Send email with link to reset password
+                // inputHandler.desanitize(email.address)
                 mail.sendReset("finn.milner@outlook.com", user.id, password.resetCode)
             } else {
                 throw new Error()

@@ -1,6 +1,9 @@
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
+// Import inputHandler to validate and sanitize inputs
+import { inputHandler } from "$lib/server/inputHandler.js"
+
 // Import error logger to record error details
 import { logError } from "$lib/server/errorLogger"
 
@@ -28,8 +31,11 @@ export const POST = async ({ request, locals }) => {
     // Get request data sent by client
     const { search } = await request.json()
 
-    // TODO: sanitize search
+    // Do not validate search as existing usernames may not conform to current validation checks
+    // However these users should still be able to be searched for
 
+    // Sanitize search
+    const sanitizedSearch = inputHandler.sanitize(search)
 
     // Get `User` entries which usernames contain `search`
     // Not including the client's username
@@ -40,7 +46,7 @@ export const POST = async ({ request, locals }) => {
             where: {
                 AND: [
                     {
-                        username: search
+                        username: sanitizedSearch
                     },
                     {
                         username: {
@@ -67,12 +73,12 @@ export const POST = async ({ request, locals }) => {
                 AND: [
                     {
                         username: {
-                            startsWith: search, 
+                            startsWith: sanitizedSearch
                         }
                     },
                     {
                         username: {
-                            not: search
+                            not: sanitizedSearch
                         }
                     },
                     {
@@ -97,7 +103,7 @@ export const POST = async ({ request, locals }) => {
         users = users.reduce((prev, match) => {
             const sent = match.frRqReceived.some(entry => entry.senderId === user.id)
             const received = match.frRqSent.some(entry => entry.recipientId === user.id)
-            return ({...prev, [match.username]: {
+            return ({...prev, [inputHandler.desanitize(match.username)]: {
                 sent,
                 received
         }})}, {})

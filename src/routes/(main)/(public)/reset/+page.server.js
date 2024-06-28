@@ -1,8 +1,8 @@
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
-// Import sanitizer to ensure all user inputs are valid
-import { sanitizer } from "$lib/server/sanitize.js"
+// Import inputHandler to validate and sanitize inputs
+import { inputHandler } from "$lib/server/inputHandler.js"
 
 // Import hashing functions to hash & verify hashes
 import { stringHasher } from "$lib/server/argon"
@@ -35,7 +35,14 @@ export const load = async ({ url }) => {
             }
         }
 
-        // TODO: sanitize url params
+        // If url params are not in valid format
+        if (!inputHandler.validate.uuid(userId) || !inputHandler.validate.uuid(resetCode)) {
+            // End function
+            return {
+                status: 400,
+                errors: { client: "This is not a valid reset link..." }
+            }
+        }
 
 
         // Get `User` entry to have password reset
@@ -131,20 +138,26 @@ export const actions = {
 
         // If url does not have both search params
         if (!userId || !resetCode) {
-            // End function
+            // End action
             return {
                 status: 400
             }
         }
 
-        // TODO: sanitize url params
+        // If url params are not in valid format
+        if (!inputHandler.validate.uuid(userId) || !inputHandler.validate.uuid(resetCode)) {
+            // End action
+            return {
+                status: 400
+            }
+        }
 
 
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
         // If `formData.password` does not fit password requirements
-        if (!sanitizer.password(formData.password)) {
+        if (!inputHandler.validate.password(formData.password)) {
             // End action
             return {
                 status: 422,

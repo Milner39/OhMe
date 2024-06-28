@@ -123,7 +123,7 @@
     <nav bind:this={nav}>
         <!-- If the `brand` slot was passed in -->
         {#if $$slots.brand}
-            <a class="brand" href="/">
+            <a class="brand thinFW" href="/">
                 <!-- Children in `brand` slot go here -->
                 <slot name="brand"/>
             </a>
@@ -237,7 +237,6 @@
             justify-content: center;
 
             color: var(--br-3);
-            font-weight: 300;
         }
 
         >.collapse {

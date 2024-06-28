@@ -45,10 +45,10 @@
         <div class="block loaded" class:valid={form?.status === 200}>
             {#if form?.status === 200}
                 <Checkmark/>
-                <h4 class="title">Password has been reset</h4>
+                <h4 class="thickFW">Password has been reset</h4>
                 <a class="button-pill" href="/"><h5>Return Home</h5></a>
             {:else if streamed.status === 200}
-                <h4 class="title">Reset Your Password</h4>
+                <h4 class="thickFW">Reset Your Password</h4>
                 <form method="POST" use:enhance>
                     <div>
                         <label for="password"><small>Password*</small></label>
@@ -90,10 +90,6 @@
         max-width: 500px;
 
         text-align: center;
-
-        >.title {
-            font-weight: 600;
-        }
 
         > :global(svg) {
             color: var(--red);

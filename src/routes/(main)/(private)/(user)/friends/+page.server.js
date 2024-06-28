@@ -1,3 +1,7 @@
+// Import inputHandler to validate and sanitize inputs
+import { inputHandler } from "$lib/server/inputHandler.js"
+
+
 // MARK: Load
 // https://kit.svelte.dev/docs/load#page-data
 // Define load function
@@ -19,27 +23,32 @@ export const load = async ({ locals }) => {
 
     // Set all of the `User`s that the client has friended
     for (const { recipientUsername } of user.frRqSent) {
+        // Get the username before sanitization
+        const desanitizedUsername = inputHandler.desanitize(recipientUsername)
         // Set default values if key is undefined
-        userFrRqs[recipientUsername] ??= {
+        userFrRqs[desanitizedUsername] ??= {
             sent: false,
             received: false
         }
-        userFrRqs[recipientUsername].sent = true
+        userFrRqs[desanitizedUsername].sent = true
     }
     // Set all of the `User`s that have friended the client
     for (const { senderUsername } of user.frRqReceived) {
+        // Get the username before sanitization
+        const desanitizedUsername = inputHandler.desanitize(senderUsername)
         // Set default values if key is undefined
-        userFrRqs[senderUsername] ??= {
+        userFrRqs[desanitizedUsername] ??= {
             sent: false,
             received: false
         }
-        userFrRqs[senderUsername].received = true 
+        userFrRqs[desanitizedUsername].received = true 
     }
 
 
     // Variables to store number of pending friend requests
     let pendingSent = 0
     let pendingReceived = 0
+    let friendCount = 0
 
     // Use the status of friend requests to increment pending variables
     for (const status of Object.values(userFrRqs)) {
@@ -52,6 +61,10 @@ export const load = async ({ locals }) => {
             case "false-true":
                 pendingReceived++
                 break
+            // If both users have sent friend requests to each other
+            case "true-true":
+                friendCount++
+                break
         }
     }
 
@@ -62,7 +75,8 @@ export const load = async ({ locals }) => {
         friendRequests: {
             users: userFrRqs,
             pendingSent,
-            pendingReceived
+            pendingReceived,
+            friendCount
         } 
     }
 }
@@ -101,7 +115,8 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // TODO: sanitize username
+        // Do not validate username as existing usernames may not conform to current validation checks
+        // However these friend requests should still be able to be sent
 
 
         // Get id of `User` entry to send friend request
@@ -109,7 +124,7 @@ export const actions = {
             let dbResponse = await prismaClient.User.findUnique({
                 // Set field filters
                 where: {
-                    username: formData.username
+                    username: inputHandler.sanitize(formData.username)
                 },
                 // Set fields to return
                 select: {
@@ -213,7 +228,8 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
 
-        // TODO: sanitize username
+        // Do not validate username as existing usernames may not conform to current validation checks
+        // However these friend requests should still be able to be canceled
 
 
         // Get id of `User` entry to cancel friend request
@@ -221,7 +237,7 @@ export const actions = {
             let dbResponse = await prismaClient.User.findUnique({
                 // Set field filters
                 where: {
-                    username: formData.username
+                    username: inputHandler.sanitize(formData.username)
                 },
                 // Set fields to return
                 select: {

@@ -1,8 +1,8 @@
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
-// Import sanitizer to ensure all user inputs are valid
-import { sanitizer } from "$lib/server/sanitize.js"
+// Import inputHandler to validate and sanitize inputs
+import { inputHandler } from "$lib/server/inputHandler.js"
 
 // Import hashing functions to hash & verify hashes
 import { stringHasher } from "$lib/server/argon"
@@ -41,7 +41,7 @@ export const actions = {
         const formData = Object.fromEntries(await request.formData())
         
         // If `formData.username` does not fit username requirements
-        if (!sanitizer.username(formData.username)) {
+        if (!inputHandler.validate.username(formData.username)) {
             // End action
             return {
                 status: 422,
@@ -49,9 +49,11 @@ export const actions = {
             }
         }
 
+        // Sanitize username
+        const sanitizedUsername = inputHandler.sanitize(formData.username)
 
-        // If `formData.username` is current username
-        if (user.username === formData.username) {
+        // If username has not changed
+        if (user.username === sanitizedUsername) {
             // End action
             return {
                 status: 200
@@ -68,7 +70,7 @@ export const actions = {
                 },
                 // Set field data
                 data: {
-                    username: formData.username
+                    username: sanitizedUsername
                 }
             })
 
@@ -135,7 +137,7 @@ export const actions = {
         const formData = Object.fromEntries(await request.formData())
         
         // If `formData.email` does not fit email requirements
-        if (!sanitizer.email(formData.email)) {
+        if (!inputHandler.validate.email(formData.email)) {
             // End action
             return {
                 status: 422,
@@ -143,9 +145,11 @@ export const actions = {
             }
         }
 
+        // Sanitize email
+        const sanitizedEmail = inputHandler.sanitize(formData.email.toLowerCase())
 
-        // If `formData.email` is current email
-        if (user.email.address === formData.email) {
+        // If email has not changed
+        if (user.email.address === sanitizedEmail) {
             // End action
             return {
                 status: 200
@@ -164,7 +168,7 @@ export const actions = {
                 data: {
                     email: {
                         update: {
-                            address: formData.email.toLowerCase(),
+                            address: sanitizedEmail,
                             verified: false,
                             verifyCode: crypto.randomUUID(),
                             codeSentAt: new Date()
@@ -187,6 +191,7 @@ export const actions = {
                 let { email } = dbResponse
 
                 // Send email with link to verify updated email
+                // inputHandler.desanitize(email.address)
                 mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             } else {
                 throw new Error()
@@ -234,11 +239,6 @@ export const actions = {
 
     // MARK: Password
     password: async ({ request, locals }) => {
-        // Variables to hold error information and set notice message
-        let errors = {}
-        let notice
-
-
         // Get `user` object from locals
         const { user } = locals
 
@@ -254,21 +254,15 @@ export const actions = {
         // Get form data sent by client
         const formData = Object.fromEntries(await request.formData())
         
-        // If `formData.password` does not fit password requirements
-        if (!sanitizer.password(formData.password)) {
-            errors.password = "Invalid password"
-        }
-        // If `formData.newPassword` does not fit password requirements
-        if (!sanitizer.password(formData.newPassword)) {
-            errors.newPassword = "Invalid password"
-        }
+        // Do not validate original password as existing passwords may not conform to current validation checks
+        // However these passwords should still be able to be changed
 
-        // If form inputs have failed sanitization checks
-        if (Object.keys(errors).length > 0) {
+        // If `formData.newPassword` does not fit password requirements
+        if (!inputHandler.validate.password(formData.newPassword)) {
             // End action
             return {
                 status: 422,
-                errors
+                errors: { newPassword: "Invalid password" }
             }
         }
 

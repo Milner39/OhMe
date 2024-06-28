@@ -11,7 +11,7 @@
     {#each bars as bar}
         <!-- Set width as a percentage of "maxValue", 100% filling all availible space -->
         <div class="bar" style="width: {Math.ceil(100*(bar.value / maxValue))}%; background-color: {bar.bgColor};"/>
-        <h6>{bar.label}</h6>
+        <h6 class="thinFW">{bar.label}</h6>
     {/each}
 </div>
 
@@ -35,7 +35,6 @@
         grid-column: label;
 
         color: var(--tx-4);
-        font-weight: 300;
     }
 
 </style>

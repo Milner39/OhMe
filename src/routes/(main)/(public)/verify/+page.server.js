@@ -1,8 +1,8 @@
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
-// Import sanitizer to ensure all user inputs are valid
-import { sanitizer } from "$lib/server/sanitize.js"
+// Import inputHandler to validate and sanitize inputs
+import { inputHandler } from "$lib/server/inputHandler.js"
 
 // Import error logger to record error details
 import { logError } from "$lib/server/errorLogger"
@@ -32,7 +32,14 @@ export const load = async ({ url }) => {
             }
         }
 
-        // TODO: sanitize url params
+        // If url params are not in valid format
+        if (!inputHandler.validate.uuid(userId) || !inputHandler.validate.uuid(verifyCode)) {
+            // End function
+            return {
+                status: 400,
+                errors: { client: "This is not a valid verification link..." }
+            }
+        }
 
 
         // Get `User` entry to have email verified

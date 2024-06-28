@@ -30,6 +30,9 @@ import { isRedirect } from "@sveltejs/kit"
 // Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
 
+// Import inputHandler to validate and sanitize inputs
+import { inputHandler } from "$lib/server/inputHandler.js"
+
 // Import error logger to record error details
 import { logError } from "$lib/server/errorLogger"
 
@@ -65,7 +68,14 @@ const auth = async ({ event, resolve }) => {
         return await resolve(event)
     }
 
-    // TODO: Sanitize cookies
+    // If cookies are not in valid format
+    if (!inputHandler.validate.uuid(userId) || !inputHandler.validate.uuid(sessionId)) {
+        // Delete client's cookies
+        await deleteAuthCookies(event.cookies)
+
+        // End handle
+        return await resolve(event)
+    }
 
 
     // Get `Session` and connected `User` entries with matching ids from db
