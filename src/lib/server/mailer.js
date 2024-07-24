@@ -3,14 +3,14 @@
 // Import function to create mail transporter to send emails
 import nodemailer from "nodemailer"
 
-// Configure urls based on eviroment variables
+// Configure urls based on environment variables
 const envUrls = {
     development: `${process.env.DEV_PROTO}://192.168.0.63:${process.env.DEV_PORT}`,
     preview: `${process.env.PREV_PROTO}://192.168.0.63:${process.env.PREV_PORT}`,
     production: process.env.NODE_SERVER_ORIGIN
 }
 
-// Select url based on node enviroment
+// Select url based on node environment
 const url = envUrls[process.env.NODE_ENV] || null
 
 // Create mail transporter for a gmail account,

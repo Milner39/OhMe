@@ -6,7 +6,7 @@ import adapter from "@sveltejs/adapter-node"
 
 // https://kit.svelte.dev/docs/integrations#preprocessors
 // "Preprocessors transform your .svelte files before passing them to the compiler."
-// Import preproceeser to allow the use of scss
+// Import preprocessor to allow the use of scss
 import sveltePreprocess from "svelte-preprocess"
 
 // https://kit.svelte.dev/docs/configuration
@@ -19,10 +19,10 @@ const config = {
 	],
 	kit: {
 		adapter: adapter({
-			// Controlls the directory to build the server to
+			// Controls the directory to build the server to
 			out: "build",
 			
-			// Controlls the prefix of the enviroment variables used by the Node server
+			// Controls the prefix of the environment variables used by the Node server
 			envPrefix: "NODE_SERVER_",
 		}),
 
@@ -30,7 +30,7 @@ const config = {
 		outDir: ".svelte-kit",
 
 		env: {
-			// Controlls the prefix of the enviroment variables used in runtime
+			// Controls the prefix of the environment variables used in runtime
 			publicPrefix: "PUBLIC_",
 			privatePrefix: "PRIVATE_"
 		},
@@ -40,7 +40,7 @@ const config = {
 			directives: {
 				"script-src": ["self"]
 			},
-			// Optionaly report CSP violations
+			// Optionally report CSP violations
 			// reportOnly: {
 			// 	"script-src": ["self"],
 			// 	"report-uri": ["/csp-report"]

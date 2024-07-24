@@ -4,8 +4,8 @@
 import { writable } from "svelte/store"
 
 // Define function to create a custom store
-const createNoticeStore = (initalValue) => {
-    const { subscribe, set, update } = writable(initalValue)
+const createNoticeStore = (initialValue) => {
+    const { subscribe, set, update } = writable(initialValue)
 
     const close = () => {
         set(null)
@@ -14,5 +14,5 @@ const createNoticeStore = (initalValue) => {
     return { subscribe, set, update, close}
 }
 
-// Create store with `null` inital value
+// Create store with `null` initial value
 export const notice = createNoticeStore(null)

@@ -6,7 +6,7 @@ import { Argon2id } from "oslo/password"
 // Declare a `global.argonInstance` variable to prevent multiple instances
 global.argonInstance
 
-// Use `global.argonInstance` if it is declared or initalise one
+// Use `global.argonInstance` if it is declared or initialise one
 const stringHasher = global.argonInstance || new Argon2id()
 
 // Set `global.argonInstance` if running in development mode
