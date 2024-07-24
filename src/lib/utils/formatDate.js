@@ -5,6 +5,9 @@ const padTo2Digits = (num) => {
 
 // Format date function
 export const formatDate = (date) => {
+    if (!(date instanceof Date)) {
+        throw new Error("'date' must be 'Date' object")
+    }
     const DD = padTo2Digits(date.getDate())
     const MM = padTo2Digits(date.getMonth() +1)
     const YYYY = date.getFullYear().toString()
