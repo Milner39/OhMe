@@ -1,11 +1,11 @@
-// Create object to with methods to handle user inputs
-const inputHandler = {
+// Create object with methods to handle user inputs
+export const inputHandler = {
+    // #region VALIDATION
     // Functions to validate input formats
     validate: {
         // IMPROVE: Use switch case statement to check for more specific error messages
         // Example: case email.length > 50 { error.email = "Email too long"}
         // If no cases are hit, no errors
-
         username: (input) => {
             return (
                 typeof input === "string" &&
@@ -58,11 +58,19 @@ const inputHandler = {
             )
         }
     },
+    // #endregion
 
-    // Prisma uses "Prepared statements" so input sanitation is not necessary as there is no risk of SQL injection attacks
+
+
+    // #region (DE)SANITATION
+    // Prisma uses "Prepared statements" so input sanitation is not necessary
+    // as there is no risk of SQL injection attacks.
     // It will be used regardless of necessity in case the database provider is changed in the future
     sanitize: (input) => {
-        // Replace all special characters attacks with escape codes
+        if (typeof input !== "string") {
+            throw new Error("'input' must be type 'string'")
+        }
+        // Replace special characters with escape codes
         return input
             .replace(/&/g, "&amp")
             .replace(/#/g, "&hsh")
@@ -81,12 +89,15 @@ const inputHandler = {
             .replace(/_/g, "&uds")
             .replace(/:/g, "&fcn")
             .replace(/;/g, "&scn")
-            // & is the symbol for the escape codes
+            // & MUST come first as it is the symbol for the escape codes
     },
 
-    desanitize: (sanitized) => {
-        // Replace all escape codes with original characters
-        return sanitized
+    desanitize: (input) => {
+        if (typeof input !== "string") {
+            throw new Error("'input' must be type 'string'")
+        }
+        // Replace escape codes with original characters
+        return input
             .replace(/&hsh/g, "#")
             .replace(/&dlr/g, "$")
             .replace(/&ltn/g, "<")
@@ -106,6 +117,5 @@ const inputHandler = {
             .replace(/&amp/g, "&")
             // & MUST come last as it is the symbol for the escape codes
     }
+    // #endregion
 }
-
-export { inputHandler }

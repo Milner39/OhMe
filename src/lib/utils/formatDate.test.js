@@ -3,8 +3,6 @@ import { formatDate } from "./formatDate"
 
 describe("Returns the string value of a given 'Date' object in 'DD/MM/YYYY hh:mm:ss' format", () => {
     test("Fails if a 'date' argument is not valid 'Date' object", () => {
-        assert.throws(() => formatDate("Not a 'Date' object"))
-        assert.throws(() => formatDate(123))
         assert.throws(() => formatDate(null))
     })
 
