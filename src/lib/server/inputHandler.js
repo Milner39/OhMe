@@ -1,3 +1,7 @@
+// Import settings
+import { settings as allSettings } from "../settings"
+const { sanitization: settings } = allSettings
+
 // Create object with methods to handle user inputs
 export const inputHandler = {
     // #region VALIDATION
@@ -70,52 +74,29 @@ export const inputHandler = {
         if (typeof input !== "string") {
             throw new Error("'input' must be type 'string'")
         }
+        let sanitized = input
         // Replace special characters with escape codes
-        return input
-            .replace(/&/g, "&amp")
-            .replace(/#/g, "&hsh")
-            .replace(/\$/g, "&dlr")
-            .replace(/</g, "&ltn")
-            .replace(/>/g, "&gtn")
-            .replace(/'/g, "&sqt")
-            .replace(/"/g, "&dqt")
-            .replace(/\\/g, "&bsl")
-            .replace(/\//g, "&fsl")
-            .replace(/\*/g, "&ast")
-            .replace(/=/g, "&eql")
-            .replace(/%/g, "&pct")
-            .replace(/\+/g, "&pls")
-            .replace(/-/g, "&dsh")
-            .replace(/_/g, "&uds")
-            .replace(/:/g, "&fcn")
-            .replace(/;/g, "&scn")
-            // & MUST come first as it is the symbol for the escape codes
+        for (const charCode of settings.charCodes) {
+            sanitized = sanitized.replaceAll(charCode.char, charCode.code)
+        }
+        return sanitized
     },
 
     desanitize: (input) => {
         if (typeof input !== "string") {
             throw new Error("'input' must be type 'string'")
         }
+        let desanitized = input
+        // Clone the array and remove the first item
+        const firstCharCodes = [...settings.charCodes]
+        firstCharCodes.shift()
         // Replace escape codes with original characters
-        return input
-            .replace(/&hsh/g, "#")
-            .replace(/&dlr/g, "$")
-            .replace(/&ltn/g, "<")
-            .replace(/&gtn/g, ">")
-            .replace(/&sqt/g, "'")
-            .replace(/&dqt/g, "\"")
-            .replace(/&bsl/g, "\\")
-            .replace(/&fsl/g, "/")
-            .replace(/&ast/g, "*")
-            .replace(/&eql/g, "=")
-            .replace(/&pct/g, "%")
-            .replace(/&pls/g, "+")
-            .replace(/&dsh/g, "-")
-            .replace(/&uds/g, "_")
-            .replace(/&fcn/g, ":")
-            .replace(/&scn/g, ";")
-            .replace(/&amp/g, "&")
-            // & MUST come last as it is the symbol for the escape codes
+        for (const charCode of firstCharCodes) {
+            desanitized = desanitized.replaceAll(charCode.code, charCode.char)
+        }
+        // Replace the escape code representing the character 
+        // that indicates the start of an escape code last
+        return desanitized.replaceAll(settings.charCodes[0].code, settings.charCodes[0].char)
     }
     // #endregion
 }

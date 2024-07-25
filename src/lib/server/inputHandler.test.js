@@ -115,25 +115,9 @@ describe("validate", () => {
 
 
 // #region (DE)SANITATION
-const charCodes = [
-    { char: "&", code: "&amp" },
-    { char: "#", code: "&hsh" },
-    { char: "$", code: "&dlr" },
-    { char: "<", code: "&ltn" },
-    { char: ">", code: "&gtn" },
-    { char: "'", code: "&sqt" },
-    { char: "\"", code: "&dqt" },
-    { char: "\\", code: "&bsl" },
-    { char: "/", code: "&fsl" },
-    { char: "*", code: "&ast" },
-    { char: "=", code: "&eql" },
-    { char: "%", code: "&pct" },
-    { char: "+", code: "&pls" },
-    { char: "-", code: "&dsh" },
-    { char: "_", code: "&uds" },
-    { char: ":", code: "&fcn" },
-    { char: ";", code: "&scn" }
-]
+// Import settings
+import { settings as allSettings } from "../settings"
+const { sanitization: settings } = allSettings
 
 describe("sanitize", () => {
     test("Fails if a 'input' argument is not type 'string'", () => {
@@ -141,7 +125,22 @@ describe("sanitize", () => {
     })
 
     describe("Given 'input' argument is type 'string'", () => {
-        test.each(charCodes)("Replaces $char with $code", ({char, code}) => {
+        test("'char' indicating the start of a 'code' is first to be sanitized", () => {
+            const result = inputHandler.sanitize(
+                settings.charCodes[0].char+
+                settings.charCodes[1].char
+            )
+            expect(result).toBe(
+                settings.charCodes[0].char+
+                settings.charCodes[0].code.substring(1)+
+                settings.charCodes[0].char+
+                settings.charCodes[1].code.substring(1)
+            )
+            // To make sure "&#"
+            // returns: "&amp&hsh"
+            // not: "&amphsh"
+        })
+        test.each(settings.charCodes)("Replaces $char with $code", ({char, code}) => {
             const result = inputHandler.sanitize(char)
             expect(result).toBe(code)
         })
@@ -158,7 +157,21 @@ describe("desanitize", () => {
     })
 
     describe("Given 'input' argument is type 'string'", () => {
-        test.each(charCodes)("Replaces $code with $char", ({char, code}) => {
+        test("'char' indicating the start of a 'code' is last to be desanitized", () => {
+            const result = inputHandler.desanitize(
+                settings.charCodes[0].char+
+                settings.charCodes[0].code.substring(1)+
+                settings.charCodes[1].code.substring(1)
+            )
+            expect(result).toBe(
+                settings.charCodes[0].char+
+                settings.charCodes[1].code.substring(1)
+            )
+            // To make sure "&amphsh"
+            // returns: "&hsh"
+            // not: "#"
+        })
+        test.each(settings.charCodes)("Replaces $code with $char", ({char, code}) => {
             const result = inputHandler.desanitize(code)
             expect(result).toBe(char)
         })
