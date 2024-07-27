@@ -35,16 +35,14 @@ const config = {
 			privatePrefix: "PRIVATE_"
 		},
 
+
+
 		// Prevent scripts loading from external sites, stopping XSS attacks
 		csp: {
+			mode: "auto",
 			directives: {
 				"script-src": ["self"]
-			},
-			// Optionally report CSP violations
-			// reportOnly: {
-			// 	"script-src": ["self"],
-			// 	"report-uri": ["/csp-report"]
-			// }
+			}
 		},
 
 		// Check origin of requests, stopping CSRF attacks
