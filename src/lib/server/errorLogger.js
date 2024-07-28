@@ -2,7 +2,7 @@
 import { client as prismaClient } from "./prisma"
 
 // Import format date utility
-import { formatDate } from "../utils/formatDate"
+import { formatDate } from "../utils/dateFormatter"
 
 // Import chalk to color console messages
 import chalk from "chalk"

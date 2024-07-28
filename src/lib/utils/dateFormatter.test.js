@@ -1,5 +1,5 @@
 import { describe, test, expect, assert } from "vitest"
-import { formatDate } from "./formatDate"
+import { formatDate } from "./dateFormatter"
 
 describe("Returns the string value of a given 'Date' object in 'DD/MM/YYYY hh:mm:ss' format", () => {
     test("Fails if a 'date' argument is not valid 'Date' object", () => {
