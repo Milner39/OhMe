@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"test": "set NODE_ENV=development&& vitest",
+		"test": "set NODE_ENV=testing&& vitest",
 		"dev": "set NODE_ENV=development&& vite dev",
 		"build": "set NODE_ENV=building&& vite build",
 		"preview": "set NODE_ENV=preview&& vite preview",
