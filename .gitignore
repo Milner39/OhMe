@@ -5,11 +5,11 @@
 # Installed dependencies
 node_modules
 
-# The folder that `npm run build` outputs to
-/build
-
 # The folder that `npm run dev` outputs to
 /.svelte-kit
+
+# The folder that `npm run build` outputs to
+/build
 
 # Enviromental variables but not the `env.example` file
 .env
@@ -20,9 +20,6 @@ node_modules
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# vscode settings
-/.vscode
-
 # Database files
 *.sqlite
 *.sqlite-journal
@@ -30,3 +27,9 @@ vite.config.ts.timestamp-*
 # Media files
 *.png
 *.mp4
+
+# Test data files
+/tests/testData.*
+
+# VSCode settings
+/.vscode
