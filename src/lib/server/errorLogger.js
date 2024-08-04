@@ -2,7 +2,7 @@
 import { client as prismaClient } from "./prisma"
 
 // Import format date utility
-import { formatDate } from "../utils/dateFormatter"
+import dataUtils from "../utils/dateUtils.js"
 
 // Import chalk to color console messages
 import chalk from "chalk"
@@ -12,7 +12,7 @@ import chalk from "chalk"
 // to store error information
 const logError = async (details) => {
     // Get timestamp when error occurred
-    const timestamp = formatDate(new Date())
+    const timestamp = dataUtils.format(new Date())
 
     try {
         // Create entry in db
