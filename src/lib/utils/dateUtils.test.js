@@ -3,7 +3,7 @@ import { format } from "./dateUtils.js"
 
 describe("format", () => {
     describe("Returns the string value of a given 'Date' object in 'DD/MM/YYYY hh:mm:ss' format", () => {
-        test("Fails if a 'date' argument is not valid 'Date' object", () => {
+        test("Fails if the 'date' argument is not valid 'Date' object", () => {
             assert.throws(() => format(null))
         })
     
