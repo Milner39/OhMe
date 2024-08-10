@@ -24,8 +24,28 @@ const deepMerge = (target, source, visited = new WeakMap()) => {
 
     // Iterate over keys in `source`
     for (const key of Object.keys(source)) {
+        // If `source[key]` is an array:
+        if (Array.isArray(source[key])) {
+            // If `source[key]` has already been visited:
+            if (visited.has(source[key])) {
+                // Set `target[key]` to target stored in the WeakMap
+                target[key] = visited.get(source[key])
+            } 
+
+            // If `source[key]` has not been visited:
+            else {
+                // If `target[key]` is not an array:
+                if (!Array.isArray(target[key])) {
+                    // Set `target[key]` to an empty array
+                    target[key] = []
+                }
+                // Recursively merge nested arrays
+                deepMerge(target[key], source[key], visited)
+            }
+        }
+
         // If `source[key]` is type `object` and is not null:
-        if (typeof source[key] === "object" && source[key] !== null) {
+        else if (typeof source[key] === "object" && source[key] !== null) {
             // If `source[key]` has already been visited:
             if (visited.has(source[key])) {
                 // Set `target[key]` to target stored in the WeakMap
@@ -42,8 +62,11 @@ const deepMerge = (target, source, visited = new WeakMap()) => {
                 // Recursively merge nested objects
                 deepMerge(target[key], source[key], visited)
             }
-        } else {
-            // Set null and non-object values from source to target
+        } 
+        
+        // If `source[key]` is primitive value or function:
+        else {
+            // Set value from source to target
             target[key] = source[key]
         }
     }
