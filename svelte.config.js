@@ -14,6 +14,15 @@ const config = {
 
 		// The directory for SvelteKit to write temp files and cache
 		outDir: ".svelte-kit",
+
+		env: {
+			/*
+				Prefix for environment variables that are safe/unsafe
+				to expose client-side
+			*/
+			publicPrefix: "PUBLIC_",
+			privatePrefix: ""
+		}
 	}
 }
 

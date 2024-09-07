@@ -2,6 +2,12 @@
 // Import SvelteKit plugin for Vite
 import { sveltekit } from "@sveltejs/kit/vite"
 
+// Import dotenv to get environment variables
+import dotenv from "dotenv"
+
+// Load environment variables
+dotenv.config()
+
 // https://vitejs.dev/config/
 // Define Vite config
 /** @type {import('vite').UserConfig} */
@@ -16,7 +22,7 @@ const config = {
 		host: true,
 
 		// Host on specified port during development
-		port: 4522,
+		port: process.env.DEV_PORT,
 		strictPort: true
 	},
 
@@ -26,7 +32,7 @@ const config = {
 		host: true,
 
 		// Host on specified port during preview
-		port: 4523,
+		port: process.env.PREV_PORT,
 		strictPort: true
 	}
 }
