@@ -13,13 +13,21 @@ const config = {
 	// Development settings
 	server: {
 		// Allows devices on same network to access the site
-		host: true
+		host: true,
+
+		// Host on specified port during development
+		port: 4522,
+		strictPort: true
 	},
 
 	// Preview settings
 	preview: {
 		// Allows devices on same network to access the site
-		host: true
+		host: true,
+
+		// Host on specified port during preview
+		port: 4523,
+		strictPort: true
 	}
 }
 
