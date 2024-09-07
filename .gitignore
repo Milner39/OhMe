@@ -1,10 +1,20 @@
-.DS_Store
+# Misc
+/.vscode
+
+# Installed dependencies
 node_modules
-/build
+
+# SvelteKit temp files
 /.svelte-kit
-/package
+
+# Vite temp files
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# The folder that `npm run build` outputs to
+/build
+
+# Enviromental variables but not the `env.example` file
 .env
 .env.*
 !.env.example
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
