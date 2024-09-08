@@ -3,7 +3,8 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"serve": "node -r dotenv/config build"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "^5.0.1",

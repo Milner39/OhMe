@@ -9,7 +9,10 @@ const config = {
 	kit: {
 		adapter: adapter({
 			// The directory to build the Node server
-			out: "build"
+			out: "build",
+
+			// Prefix for environment variables used by the Node server
+			envPrefix: "NODE_SERVER_",
 		}),
 
 		// The directory for SvelteKit to write temp files and cache
