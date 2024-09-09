@@ -16,22 +16,12 @@ export const load = async ({ url }) => {
 
 
 
-// Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
-
-// Import inputHandler to validate and sanitize inputs
 import { inputHandler } from "$lib/server/inputHandler.js"
-
-// Import hashing functions to hash & verify hashes
 import { stringHasher, failHash } from "$lib/server/argon"
-
-// Import mailer to send emails
-import { Emailer } from "$lib/server/mailer"
-
-// Import error logger to record error details
+import { Emailer } from "$lib/server/emailUtils"
 import { logError } from "$lib/server/errorLogger"
 
-// Import settings
 import { settings }  from "$lib/settings"
 
 
@@ -367,7 +357,7 @@ export const actions = {
                 var { sessions, email, ...user } = dbResponse
 
                 // Send email with link to verify email
-                // inputHandler.desanitize(email.address)
+                // inputHandler.desanitize(email.address) replaces my email
                 Emailer.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             } else {
                 throw new Error()
@@ -518,7 +508,7 @@ export const actions = {
                 let { email, password } = dbResponse
 
                 // Send email with link to reset password
-                // inputHandler.desanitize(email.address)
+                // inputHandler.desanitize(email.address) replaces my email
                 Emailer.sendReset("finn.milner@outlook.com", user.id, password.resetCode)
             } else {
                 throw new Error()

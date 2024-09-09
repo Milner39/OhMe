@@ -1,6 +1,6 @@
 // #region Imports
 import { describe, test, expect, onTestFinished } from "vitest"
-import { createTransport, createMail } from "./mailer.js"
+import { createTransport, createEmailer } from "./emailUtils.js"
 import path from "path"
 import jsonUtils from "./jsonUtils.js"
 // #endregion
@@ -31,13 +31,12 @@ const updateTestDataKey_clearIfFail = (state, key) => {
 
 
 // Get transport credentials
-const transportAuth = testData.transport?.auth || {}
+const transportAuth = testData.transport?.auth
 
 // Create transport
 const transport = await createTransport(
     transportAuth,
     {
-        service: undefined,
         host: "smtp.ethereal.email",
         port: 587,
         secure: false,
@@ -77,13 +76,12 @@ describe("createTransport", async () => {
 })
 // #endregion
 
-// #region Transport
+// #region Emailer
 describe.runIf(transport)("createEmailer", async () => {
     // Create emailer
-    const emailer = await createMail(transport)
-    console.log(emailer)
+    const emailer = await createEmailer(transport)
 
-    test("Returns a `Emailer` object", () => {
+    test("Returns an `Emailer` object", () => {
         expect(emailer).toBeTruthy()
     })
 

@@ -1,9 +1,15 @@
 // #region Imports
 /* 
     https://nodemailer.com/
-    "Nodemailer is a module for Node.js applications to allow easy as cake email sending."
+    Import Nodemailer for email sending
 */
 import nodemailer from "nodemailer"
+// #endregion
+
+
+
+// #region ENV
+const TESTING = process.env.NODE_ENV === "testing"
 // #endregion
 
 
@@ -54,6 +60,7 @@ const createTransport = async (auth = {
     // Initialise transport variable
     let transport
 
+
     // If credentials are defined:
     if (auth.user && auth.pass) {
         // Create email transport, default to gmail config
@@ -68,45 +75,48 @@ const createTransport = async (auth = {
         // Add name and address key to object
         transport = Object.assign(transport,
             {
-                name: "OhMe" + (process.env.NODE_ENV === "testing" ? " - Testing" : ""),
+                name: "OhMe" + (TESTING ? " - Testing" : ""),
                 address: auth.user
             }
         )
+        return transport
+    } 
 
-    // Get credentials based on `env.NODE_ENV`
-    } else {
-        // If not testing:
-        transport = process.env.NODE_ENV !== "testing" ?
-            // Create transport with default config
-            await createTransport({
-                user: process.env.PRIVATE_EMAIL_USER,
-                pass: process.env.PRIVATE_EMAIL_PASS
-            }):
 
-            // Create transport with testing config
-            await createTransport(
-                await getTestAuth(),
-                {
-                    host: "smtp.ethereal.email",
-                    port: 587,
-                    secure: false,
-                }
-            )
-    }
+    // Create transport with new credentials
+    // If not testing:
+    transport = !TESTING ?
+        // Create transport with default config
+        await createTransport({
+            user: process.env.PRIVATE_EMAIL_USER,
+            pass: process.env.PRIVATE_EMAIL_PASS
+        }):
+
+        // Create transport with testing config
+        await createTransport(
+            await getTestAuth(),
+            {
+                host: "smtp.ethereal.email",
+                port: 587,
+                secure: false,
+            }
+        )
     return transport
 }
 // #endregion
 
 
 
-// #region Mail
+// #region Emailer
 /*
-    Define a subroutine to create a `Mail` object
+    Define a subroutine to create an `Emailer` object
     with subroutines to send emails.
 */
-const createMail = async (existingTransport = null) => {
+const createEmailer = async (existingTransport = null) => {
     // Create a new `Transport` object if one is not provided
     const transport = existingTransport || await createTransport()
+
+    // Return methods to send emails with different presets
     return {
         send: async (to, args) => {
             // Send email
@@ -164,12 +174,12 @@ const createMail = async (existingTransport = null) => {
 
 // #region Export
 // Create `Emailer` object
-const Emailer = await createMail()
+const Emailer = await createEmailer()
 
 // Define object to hold all email utils
 const emailUtils = {
     createTransport,
-    createMail,
+    createEmailer,
     Emailer
 }
 
@@ -177,7 +187,5 @@ const emailUtils = {
 export default emailUtils
 
 // Named export for each method
-export { createTransport, createMail, Emailer }
+export { createTransport, createEmailer, Emailer }
 // #endregion
-
-//TODO: rename to emailUtils and createMail should be createEmailer
