@@ -166,3 +166,5 @@ describe("deepMerge", () => {
         })
     })
 })
+
+// TODO: mapWithRule
