@@ -162,7 +162,22 @@ const createMail = async (existingTransport = null) => {
 
 
 
-//const mail = await createMail()
-export { createTransport, createMail }
+// #region Export
+// Create `Emailer` object
+const Emailer = await createMail()
+
+// Define object to hold all email utils
+const emailUtils = {
+    createTransport,
+    createMail,
+    Emailer
+}
+
+// Default export for the entire object
+export default emailUtils
+
+// Named export for each method
+export { createTransport, createMail, Emailer }
+// #endregion
 
 //TODO: rename to emailUtils and createMail should be createEmailer

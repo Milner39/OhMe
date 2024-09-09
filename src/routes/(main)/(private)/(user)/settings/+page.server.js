@@ -8,7 +8,7 @@ import { inputHandler } from "$lib/server/inputHandler.js"
 import { stringHasher } from "$lib/server/argon"
 
 // Import mailer to send emails
-import { mail } from "$lib/server/mailer"
+import { Emailer } from "$lib/server/mailer"
 
 // Import error logger to record error details
 import { logError } from "$lib/server/errorLogger"
@@ -192,7 +192,7 @@ export const actions = {
 
                 // Send email with link to verify updated email
                 // inputHandler.desanitize(email.address)
-                mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
+                Emailer.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             } else {
                 throw new Error()
             }
