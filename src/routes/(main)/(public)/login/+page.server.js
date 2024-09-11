@@ -18,7 +18,7 @@ export const load = async ({ url }) => {
 
 import { client as prismaClient } from "$lib/server/prisma"
 import { inputHandler } from "$lib/server/inputHandler.js"
-import { stringHasher } from "$lib/server/argon"
+import { stringHasher } from "$lib/server/hashUtils"
 import { Emailer } from "$lib/server/emailUtils"
 import { logError } from "$lib/server/errorLogger"
 

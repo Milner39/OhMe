@@ -5,7 +5,7 @@ import { client as prismaClient } from "$lib/server/prisma"
 import { inputHandler } from "$lib/server/inputHandler.js"
 
 // Import hashing functions to hash & verify hashes
-import { stringHasher } from "$lib/server/argon"
+import { stringHasher } from "$lib/server/hashUtils"
 
 // Import error logger to record error details
 import { logError } from "$lib/server/errorLogger"
