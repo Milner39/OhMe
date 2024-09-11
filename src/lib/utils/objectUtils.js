@@ -10,7 +10,7 @@ const deepMerge = (target, source, visited = new WeakMap()) => {
         (typeof target !== "object" || target === null) ||
         (typeof source !== "object" || source === null)
     ) {
-        throw new Error("'target' and 'source' must be type 'object' and not null")
+        throw new Error("`target` and `source` must be type `object` and not null")
     }
 
     // If `source` has already been visited:
@@ -75,9 +75,21 @@ const deepMerge = (target, source, visited = new WeakMap()) => {
 /*
     Define a subroutine to replace certain values in 
     an object with the result of passing them into a function.
-    // TODO: use weak map/set to handle circular references
+    `rule` must not contain circular references
 */
 const mapWithRule = (target, rule, func) => {
+    // Throw error if `target` or `rule` are not type `object` or are null
+    if (
+        (typeof target !== "object" || target === null) ||
+        (typeof rule !== "object" || rule === null)
+    ) {
+        throw new Error("`target` and `source` must be type `object` and not null")
+    }
+    // Throw error if `func` is not type `function`
+    if (typeof func !== "function") {
+        throw new Error("`func` must be type `function`")
+    }
+
     // Iterate over key-value pairs in `rule`
     for (const [key, value] of Object.entries(rule)) {
         /*

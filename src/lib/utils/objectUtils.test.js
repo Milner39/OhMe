@@ -13,7 +13,7 @@ describe("deepMerge", () => {
             assert.throws(() => deepMerge(null, null))
         })
 
-        describe("Given 'target' and 'source' argument are valid objects", () => {
+        describe("Given all arguments are valid", () => {
             test("Existing keys in 'target' are replaced by the matching key in `source`", () => {
                 const target = { 
                     a: "B"
@@ -23,9 +23,8 @@ describe("deepMerge", () => {
                 }
                 deepMerge(target, source) 
                 expect(target).toEqual({
-                        a: "A"
-                    }
-                )
+                    a: "A"
+                })
             })
 
             test("Non-existing keys in 'target' are created with the value of the matching key in `source`", () => {
@@ -39,8 +38,7 @@ describe("deepMerge", () => {
                 expect(target).toEqual({
                         a: "A",
                         b: "B"
-                    }
-                )
+                })
             })
 
             test("Keys in 'target' that values are type 'object' and are not null, can have their nested keys replaced by the matching nested key in 'source'", () => {
@@ -167,4 +165,42 @@ describe("deepMerge", () => {
     })
 })
 
+describe("mapWithRule", () => {
+    describe("Maps a function to only the values of keys in the first object that are true in the second object", () => {
+        test("Fails if the 'target' or 'rule' argument are not type 'object' or are null", () => {
+            assert.throws(() => mapWithRule(0, {}, (value) => {return value}))
+            assert.throws(() => mapWithRule({}, 0, (value) => {return value}))
+            assert.throws(() => mapWithRule(0, 0, (value) => {return value}))
+            
+            assert.throws(() => mapWithRule(null, {}, (value) => {return value}))
+            assert.throws(() => mapWithRule({}, null, (value) => {return value}))
+            assert.throws(() => mapWithRule(null, null, (value) => {return value}))
+        })
+        test("Fails if the 'func' argument is not type 'function'", () => {
+            assert.throws(() => mapWithRule({}, {}, null))
+        })
+
+        describe("Given all arguments are valid", () => {
+            test("Only values of keys in the first object get replaced if the matching key in the second object is true", () => {
+                const target = {
+                    a: 2,
+                    b: 3
+                }
+                const rule = {
+                    a: true
+                }
+                const func = (value) => {
+                    return value ** 2
+                }
+                mapWithRule(target, rule, func)
+                expect(target).toEqual({
+                    a: 4,
+                    b: 3
+                })
+            })
+        })
+    })
+})
+
+// THEN THIS
 // TODO: mapWithRule
