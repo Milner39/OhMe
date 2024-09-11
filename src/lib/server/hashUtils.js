@@ -23,9 +23,9 @@ const stringHasher = new Argon2id({
     Use to prevent timing attacks where malicious clients attempt 
     to guess credentials based on HTTP request response times.
 */
-const failingHash = await stringHasher.hash("")
+const failingHash = await stringHasher.hash("Random Text")
 stringHasher.failVerify = async () => {
-    await stringHasher.verify(failingHash, "fail")
+    await stringHasher.verify(failingHash, "Fail Verification")
     return false
 }
 // #endregion
