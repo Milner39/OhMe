@@ -1,7 +1,7 @@
 import { client as prismaClient } from "$lib/server/prisma"
 import { inputHandler } from "$lib/server/inputHandler.js"
 import { stringHasher } from "$lib/server/hashUtils"
-import { Emailer } from "$lib/server/emailUtils"
+import { emailer } from "$lib/server/emailUtils"
 import { logError } from "$lib/server/errorLogger"
 
 
@@ -183,7 +183,7 @@ export const actions = {
 
                 // Send email with link to verify updated email
                 // inputHandler.desanitize(email.address) replaces my email
-                Emailer.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
+                emailer.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             } else {
                 throw new Error()
             }

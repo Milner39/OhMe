@@ -81,7 +81,7 @@ describe.runIf(transport)("createEmailer", async () => {
     // Create emailer
     const emailer = await createEmailer(transport)
 
-    test("Returns an `Emailer` object", () => {
+    test("Returns an `emailer` object", () => {
         expect(emailer).toBeTruthy()
     })
 

@@ -36,7 +36,7 @@ if (
 
 
 // #region Transport
-// Define a subroutine to create a `Transport` object
+// Define a subroutine to create a `transport` object
 const createTransport = async (auth = { 
     user: null, 
     pass: null
@@ -109,7 +109,7 @@ const createTransport = async (auth = {
 
 // #region Emailer
 /*
-    Define a subroutine to create an `Emailer` object
+    Define a subroutine to create an `emailer` object
     with subroutines to send emails.
 */
 const createEmailer = async (existingTransport = null) => {
@@ -173,19 +173,19 @@ const createEmailer = async (existingTransport = null) => {
 
 
 // #region Export
-// Create `Emailer` object
-const Emailer = await createEmailer()
+// Create `emailer` object
+const emailer = await createEmailer()
 
 // Define object to hold all email utils
 const emailUtils = {
     createTransport,
     createEmailer,
-    Emailer
+    emailer
 }
 
 // Default export for the entire object
 export default emailUtils
 
 // Named export for each method
-export { createTransport, createEmailer, Emailer }
+export { createTransport, createEmailer, emailer }
 // #endregion
