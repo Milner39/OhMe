@@ -201,6 +201,3 @@ describe("mapWithRule", () => {
         })
     })
 })
-
-// THEN THIS
-// TODO: mapWithRule
