@@ -1,16 +1,7 @@
-// Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
-
-// Import inputHandler to validate and sanitize inputs
 import { inputHandler } from "$lib/server/inputHandler.js"
-
-// Import hashing functions to hash & verify hashes
-import { stringHasher } from "$lib/server/argon"
-
-// Import mailer to send emails
-import { mail } from "$lib/server/mailer"
-
-// Import error logger to record error details
+import { stringHasher } from "$lib/server/hashUtils"
+import { emailer } from "$lib/server/emailUtils"
 import { logError } from "$lib/server/errorLogger"
 
 
@@ -191,8 +182,8 @@ export const actions = {
                 let { email } = dbResponse
 
                 // Send email with link to verify updated email
-                // inputHandler.desanitize(email.address)
-                mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
+                // inputHandler.desanitize(email.address) replaces my email
+                emailer.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             } else {
                 throw new Error()
             }

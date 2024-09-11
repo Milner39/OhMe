@@ -1,22 +1,30 @@
-// Create object to with methods to handle user inputs
-const inputHandler = {
-    // Functions to validate input formats
-    validate: {
-        // IMPROVE: Use switch case statement to check for more specific error messages
-        // Example: case email.length > 50 { error.email = "Email too long"}
-        // If no cases are hit, no errors
+// Import settings
+import { settings as allSettings } from "../settings"
+const { sanitization: settings } = allSettings
 
+// Create an object with subroutines to handle user inputs
+export const inputHandler = {
+    // #region VALIDATION
+    // Subroutines to validate inputs match certain formats
+    validate: {
+        /*
+            IMPROVE: Use switch case statement to check for more specific error messages
+            Example: case email.length > 50 { error.email = "Email too long"}
+            If no cases are hit, no errors.
+        */
         username: (input) => {
             return (
                 typeof input === "string" &&
                 input.length <= 25 &&
                 input.length >= 1 &&
-                // ^              Start string
-                // (?!\s)         Anything but whitespace
-                // (.*?)          Any character can follow 0 or more times
-                // (?<!\s)        Anything but whitespace
-                // $              End string
-                // Prevents strings starting or ending in spaces
+                /*  
+                    ^              Start string
+                    (?!\s)         Anything but whitespace
+                    (.*?)          Any character can follow 0 or more times
+                    (?<!\s)        Anything but whitespace
+                    $              End string
+                    Prevents strings starting or ending in spaces
+                */
                 /^(?!\s)(.*?)(?<!\s)$/.test(input)
             ) 
         },
@@ -25,12 +33,14 @@ const inputHandler = {
                 typeof input === "string" &&
                 input.length <= 50 &&
                 input.length >= 1 &&
-                // ^              Start string
-                // (?!\s)         Anything but whitespace
-                // (.*?)          Any character can follow 0 or more times
-                // (?<!\s)        Anything but whitespace
-                // $              End string
-                // Prevents strings starting or ending in spaces
+                /*
+                    ^              Start string
+                    (?!\s)         Anything but whitespace
+                    (.*?)          Any character can follow 0 or more times
+                    (?<!\s)        Anything but whitespace
+                    $              End string
+                    Prevents strings starting or ending in spaces
+                */
                 /^(?!\s)(.*?)(?<!\s)$/.test(input)
             ) 
         },
@@ -38,15 +48,17 @@ const inputHandler = {
             return (
                 typeof input === "string" &&
                 input.length <= 320 &&
-                // ^                      Start string
-                // [^\s@]+                (local) 1 or more non-whitespace, non: "@" chars
-                // @                      Single "@"
-                // [^\s@.]+               (domain) 1 or more non-whitespace, non: "@" or "." chars
-                // (?:\.[^\s@.]+)*        (subdomains) 0 or more subdomains
-                // \.                     Single "."
-                // [A-Za-z]{2,}           (TLD) 2 or more of these chars
-                // $                      End string
-                // Standard email address format
+                /*
+                    ^                      Start string
+                    [^\s@]+                (local) 1 or more non-whitespace, non: "@" chars
+                    @                      Single "@"
+                    [^\s@.]+               (domain) 1 or more non-whitespace, non: "@" or "." chars
+                    (?:\.[^\s@.]+)*        (subdomains) 0 or more subdomains
+                    \.                     Single "."
+                    [A-Za-z]{2,}           (TLD) 2 or more of these chars
+                    $                      End string
+                    Standard email address format
+                */
                 /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)*\.[A-Za-z]{2,}$/.test(input)
             )
         },
@@ -58,54 +70,44 @@ const inputHandler = {
             )
         }
     },
+    // #endregion
 
-    // Prisma uses "Prepared statements" so input sanitation is not necessary as there is no risk of SQL injection attacks
-    // It will be used regardless of necessity in case the database provider is changed in the future
+
+
+    // #region (DE)SANITATION
+    /*
+        Prisma uses "Prepared statements" so input sanitation is 
+        not necessary as there is no risk of SQL injection attacks.
+        It will be used regardless of necessity in case the database 
+        provider is changed in the future.
+    */
     sanitize: (input) => {
-        // Replace all special characters attacks with escape codes
-        return input
-            .replace(/&/g, "&amp")
-            .replace(/#/g, "&hsh")
-            .replace(/\$/g, "&dlr")
-            .replace(/</g, "&ltn")
-            .replace(/>/g, "&gtn")
-            .replace(/'/g, "&sqt")
-            .replace(/"/g, "&dqt")
-            .replace(/\\/g, "&bsl")
-            .replace(/\//g, "&fsl")
-            .replace(/\*/g, "&ast")
-            .replace(/=/g, "&eql")
-            .replace(/%/g, "&pct")
-            .replace(/\+/g, "&pls")
-            .replace(/-/g, "&dsh")
-            .replace(/_/g, "&uds")
-            .replace(/:/g, "&fcn")
-            .replace(/;/g, "&scn")
-            // & is the symbol for the escape codes
+        if (typeof input !== "string") {
+            throw new Error("'input' must be type 'string'")
+        }
+        let sanitized = input
+        // Replace special characters with escape codes
+        for (const charCode of settings.charCodes) {
+            sanitized = sanitized.replaceAll(charCode.char, charCode.code)
+        }
+        return sanitized
     },
 
-    desanitize: (sanitized) => {
-        // Replace all escape codes with original characters
-        return sanitized
-            .replace(/&hsh/g, "#")
-            .replace(/&dlr/g, "$")
-            .replace(/&ltn/g, "<")
-            .replace(/&gtn/g, ">")
-            .replace(/&sqt/g, "'")
-            .replace(/&dqt/g, "\"")
-            .replace(/&bsl/g, "\\")
-            .replace(/&fsl/g, "/")
-            .replace(/&ast/g, "*")
-            .replace(/&eql/g, "=")
-            .replace(/&pct/g, "%")
-            .replace(/&pls/g, "+")
-            .replace(/&dsh/g, "-")
-            .replace(/&uds/g, "_")
-            .replace(/&fcn/g, ":")
-            .replace(/&scn/g, ";")
-            .replace(/&amp/g, "&")
-            // & MUST come last as it is the symbol for the escape codes
+    desanitize: (input) => {
+        if (typeof input !== "string") {
+            throw new Error("'input' must be type 'string'")
+        }
+        let desanitized = input
+        // Clone the array and remove the first item
+        const firstCharCodes = [...settings.charCodes]
+        firstCharCodes.shift()
+        // Replace escape codes with original characters
+        for (const charCode of firstCharCodes) {
+            desanitized = desanitized.replaceAll(charCode.code, charCode.char)
+        }
+        /* Lastly, replace the escape code representing the character 
+           that indicates the start of an escape code */
+        return desanitized.replaceAll(settings.charCodes[0].code, settings.charCodes[0].char)
     }
+    // #endregion
 }
-
-export { inputHandler }

@@ -5,7 +5,7 @@ import { PrismaClient } from "@prisma/client"
 // Declare a `global.prismaClient` variable to prevent multiple instances
 global.prismaClient
 
-// Use `global.prismaClient` if it is declared or initalise one
+// Use `global.prismaClient` if it is declared or initialise one
 const client = global.prismaClient || new PrismaClient()
 
 // Set `global.prismaClient` if running in development mode

@@ -16,22 +16,12 @@ export const load = async ({ url }) => {
 
 
 
-// Import prisma client instance to interact with db
 import { client as prismaClient } from "$lib/server/prisma"
-
-// Import inputHandler to validate and sanitize inputs
 import { inputHandler } from "$lib/server/inputHandler.js"
-
-// Import hashing functions to hash & verify hashes
-import { stringHasher, failHash } from "$lib/server/argon"
-
-// Import mailer to send emails
-import { mail } from "$lib/server/mailer"
-
-// Import error logger to record error details
+import { stringHasher } from "$lib/server/hashUtils"
+import { emailer } from "$lib/server/emailUtils"
 import { logError } from "$lib/server/errorLogger"
 
-// Import settings
 import { settings }  from "$lib/settings"
 
 
@@ -126,12 +116,16 @@ export const actions = {
         // If `User` entry with matching credentials does not exist, null will be returned
         // in which case instead of verifying `User.password.hash` a hashed empty string is used,
         // therefore `correctPassword` will always be false
-        const hashedPassword = password?.hash || failHash
+        let correctPassword = false
 
+        if (!password.hash) {
+            await stringHasher.failVerify()
+        } else {
+            correctPassword = await stringHasher.verify(password.hash, formData.password)
+        }
         // This is done because returning immediately allows malicious clients to figure out
         // valid usernames from response times, allowing them to only focus on guessing passwords 
         // in brute-force attacks. As a preventive measure, verify passwords even for non-existing users  
-        const correctPassword = await stringHasher.verify(hashedPassword, formData.password)
 
         // If password is incorrect
         if (!correctPassword) {
@@ -367,8 +361,8 @@ export const actions = {
                 var { sessions, email, ...user } = dbResponse
 
                 // Send email with link to verify email
-                // inputHandler.desanitize(email.address)
-                mail.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
+                // inputHandler.desanitize(email.address) replaces my email
+                emailer.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
             } else {
                 throw new Error()
             }
@@ -518,8 +512,8 @@ export const actions = {
                 let { email, password } = dbResponse
 
                 // Send email with link to reset password
-                // inputHandler.desanitize(email.address)
-                mail.sendReset("finn.milner@outlook.com", user.id, password.resetCode)
+                // inputHandler.desanitize(email.address) replaces my email
+                emailer.sendReset("finn.milner@outlook.com", user.id, password.resetCode)
             } else {
                 throw new Error()
             }

@@ -1,8 +1,8 @@
 ## Developing
 
+Configure a `.env` file using the `.env.example` file as a guide
 Install dependencies with `npm install` (or `pnpm install` or `yarn`)
-Created a database with `npx prisma db push`
-Configure a `.env file`
+Create a database with `npx prisma db push`
 
 start a development server:
 

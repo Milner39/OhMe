@@ -1,7 +1,33 @@
-// Settings to control values across the app
+// Settings to control values across the application
 export const settings = {
     urls: {
         login: "/login"
+    },
+    sanitization: {
+        // Characters and corresponding codes used for input sanitation
+        charCodes: [
+            { char: "&", code: "&amp" },
+            { char: "#", code: "&hsh" },
+            { char: "$", code: "&dlr" },
+            { char: "<", code: "&ltn" },
+            { char: ">", code: "&gtn" },
+            { char: "'", code: "&sqt" },
+            { char: "\"", code: "&dqt" },
+            { char: "\\", code: "&bsl" },
+            { char: "/", code: "&fsl" },
+            { char: "*", code: "&ast" },
+            { char: "=", code: "&eql" },
+            { char: "%", code: "&pct" },
+            { char: "+", code: "&pls" },
+            { char: "-", code: "&dsh" },
+            { char: "_", code: "&uds" },
+            { char: ":", code: "&fcn" },
+            { char: ";", code: "&scn" }
+        ]
+        // Rules:
+            // The "char" indicating the start of a "code" ("&") 
+            // must be the "char" of the first item in charCodes
+            // ({ char: "&", code: "&amp" })
     },
     session: {
         // How long a session persists before expiring
