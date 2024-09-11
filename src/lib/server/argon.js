@@ -1,24 +1,54 @@
-// https://oslo.js.org/reference/password/Argon2id/
-// "Provides methods for hashing passwords and verifying hashes with argon2id"
-// Import `Argon2id` class
+// #region Imports
+/*
+    https://oslo.js.org/reference/password/Argon2id/
+    Provides subroutines for hashing and verifying strings
+*/
 import { Argon2id } from "oslo/password"
+// #endregion
 
-// Declare a `global.argonInstance` variable to prevent multiple instances
-global.argonInstance
 
-// Use `global.argonInstance` if it is declared or initialise one
-const stringHasher = global.argonInstance || new Argon2id()
 
-// Set `global.argonInstance` if running in development mode
-if (process.env.NODE_ENV === "development") {
-    global.argonInstance = stringHasher
+// #region Utils
+// Define a object to hold string hashing and verifying subroutines
+const stringHasher = new Argon2id({
+    memorySize: 65536,//KB
+    iterations: 3,
+    parallelism: 1,
+    tagLength: 32
+})
+
+/* 
+    Define a subroutine that will simulate the computation time 
+    that verifying a string would take. 
+    Use to prevent timing attacks where malicious clients attempt 
+    to guess credentials based on HTTP request response times.
+*/
+const failingHash = await stringHasher.hash("")
+stringHasher.failVerify = async () => {
+    await stringHasher.verify(failingHash, "fail")
+    return false
+}
+// #endregion
+
+
+// #region Exports
+// Define object to hold all hash utils
+const hashUtils = {
+    stringHasher
 }
 
-// Create a hash that will always cause
-// `stringHasher.verify(failHash, String)` to return false
-const failHash = await stringHasher.hash("")
+// Default export for the entire object
+export default hashUtils
 
-export { 
-    stringHasher,
-    failHash
-}
+// Named exports for each method
+export { stringHasher }
+// #endregion
+
+
+
+// #region DOCS
+
+// Resources explaining safe password storage
+// https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+
+// #endregion

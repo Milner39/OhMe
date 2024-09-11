@@ -18,7 +18,7 @@ export const load = async ({ url }) => {
 
 import { client as prismaClient } from "$lib/server/prisma"
 import { inputHandler } from "$lib/server/inputHandler.js"
-import { stringHasher, failHash } from "$lib/server/argon"
+import { stringHasher } from "$lib/server/argon"
 import { Emailer } from "$lib/server/emailUtils"
 import { logError } from "$lib/server/errorLogger"
 
@@ -116,12 +116,16 @@ export const actions = {
         // If `User` entry with matching credentials does not exist, null will be returned
         // in which case instead of verifying `User.password.hash` a hashed empty string is used,
         // therefore `correctPassword` will always be false
-        const hashedPassword = password?.hash || failHash
+        let correctPassword = false
 
+        if (!password.hash) {
+            await stringHasher.failVerify()
+        } else {
+            correctPassword = await stringHasher.verify(password.hash, formData.password)
+        }
         // This is done because returning immediately allows malicious clients to figure out
         // valid usernames from response times, allowing them to only focus on guessing passwords 
         // in brute-force attacks. As a preventive measure, verify passwords even for non-existing users  
-        const correctPassword = await stringHasher.verify(hashedPassword, formData.password)
 
         // If password is incorrect
         if (!correctPassword) {
