@@ -198,6 +198,46 @@ describe("mapWithRule", () => {
                     b: 3
                 })
             })
+
+            test("Non-existing keys in 'target' are created with the value 'func(undefined)'", () => {
+                const target = {
+                    a: "Hello world!"
+                }
+                const rule = {
+                    b: true
+                }
+                const func = (value) => {
+                    if (typeof value === "undefined") return "Hello null!"
+                }
+                mapWithRule(target, rule, func)
+                expect(target).toEqual({
+                    a: "Hello world!",
+                    b: "Hello null!"
+                })
+            })
+
+            test("Non-existing keys in 'target' are created as an object if key is recursed into", () => {
+                const target = {
+                    a: 419
+                }
+                const rule = {
+                    a: true,
+                    b: {
+                        c: true
+                    }
+                }
+                const func = (value) => {
+                    if (typeof value === "undefined") return 0
+                    return value + 1
+                }
+                mapWithRule(target, rule, func)
+                expect(target).toEqual({
+                    a: 420,
+                    b: {
+                        c: 0
+                    }
+                })
+            })
         })
     })
 })

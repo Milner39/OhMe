@@ -107,6 +107,12 @@ const mapWithRule = (target, rule, func) => {
             providing `value` as the nested rule.
         */
         } else if (typeof value === "object" && value !== null) {
+            /*
+                If `target[key]` is type `undefined` 
+                initialise it as an object.
+            */
+            if (typeof target[key] === "undefined") target[key] = {}
+
             mapWithRule(target[key], value, func)
         }
     }
