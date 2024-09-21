@@ -1,39 +1,84 @@
-import { client as prismaClient } from "$lib/server/prisma"
-import { inputHandler } from "$lib/server/inputHandler.js"
-import { stringHasher } from "$lib/server/hashUtils"
-import { emailer } from "$lib/server/emailUtils"
-import { logError } from "$lib/server/errorLogger"
+// #region Imports
+import dbClient from "$lib/server/prisma.js"
+import inputHandler from "$lib/server/inputHandler.js"
+import { stringHasher } from "$lib/server/hashUtils.js"
+import { emailer } from "$lib/server/emailUtils.js"
+import logError from "$lib/server/errorLogger.js"
+// #endregion
 
 
-// https://kit.svelte.dev/docs/form-actions
-// "A +page.server.js file can export actions, which allow you to POST data to the server using the <form> element."
-// Define actions
+
+// #region actions
+    // #region Extras
+/**
+ * Get an `Object` containing a key for each input 
+   in a form submission and their respective values.
+ * @async
+ *
+ * 
+ * @param {
+   import("@sveltejs/kit").RequestEvent["request"]
+} request - The `.request` property of a `RequestEvent`.
+*
+* 
+* @returns {Promise<{
+    "": any[]
+}>}
+*/
+const getFormData = async (request) => {
+return Object.fromEntries(await request.formData())
+}
+    // #endregion
+
+
+
+/*
+    https://kit.svelte.dev/docs/form-actions#named-actions
+    Define form actions
+*/ 
+/** @type {import("./$types").Actions} */
 export const actions = {
-    // MARK: Username
+    // #region username()
+    /**
+     * Action to update client's username.
+     * @async
+     * 
+     * @param {import("@sveltejs/kit").RequestEvent} requestEvent 
+     * 
+     * @returns {{
+            status: Number,
+            notice?: String
+            errors?: {
+                username: String
+            }
+        }}
+     */
     username: async ({ request, locals }) => {
-        // Variables to hold error information and set notice message
+        /* 
+            Variables to hold:
+                - notice message
+                - error messages
+        */
+        let notice = null
         let errors = {}
-        let notice
         
 
-        // Get `user` object from locals
+        // Get `user` from locals
         const { user } = locals
 
-        // If `user` is `undefined`
+        // If client is not logged in
         if (!user) {
-            // End action
-            return {
-                status: 401
-            }
+            return { status: 401 }
         }
+
+        // IMPROVE: stop users with unverified email making requests
 
 
         // Get form data sent by client
-        const formData = Object.fromEntries(await request.formData())
+        const formData = await getFormData(request)
         
-        // If `formData.username` does not fit username requirements
+        // If submitted username does not conform to validation checks
         if (!inputHandler.validate.username(formData.username)) {
-            // End action
             return {
                 status: 422,
                 errors: { username: "Invalid username" }
@@ -43,18 +88,17 @@ export const actions = {
         // Sanitize username
         const sanitizedUsername = inputHandler.sanitize(formData.username)
 
+
         // If username has not changed
         if (user.username === sanitizedUsername) {
-            // End action
-            return {
-                status: 200
-            }
+            return { status: 200 }
         }
 
 
-        // Update `User.username` in db for current user
+        // TODO: Move to db operations file
+        // Update `User.username` in db for client's `User` entry
         try {
-            await prismaClient.User.update({
+            await dbClient.user.update({
                 // Set field filters
                 where: {
                     id:  user.id
@@ -78,7 +122,7 @@ export const actions = {
                     // Log error details
                     logError({
                         filepath: "src/routes/(main)/(private)/(user)/settings/+page.server.js",
-                        message: "Error while updating username for User entry in db",
+                        message: "Error while updating username for `User` entry in db",
                         arguments: {
                             username: formData.username
                         },
@@ -88,7 +132,6 @@ export const actions = {
                     notice = "We couldn't update your username, try again later..."
             }
 
-            // End action
             return {
                 status: 503,
                 errors,
@@ -97,39 +140,60 @@ export const actions = {
         }
 
 
-        // End action
         return {
             status: 200,
             notice: "Successfully updated your username!"
         }
     },
+    // #endregion
 
 
-    // MARK: Email
+    // #region email()
+    /**
+     * Action to update client's email.
+     * @async
+     * 
+     * @param {import("@sveltejs/kit").RequestEvent} requestEvent 
+     * 
+     * @returns {{
+            status: Number,
+            notice?: String
+            errors?: {
+                email: String
+            }
+        }}
+     */
     email: async ({ request, locals }) => {
-        // Variables to hold error information and set notice message
+        /* 
+            Variables to hold:
+                - notice message
+                - error messages
+        */
+        let notice = null
         let errors = {}
-        let notice
 
 
-        // Get `user` object from locals
+        // Get `user` from locals
         const { user } = locals
 
-        // If `user` is `undefined`
+        // If client is not logged in
         if (!user) {
-            // End action
-            return {
-                status: 401
-            }
+            return { status: 401 }
         }
+
+        /*
+            Do not prevent the client from changing their email address
+            if their `Email` entry is unverified as they would not be able
+            to change their address to the correct one if it was initially 
+            entered incorrectly.
+        */
 
 
         // Get form data sent by client
-        const formData = Object.fromEntries(await request.formData())
-        
-        // If `formData.email` does not fit email requirements
+        const formData = await getFormData(request)
+
+        // If submitted email does not conform to validation checks
         if (!inputHandler.validate.email(formData.email)) {
-            // End action
             return {
                 status: 422,
                 errors: { email: "Invalid email" }
@@ -139,18 +203,17 @@ export const actions = {
         // Sanitize email
         const sanitizedEmail = inputHandler.sanitize(formData.email.toLowerCase())
 
+
         // If email has not changed
         if (user.email.address === sanitizedEmail) {
-            // End action
-            return {
-                status: 200
-            }
+            return { status: 200 }
         }
 
 
-        // Update `User.email.address` in db for current user
+        // TODO: Move to db operations file
+        // Update `User.email.address` in db for client's `User` entry
         try {
-            let dbResponse = await prismaClient.User.update({
+            const { email } = await dbClient.user.update({
                 // Set field filters
                 where: {
                     id:  user.id
@@ -176,18 +239,13 @@ export const actions = {
                     }
                 }
             })
-            
-            // If `dbResponse` is not `undefined`
-            if (dbResponse) {
-                let { email } = dbResponse
 
-                // Send email with link to verify updated email
-                // inputHandler.desanitize(email.address) replaces my email
-                emailer.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
-            } else {
-                throw new Error()
-            }
-        
+            /*
+                Send email with link to verify updated email
+                inputHandler.desanitize(email.address) replaces my email in production
+            */
+            await emailer.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
+
         // Catch errors
         } catch (error) {
             // Match error code
@@ -201,7 +259,7 @@ export const actions = {
                     // Log error details
                     logError({
                         filepath: "src/routes/(main)/(private)/(user)/settings/+page.server.js",
-                        message: "Error while updating email address for User entry in db",
+                        message: "Error while updating email address for `User` entry in db",
                         arguments: {
                             emailAddress: formData.email
                         },
@@ -211,7 +269,6 @@ export const actions = {
                     notice = "We couldn't update your email address, try again later..."
             }
 
-            // End action
             return {
                 status: 503,
                 errors,
@@ -220,50 +277,50 @@ export const actions = {
         }
 
 
-        // End action
         return {
             status: 200,
             notice: "Successfully updated your email address!"
         }
     },
+    // #endregion
 
 
-    // MARK: Password
+    // #region password()
+    /**
+     * Action to update client's password.
+     * @async
+     * 
+     * @param {import("@sveltejs/kit").RequestEvent} requestEvent 
+     * 
+     * @returns {{
+            status: Number,
+            notice?: String
+            errors?: {
+                password: String
+            }
+        }}
+     */
     password: async ({ request, locals }) => {
-        // Get `user` object from locals
+        // Get `user` from locals
         const { user } = locals
 
-        // If `user` is `undefined`
+        // If client is not logged in
         if (!user) {
-            // End action
-            return {
-                status: 401
-            }
+            return { status: 401 }
         }
+
+        // IMPROVE: stop users with unverified email making requests
 
 
         // Get form data sent by client
-        const formData = Object.fromEntries(await request.formData())
+        const formData = await getFormData(request)
         
-        // Do not validate original password as existing passwords may not conform to current validation checks
-        // However these passwords should still be able to be changed
-
-        // If `formData.newPassword` does not fit password requirements
-        if (!inputHandler.validate.password(formData.newPassword)) {
-            // End action
-            return {
-                status: 422,
-                errors: { newPassword: "Invalid password" }
-            }
-        }
-
 
         // Check if password is correct
         const correctPassword = await stringHasher.verify(user.password.hash, formData.password)
 
         // If password is incorrect
         if (!correctPassword) {
-            // End action
             return {
                 status: 422,
                 errors: { password: "Password incorrect" }
@@ -283,7 +340,25 @@ export const actions = {
         }
 
 
-        // Update `User.password.hash` in db for current user
+        /*
+            Do not validate original password as existing passwords 
+            may not conform to current validation checks, however these 
+            passwords should still be able to be changed.
+        */
+
+        // If submitted new password does not conform to validation checks
+        if (!inputHandler.validate.password(formData.newPassword)) {
+            return {
+                status: 422,
+                errors: { newPassword: "Invalid password" }
+            }
+        }
+
+
+        // TODO: Move to db operations file
+        // Update `User.password.hash` in db for client's `User` entry
+        const hash = await stringHasher.hash(formData.newPassword)
+
         try {
             await prismaClient.User.update({
                 // Set field filters
@@ -294,7 +369,7 @@ export const actions = {
                 data: {
                     password: {
                         update: {
-                            hash: await stringHasher.hash(formData.newPassword)
+                            hash: hash
                         }
                     }
                 }
@@ -305,14 +380,13 @@ export const actions = {
             // Log error details
             logError({
                 filepath: "src/routes/(main)/(private)/(user)/settings/+page.server.js",
-                message: "Error while updating password hash for User entry in db",
+                message: "Error while updating password hash for `User` entry in db",
                 arguments: {
-                    passwordHash: await stringHasher.hash(formData.newPassword)
+                    passwordHash: hash
                 },
                 error
             })
 
-            // End action
             return {
                 status: 503,
                 notice: "We couldn't update your password, try again later..."
@@ -320,10 +394,10 @@ export const actions = {
         }
 
 
-        // End action
         return {
             status: 200,
             notice: "Successfully updated your password!"
         }
     }
+    // #endregion
 }

@@ -1,4 +1,6 @@
 <script>
+    // #region Imports
+
     // Import svgs
     import LogIn from "$lib/assets/svgs/LogIn.svelte"
     import Checkmark from "$lib/assets/svgs/Checkmark.svelte"
@@ -7,45 +9,79 @@
     import Banner from "$lib/components/Banner.svelte"
     import AutoScroll from "$lib/components/AutoScroll.svelte"
 
-    // https://kit.svelte.dev/docs/modules#$app-stores
-    // Import `page` to get page data
+    /*
+        https://kit.svelte.dev/docs/modules#$app-stores-page
+        Store containing page information
+    */
     import { page } from "$app/stores"
 
-    // https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
-    // "Without an argument, use:enhance will emulate the browser-native behaviour, just without the full-page reloads."
-    //  https://kit.svelte.dev/docs/modules#$app-forms-applyaction
-    // "...updates form and $page.form to result.data (regardless of where you are submitting from, in contrast to update from enhance)"
+    /*
+        `enhance`:
+            https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
+            Form action to improve the default behaviour of form elements.
+
+        `applyAction`:
+            https://kit.svelte.dev/docs/modules#$app-forms-applyaction
+            Subroutine to update the `$page.form` property even if form 
+            action is on another route.
+    */
     import { enhance, applyAction } from "$app/forms"
 
-    // https://kit.svelte.dev/docs/modules#$app-navigation-goto
-    // Import function to redirect client
+    /*
+        https://kit.svelte.dev/docs/modules#$app-navigation-goto
+        Subroutine to redirect client
+    */
     import { goto } from "$app/navigation"
+    // #endregion
 
-    // Reactive statements are indicated by the `$:` label
-    // https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
-    // "Reactive statements run
-    //  after other script code
-    //  before the component markup is rendered
-    //  whenever the values that they depend on have changed."
 
-    // https://kit.svelte.dev/docs/load#$page-data
-    // "...has access to its own data plus all the data from its parents."
-    // Get data from load functions
+
+    /*
+        Reactive statements are indicated by the `$:` label
+        https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
+        "Reactive statements run:
+         - after other script code
+         - before the component markup is rendered
+         - whenever the values that they depend on have changed."
+    */
+
+    /*
+        https://kit.svelte.dev/docs/load#$page-data
+        Get data from load subroutines
+    */
     $: data = $page.data
 
 
-    // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
-    // "...the action can respond with data that will be available through the form property"
-    // Get data returned from form actions
+    /*
+        https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
+        Get data from form actions
+    */
     $: form = $page.form
 
-
-    // https://kit.svelte.dev/docs/state-management#storing-state-in-the-url
-    // Get url data from `page`
+    /*
+        https://kit.svelte.dev/docs/state-management#storing-state-in-the-url
+        Get data from URL
+    */
     $: url = $page.url
 
-    // Reactive statement to redirect the client on login if a redirect location is set
-    $: if (form?.status === 200 && url.searchParams.get("redirectTo")) {
+
+    /*
+        If `data`, `form`, or `url` change:
+            - Check if a successful form was submitted.
+
+            - Check if the form was one of the valid options
+              to redirect from.
+
+            - Check if the `redirectTo` search parameter
+              is set.
+
+            - Redirect client to the route set as `redirectTo`.
+    */
+    $: if (
+        form?.status === 200 && 
+        ["login", "register"].includes(data.mode) &&
+        url.searchParams.get("redirectTo")
+    ) {
         goto(`/${url.searchParams.get("redirectTo").slice(1)}`)
     }
 

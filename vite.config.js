@@ -1,13 +1,26 @@
-// https://vitejs.dev/guide/using-plugins
-// Import sveltekit plugin for vite
+// #region Imports
+
+/*
+	https://vitejs.dev/guide/using-plugins
+	Import SvelteKit plugin for Vite
+*/
 import { sveltekit } from "@sveltejs/kit/vite"
 
-// Import dotenv to get environment variables
+// Import `dotenv` to get environment variables
 import dotenv from "dotenv"
+// #endregion
+
+
+
+// Load environment variables
 dotenv.config()
 
-// https://vitejs.dev/config/
-// Define vite config
+
+/*
+	https://vitejs.dev/config/
+	Define vite config
+*/ 
+/** @type {import("vite").UserConfig} */
 const config = {
 	plugins: [
 		sveltekit()

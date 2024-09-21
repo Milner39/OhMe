@@ -1,13 +1,14 @@
 <script>
+    // #region Imports
+    import { notice } from "$lib/stores/notice.js"
+
+    // Import components
+    import AutoScroll from "$lib/components/AutoScroll.svelte"
+
     // Import svgs
     import Close from "$lib/assets/svgs/Close.svelte"
     import Alert from "$lib/assets/svgs/Alert.svelte"
-
-    // Import components
-    import AutoScroll from "$lib/components//AutoScroll.svelte"
-
-    // Import notice store
-    import { notice } from "$lib/stores/notice"
+    // #endregion
 </script>
 
 <!-- If `notice` has a value: display notice -->

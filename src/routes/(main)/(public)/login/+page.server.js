@@ -1,31 +1,78 @@
-// MARK: Load
-// https://kit.svelte.dev/docs/load#page-data
-// Define load function
+// TODO: Move to +page.server.js because this is client-side safe
+// #region load()
+/*
+    Define load subroutine to:
+    - Get the `mode` search parameter.
+
+    - Set `mode` to a default value if it is not one
+      of the valid options.
+
+    - Return the `mode` client-side.
+*/
+/** @type {import("./$types").PageServerLoad} */
 export const load = async ({ url }) => {
-    // Get URL parameter
+    // Get the `mode` search parameter
     let mode = url.searchParams.get("mode")
 
-    // Set `mode` to default value if not one of the defined options
+    // Set `mode` to default value if not one of the valid options
     mode = ["login", "register", "reset"].includes(mode) ? mode : "login"
 
-    // Return the `mode`
+    // Return the form mode
     return { mode }
+}
+// #endregion
+
+
+
+
+
+// #region Imports
+import dbClient from "$lib/server/prisma.js"
+import inputHandler from "$lib/server/inputHandler.js"
+import { stringHasher } from "$lib/server/hashUtils.js"
+import { emailer } from "$lib/server/emailUtils.js"
+import logError from "$lib/server/errorLogger.js"
+import { dateFromNow } from "$lib/utils/dateUtils"
+import { settings }  from "$lib/settings.js"
+// #endregion
+
+
+
+// #region actions
+    // #region Extras
+/**
+ * Get an `Object` containing a key for each input 
+   in a form submission and their respective values.
+ * @async
+ *
+ * 
+ * @param {
+   import("@sveltejs/kit").RequestEvent["request"]
+} request - The `.request` property of a `RequestEvent`.
+*
+* 
+* @returns {Promise<{
+    "": any[]
+}>}
+*/
+const getFormData = async (request) => {
+    return Object.fromEntries(await request.formData())
 }
 
 
-
-
-
-import { client as prismaClient } from "$lib/server/prisma"
-import { inputHandler } from "$lib/server/inputHandler.js"
-import { stringHasher } from "$lib/server/hashUtils"
-import { emailer } from "$lib/server/emailUtils"
-import { logError } from "$lib/server/errorLogger"
-
-import { settings }  from "$lib/settings"
-
-
-// Define function to set auth cookies
+/**
+ * Set the cookies used fir authentication 
+   in the client's browser.
+ * @async
+ * 
+ * 
+ * @param {import("@sveltejs/kit").Cookies} cookies - 
+   The SvelteKit `Cookies` object provided by a handle.
+ *
+ * @param {String} userId 
+ * 
+ * @param {String} sessionId 
+ */
 const setAuthCookies = async (cookies, userId, sessionId) => {
     // Set client's cookies
     cookies.set("user", userId, {
@@ -43,33 +90,53 @@ const setAuthCookies = async (cookies, userId, sessionId) => {
         secure: false
     })
 }
+    // #endregion
 
 
-// https://kit.svelte.dev/docs/form-actions
-// "A +page.server.js file can export actions, which allow you to POST data to the server using the <form> element."
-// Define actions
+
+/*
+    https://kit.svelte.dev/docs/form-actions#named-actions
+    Define form actions
+*/ 
+/** @type {import("./$types").Actions} */
 export const actions = {
-    // MARK: Login
+    // #region login()
+    /**
+     * Action to log the client into an existing `User` entry.
+     * @async
+     * 
+     * @param {import("@sveltejs/kit").RequestEvent} requestEvent 
+     * 
+     * @returns {{
+            status: Number,
+            notice?: String
+            errors?: {
+                email?: String,
+                password?: String
+            }
+        }}
+     */
     login: async ({ request, cookies, locals }) => {
         // If client is logged in
         if (locals.user) {
-            // End action
-            return {
-                status: 401
-            }
+            return { status: 401 }
         }
 
 
         // Get form data sent by client
-        const formData = Object.fromEntries(await request.formData())
+        const formData = await getFormData(request)
 
-        // Do not validate form inputs as existing credentials may not conform to current validation checks
-        // However these users should still be able to log in
+        /*
+            Do not validate form inputs as existing credentials may not 
+            conform to current validation checks, however these users
+            should still be able to log in.
+        */
 
 
+        // TODO: Move to db operations file
         // Get password hash of `User` entry to be logged into
         try {
-            let dbResponse = await prismaClient.User.findFirst({
+            const dbResponse = await dbClient.user.findFirst({
                 // Set field filters
                 where: {
                     email: {
@@ -87,7 +154,7 @@ export const actions = {
                 }
             })
 
-            // If `dbResponse` is not `undefined`
+            // If `dbResponse` is not `null`
             if (dbResponse) {
                 var { password, ...user } = dbResponse
             }
@@ -97,7 +164,7 @@ export const actions = {
             // Log error details
             logError({
                 filepath: "src/routes/(main)/(public)/login/+page.server.js",
-                message: "Error while fetching User entry from db using form-submitted email address",
+                message: "Error while fetching `User` entry from db using form-submitted email address",
                 arguments: {
                     action: "login",
                     emailAddress: formData.email
@@ -105,7 +172,6 @@ export const actions = {
                 error
             })
 
-            // End action
             return {
                 status: 503,
                 notice: "We couldn't log you in, try again later..."
@@ -113,23 +179,27 @@ export const actions = {
         }
 
         
-        // If `User` entry with matching credentials does not exist, null will be returned
-        // in which case instead of verifying `User.password.hash` a hashed empty string is used,
-        // therefore `correctPassword` will always be false
         let correctPassword = false
 
-        if (!password.hash) {
+        /*
+            If `User` entry with matching credentials does not exist, `null` will be returned,
+            in which case instead of verifying `User.password.hash`, the `stringHasher.failVerify()` 
+            subroutine that simulates the time it would take to verify a found hash is executed.
+        */
+        if (!password) {
             await stringHasher.failVerify()
         } else {
             correctPassword = await stringHasher.verify(password.hash, formData.password)
         }
-        // This is done because returning immediately allows malicious clients to figure out
-        // valid usernames from response times, allowing them to only focus on guessing passwords 
-        // in brute-force attacks. As a preventive measure, verify passwords even for non-existing users  
+        /*
+            This is done because returning immediately allows malicious clients to figure out
+            valid emails from response times, allowing them to only focus on guessing passwords 
+            in brute-force attacks. As a preventive measure, use the `stringHasher.failVerify()` 
+            subroutine to replicate the response time of a request that submits a valid username.
+        */
 
-        // If password is incorrect
+
         if (!correctPassword) {
-            // End action
             return {
                 status: 401,
                 errors: {
@@ -140,13 +210,13 @@ export const actions = {
         }
 
 
-        // Create date set number of days from now to control when sessions expire
-        const expiryDate = new Date()
-        expiryDate.setDate(expiryDate.getDate() + settings.session.duration)
+        // Get date set number of days from now to control when sessions expire
+        const expiryDate = dateFromNow(settings.session.duration * 24 * (60 ** 2) * 1000)
 
+        // TODO: Move to db operations file
         // Create `Session` entry connected to a `User` in db
         try {
-            let dbResponse = await prismaClient.User.update({
+            const dbResponse = await dbClient.User.update({
                 // Set field filters
                 where: {
                     id: user.id
@@ -169,19 +239,14 @@ export const actions = {
                 }
             })
 
-            // If `dbResponse` is not `undefined`
-            if (dbResponse) {
-                var { sessions } = dbResponse
-            } else {
-                throw new Error()
-            }
+            var { sessions } = dbResponse
         
         // Catch errors
         } catch (error) {
             // Log error details
             logError({
                 filepath: "src/routes/(main)/(public)/login/+page.server.js", 
-                message: "Error while creating Session entry in db",
+                message: "Error while creating `Session` entry in db",
                 arguments: {
                     action: "login",
                     userId: user.id
@@ -189,7 +254,6 @@ export const actions = {
                 error
             })
 
-            // End action
             return {
                 status: 503,
                 notice: "We couldn't log you in, try again later..."
@@ -200,53 +264,78 @@ export const actions = {
         // Set client's cookies
         await setAuthCookies(cookies, user.id, sessions.at(-1).id)
 
-        // End action
         return {
             status: 200,
             notice: "Successfully logged in!"
         }
     },
+    // #endregion
 
 
-    // MARK: Register
-    register: async ({ request, cookies }) => {
-        // Variables to hold error information
+    // #region register()
+    /**
+     * Action to create a `User` entry then log the client into it.
+     * @async
+     * 
+     * @param {import("@sveltejs/kit").RequestEvent} requestEvent 
+     * 
+     * @returns {{
+            status: Number,
+            notice?: String
+            errors?: {
+                username?: String,
+                email?: String,
+                password?: String
+            }
+        }}
+     */
+    register: async ({ request, cookies, locals }) => {
+        // If client is logged in
+        if (locals.user) {
+            return { status: 401 }
+        }
+
+
+        // Variable to hold error messages
         let errors = {}
 
 
         // Get form data sent by client
-        const formData = Object.fromEntries(await request.formData())
+        const formData = await getFormData(request)
 
-        // If `formData.username` does not fit username requirements
+        // If submitted username does not conform to validation checks
         if (!inputHandler.validate.username(formData.username)) {
             errors.username = "Invalid username"
         }
-        // If `formData.email` does not fit email requirements
+
+        // If submitted email does not conform to validation checks
         if (!inputHandler.validate.email(formData.email)) {
             errors.email = "Invalid email"
         }
-        // If `formData.password` does not fit password requirements
+
+        // If submitted password does not conform to validation checks
         if (!inputHandler.validate.password(formData.password)) {
             errors.password = "Invalid password"
         }
 
         // If form inputs have failed validation checks
         if (Object.keys(errors).length > 0) {
-            // End action
             return {
                 status: 422,
                 errors
             }
         }
 
+
         // Sanitize username and email
         const sanitizedUsername = inputHandler.sanitize(formData.username)
         const sanitizedEmail = inputHandler.sanitize(formData.email.toLowerCase())
 
 
-        // Get `User` entries with the same username or email from `formData`
+        // TODO: Move to db operations file
+        // Get `User` entries with the same username or email as submitted by client
         try {
-            let dbResponse = await prismaClient.User.findMany({
+            const dbResponse = await dbClient.User.findMany({
                 // Set field filters
                 where: {
                     OR: [
@@ -286,7 +375,7 @@ export const actions = {
             // Log error details
             logError({
                 filepath: "src/routes/(main)/(public)/login/+page.server.js",
-                message: "Error while fetching User entries from db using form-submitted username and email address",
+                message: "Error while fetching `User` entries from db using form-submitted username and email address",
                 arguments: {
                     action: "register",
                     username: formData.username,
@@ -295,7 +384,6 @@ export const actions = {
                 error
             })
 
-            // End action
             return {
                 status: 503,
                 notice: "We couldn't register your account, try again later..."
@@ -311,13 +399,13 @@ export const actions = {
         }
 
 
-        // Create date set number of days from now to control when sessions expire
-        const expiryDate = new Date()
-        expiryDate.setDate(expiryDate.getDate() + settings.session.duration)
+        // Get date set number of days from now to control when sessions expire
+        const expiryDate = dateFromNow(settings.session.duration * 24 * (60 ** 2) * 1000)
 
-        // Create `User` entry in db
+        // TODO: Move to db operations file
+        // Create `User` entry connected to created `Session` entry in db
         try {
-            let dbResponse = await prismaClient.User.create({
+            const dbResponse = await dbClient.User.create({
                 // Set field data
                 data: {
                     username: sanitizedUsername,
@@ -356,23 +444,21 @@ export const actions = {
                 }
             })
 
-            // If `dbResponse` is not `undefined`
-            if (dbResponse) {
-                var { sessions, email, ...user } = dbResponse
 
-                // Send email with link to verify email
-                // inputHandler.desanitize(email.address) replaces my email
-                emailer.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
-            } else {
-                throw new Error()
-            }
+            var { sessions, email, ...user } = dbResponse
+
+            /*
+                Send email with link to verify updated email
+                inputHandler.desanitize(email.address) replaces my email in production
+            */
+            await emailer.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
 
         // Catch errors
         } catch (error) {
             // Log error details
             logError({
                 filepath: "src/routes/(main)/(public)/login/+page.server.js",
-                message: "Error while creating User entry in db",
+                message: "Error while creating `User` entry in db",
                 arguments: {
                     action: "register",
                     username: formData.username,
@@ -381,7 +467,6 @@ export const actions = {
                 error
             })
 
-            // End action
             return {
                 status: 503,
                 notice: "We couldn't register your account, try again later..."
@@ -392,33 +477,53 @@ export const actions = {
         // Set client's cookies
         await setAuthCookies(cookies, user.id, sessions.at(-1).id)
 
-        // End action
         return {
             status: 200,
             notice: "Successfully registered your account! Check your inbox for a email verification link"
         }
     },
+    // #endregion
 
 
-    // MARK: Reset
-    reset: async ({ request }) => {
+    // #region reset()
+    /**
+     * Action to send a password reset email to the submitted email address.
+     * @async
+     * 
+     * @param {import("@sveltejs/kit").RequestEvent} requestEvent 
+     * 
+     * @returns {{
+            status: Number,
+            notice?: String
+            errors?: {
+                email: String
+            }
+        }}
+     */
+    reset: async ({ request, locals }) => {
+        // If client is logged in
+        if (locals.user) {
+            return { status: 401 }
+        }
+
         // Get form data sent by client
-        const formData = Object.fromEntries(await request.formData())
+        const formData = await getFormData(request)
 
-        // Do not validate email as existing email addresses may not conform to current validation checks
-        // However these users should still be able to reset password
+        /*
+            Do not validate email as existing email addresses may not 
+            conform to current validation checks, however these users 
+            should still be able to reset password
+        */
 
-        // Sanitize email
-        const sanitizedEmail = inputHandler.sanitize(formData.email.toLowerCase())
 
-
+        // TODO: Move to db operations file
         // Get `User` entry to send password reset email
         try {
-            let dbResponse = await prismaClient.User.findFirst({
+            const dbResponse = await dbClient.user.findFirst({
                 // Set field filters
                 where: {
                     email: {
-                        address: sanitizedEmail
+                        address: inputHandler.sanitize(formData.email.toLowerCase())
                     }
                 },
                 // Set fields to return
@@ -432,11 +537,10 @@ export const actions = {
                 }
             })
 
-            // If `dbResponse` is not `undefined`
+            // If `dbResponse` is not `null`
             if (dbResponse) {
                 var { password, ...user } = dbResponse
             } else {
-                // End action
                 return {
                     status: 401,
                     errors: { email: "Email incorrect" }
@@ -448,7 +552,7 @@ export const actions = {
             // Log error details
             logError({
                 filepath: "src/routes/(main)/(public)/login/+page.server.js",
-                message: "Error while fetching User entry from db using form-submitted email address",
+                message: "Error while fetching `User` entry from db using form-submitted email address",
                 arguments: {
                     action: "reset",
                     emailAddress: formData.email
@@ -456,7 +560,6 @@ export const actions = {
                 error
             })
 
-            // End action
             return {
                 status: 503,
                 notice: "We couldn't email you a password reset link, try again later..."
@@ -466,9 +569,12 @@ export const actions = {
 
         // Get the time the last password reset code was sent
         const { codeSentAt } = password
+
         // If last link was sent less than set number of hours ago
-        if (codeSentAt && codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.password.cooldown) > new Date()) {
-            // End action
+        if (
+            codeSentAt && 
+            codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.password.cooldown) > new Date()
+        ) {
             return {
                 status: 422,
                 errors: { email: "Wait between requesting resets"}
@@ -476,9 +582,10 @@ export const actions = {
         }
 
 
-        // Update `User` entry in db with new password reset code
+        // TODO: Move to db operations file
+        // Update `User` entry with new password reset code in db 
         try {
-            let dbResponse = await prismaClient.User.update({
+            const dbResponse = await dbClient.User.update({
                 // Set field filters
                 where: {
                     id: user.id
@@ -507,23 +614,22 @@ export const actions = {
                 }
             })
 
-            // If `dbResponse` is not `undefined`
-            if (dbResponse) {
-                let { email, password } = dbResponse
 
-                // Send email with link to reset password
-                // inputHandler.desanitize(email.address) replaces my email
-                emailer.sendReset("finn.milner@outlook.com", user.id, password.resetCode)
-            } else {
-                throw new Error()
-            }
+            const { email, password } = dbResponse
+
+            /*
+                Send email with link to reset password
+                inputHandler.desanitize(email.address) replaces my email
+            */
+            await emailer.sendPasswordReset("finn.milner@outlook.com", user.id, password.resetCode)
         
         // Catch errors
         } catch (error) {
+            console.log(error)
             // Log error details
             logError({
                 filepath: "src/routes/(main)/(public)/login/+page.server.js",
-                message: "Error updating User entry in db with new password reset code",
+                message: "Error updating `User` entry in db with new password reset code",
                 arguments: {
                     action: "reset",
                     userId: user.id
@@ -531,7 +637,6 @@ export const actions = {
                 error
             })
 
-            // End action
             return {
                 status: 503,
                 notice: "We couldn't email you a password reset link, try again later..."
@@ -539,7 +644,6 @@ export const actions = {
         }
 
 
-        // End action
         return {
             status: 200,
             notice: "Success! Check your inbox for a password reset link"

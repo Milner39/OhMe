@@ -1,8 +1,17 @@
 <script>
     // Get `bars` prop from parent
+    /**
+     * @type {{
+            value: Number,
+            label: String,
+            bgColor: String
+        }[]}
+     *
+     */
     export let bars
 
-    // Get the largest `bar.value`
+
+    // Get the largest `bars[i].value`
     export let maxValue = Math.max(...bars.map(bar => bar.value))
 </script>
 
@@ -10,7 +19,7 @@
     <!-- Create a bar and label for every item in `bars` -->
     {#each bars as bar}
         <!-- Set width as a percentage of "maxValue", 100% filling all available space -->
-        <div class="bar" style="width: {Math.ceil(100*(bar.value / maxValue))}%; background-color: {bar.bgColor};"/>
+        <div class="bar" style="width: {Math.ceil(100 * (bar.value / maxValue))}%; background-color: {bar.bgColor};"/>
         <h6 class="thinFW">{bar.label}</h6>
     {/each}
 </div>

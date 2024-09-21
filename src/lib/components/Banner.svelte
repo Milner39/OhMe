@@ -1,5 +1,5 @@
 <script>
-    // The height of the div containing text
+    // The height of the div containing text in px
     let textHeight = 0
 </script>
 

@@ -1,22 +1,39 @@
 <script>
-    // https://svelte.dev/docs/svelte#onmount
-    // onMount: runs a function as soon as component has been mounted on the DOM
-    // Import functions to handle lifecycle events
-    import { onMount } from "svelte"
+    // #region Imports
 
-    // Prop to indicate how many panes there are
+    /*
+       https://svelte.dev/docs/svelte#onmount
+       Subroutine that runs when the component is mounted
+    */
+    import { onMount } from "svelte"
+    // #endregion
+
+
+
+    /*
+        Get `sideItemCount` prop from parent 
+        to indicate how many panes there are.
+    */
     export let sideItemCount = 0
-    // Prop to indicate what pane is selected
+
+    /*
+        Get `selectedPane` prop from parent
+        to indicate what pane is selected.
+    */
     export let selectedPane = 0
 
-    // The html element containing the pane content
+
+    /** @type {HTMLElement} - The HTML element that contains the pane content. */
     let pane
-    // A boolean indicating if a scroll bar on the `pane` element is shown
+
+    // `boolean` indicating if a scroll bar on `pane` is shown
     let paneScrollBar = false
 
-    // Define function to be ran on mount and resize
+
+
+    // Define subroutine to be ran on mount and resize
     const onResize = () => {
-        // Set the `paneScrollBar` to `true` if a scrollbar is shown
+        // Set `paneScrollBar` to `true` if a scrollbar is shown
         paneScrollBar = pane.clientHeight < pane.scrollHeight
     }
 
@@ -24,20 +41,18 @@
     onMount(() => {
         // Create a resize observer
         const resizeObserver = new ResizeObserver(_ => {
-            // Run resize function
             onResize()
         })
 
-        // Observe the `pane` element
+        // Observe the `pane`
         resizeObserver.observe(pane)
 
         // When component is unmounted
         return () => {
-            // Unobserve all elements
+            // Stop observing
             resizeObserver.disconnect()
         }
     })
-
 </script>
 
 <div class="sidebarPane">

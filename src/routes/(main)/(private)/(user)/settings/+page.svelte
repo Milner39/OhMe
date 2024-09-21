@@ -1,4 +1,6 @@
 <script>
+    // #region Imports
+
     // Import svgs
     import Settings from "$lib/assets/svgs/Settings.svelte"
     import Edit from "$lib/assets/svgs/Edit.svelte"
@@ -9,19 +11,40 @@
     import FormGroup from "$lib/components/FormGroup.svelte"
     import SidebarPane from "$lib/components/SidebarPane.svelte"
 
-    // https://kit.svelte.dev/docs/modules#$app-stores
-    // Import `page` to get page data
+    /*
+        https://kit.svelte.dev/docs/modules#$app-stores-page
+        Store containing page information
+    */
     import { page } from "$app/stores"
+    // #endregion
 
-    // The width in pixels that indicates when the widescreen style change should occur
+
+
+    /*
+        The width in pixels that indicates when the 
+        widescreen style change should occur.
+    */
     let wideModeSize = 850
-    // The width of the html element containing the page content
-    let contentWidth
 
-    // Variable to indicate what form group is shown on wide screens
+    /*
+        The width in pixels of the html element 
+        containing the page content.
+    */
+    let contentWidth = 0
+
+    /*
+        Variable to indicate what form group is shown 
+        on wide screens.
+    */
     let selectedFormGroup = 0
 
-    // Define a function to shrink strings to fit in input placeholder
+
+    /*
+        IMPROVE: Find a more graceful way to do this 
+        without hard coding max lengths. Maybe move this
+        process to the `FormGroup` component.
+    */
+    // Define a subroutine to shrink strings to fit in input placeholder
     const shrinkString = (string) => {
         // If `string` contains less than 16 chars, exit the function
         if (string.length < 16) return string
@@ -29,22 +52,35 @@
         return (string.slice(0,8) + "..." + string.slice(-8))
     }
 
-    // Reactive statements are indicated by the `$:` label
-    // https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
-    // "Reactive statements run
-    //  after other script code
-    //  before the component markup is rendered
-    //  whenever the values that they depend on have changed."
 
-    // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
-    // "...the action can respond with data that will be available through the form property"
-    // Get data returned from form actions
-    $: form = $page.form
 
-    // Reactive statement to update the `user` variable when `$page.data.user` changes
+    /*
+        Reactive statements are indicated by the `$:` label
+        https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
+        "Reactive statements run:
+         - after other script code
+         - before the component markup is rendered
+         - whenever the values that they depend on have changed."
+    */
+
+    /*
+        https://kit.svelte.dev/docs/load#$page-data
+        Get user data from load subroutines
+    */
     $: user = $page.data.user
 
-    // Reactive statement to control the content of form groups
+    /*
+        https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
+        Get data from form actions
+    */
+    $: form = $page.form
+
+
+    /*
+        Object to control the content of each `FormGroup` component.
+        Since a reactive declaration is used, if the values that
+        the object depend on change, so will the values in this object.
+    */
     $: FORM_GROUPS = [
         {
             title: {

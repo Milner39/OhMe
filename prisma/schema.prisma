@@ -5,9 +5,7 @@ generator client {
 }
 
 // https://www.prisma.io/docs/orm/prisma-schema/overview/data-sources
-// Define database provider and url.
-// This project uses a file based database,
-// apposed to one hosted by a provider
+// Define database provider and url
 datasource db {
     provider = "sqlite"
     url      = "file:./database.sqlite"
@@ -16,12 +14,7 @@ datasource db {
 
 
 // https://www.prisma.io/docs/orm/prisma-schema/data-model/models
-// "Models:
-//  Represent the entities of your application domain
-//  Map to the tables ... in your database
-//  Form the foundation of the queries available in the generated Prisma Client API
-//  ..."
-// Define database "Models" (Tables)
+// Define database "models" (Tables)
 model User {
     // Key
     id              String             @id @unique @default(uuid())

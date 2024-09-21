@@ -1,21 +1,33 @@
+// #region Imports
+
 // Import settings
-import { settings as allSettings } from "../settings"
+import { settings as allSettings } from "../settings.js"
 const { sanitization: settings } = allSettings
+// #endregion
+
+
 
 // Create an object with subroutines to handle user inputs
-export const inputHandler = {
-    // #region VALIDATION
+const inputHandler = {
+    // #region Validation
     // Subroutines to validate inputs match certain formats
     validate: {
         /*
-            IMPROVE: Use switch case statement to check for more specific error messages
+            IMPROVE: Return specific reasons why checks fail.
             Example: case email.length > 50 { error.email = "Email too long"}
-            If no cases are hit, no errors.
         */
+
+        /**
+         * Check if a string fits the format for a username.
+         * 
+         * @param {String} input - The `String` to check.
+         * 
+         * @returns {Boolean}
+         */
         username: (input) => {
             return (
                 typeof input === "string" &&
-                input.length <= 25 &&
+                input.length <= 50 &&
                 input.length >= 1 &&
                 /*  
                     ^              Start string
@@ -28,11 +40,20 @@ export const inputHandler = {
                 /^(?!\s)(.*?)(?<!\s)$/.test(input)
             ) 
         },
+
+
+        /**
+         * Check if a string fits the format for a password.
+         * 
+         * @param {String} input - The `String` to check.
+         * 
+         * @returns {Boolean}
+         */
         password: (input) => {
             return (
                 typeof input === "string" &&
-                input.length <= 50 &&
-                input.length >= 1 &&
+                input.length <= 256 &&
+                input.length >= 8 &&
                 /*
                     ^              Start string
                     (?!\s)         Anything but whitespace
@@ -44,6 +65,15 @@ export const inputHandler = {
                 /^(?!\s)(.*?)(?<!\s)$/.test(input)
             ) 
         },
+
+
+        /**
+         * Check if a string fits the format for an email.
+         * 
+         * @param {String} input - The `String` to check.
+         * 
+         * @returns {Boolean}
+         */
         email: (input) => {
             return (
                 typeof input === "string" &&
@@ -62,6 +92,16 @@ export const inputHandler = {
                 /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)*\.[A-Za-z]{2,}$/.test(input)
             )
         },
+
+
+
+        /**
+         * Check if a string fits the format for a uuid.
+         * 
+         * @param {String} input - The `String` to check.
+         * 
+         * @returns {Boolean}
+         */
         uuid: (input) => {
             return (
                 typeof input === "string" &&
@@ -74,40 +114,68 @@ export const inputHandler = {
 
 
 
-    // #region (DE)SANITATION
-    /*
-        Prisma uses "Prepared statements" so input sanitation is 
-        not necessary as there is no risk of SQL injection attacks.
-        It will be used regardless of necessity in case the database 
-        provider is changed in the future.
-    */
+    // #region Sanitization
+    /**
+     * Replace certain chars with escape code representations.
+     * 
+     * @param {String} input - The `String` to sanitize.
+     * 
+     * @returns {String}
+     */
     sanitize: (input) => {
         if (typeof input !== "string") {
-            throw new Error("'input' must be type 'string'")
+            throw new Error("`input` must be type `string`")
         }
+
         let sanitized = input
+
         // Replace special characters with escape codes
         for (const charCode of settings.charCodes) {
             sanitized = sanitized.replaceAll(charCode.char, charCode.code)
         }
         return sanitized
     },
+    // #endregion
 
+
+
+    // #region Desanitization
+    /**
+     * Replace escape codes with the char they represent.
+     * 
+     * @param {String} input - The `String` to desanitize.
+     * 
+     * @returns {String}
+     */
     desanitize: (input) => {
         if (typeof input !== "string") {
-            throw new Error("'input' must be type 'string'")
+            throw new Error("`input` must be type `string`")
         }
+
         let desanitized = input
+
         // Clone the array and remove the first item
         const firstCharCodes = [...settings.charCodes]
         firstCharCodes.shift()
+
         // Replace escape codes with original characters
         for (const charCode of firstCharCodes) {
             desanitized = desanitized.replaceAll(charCode.code, charCode.char)
         }
-        /* Lastly, replace the escape code representing the character 
-           that indicates the start of an escape code */
+        /* 
+           Lastly, replace the escape code representing the character 
+           that indicates the start of an escape code. 
+        */
         return desanitized.replaceAll(settings.charCodes[0].code, settings.charCodes[0].char)
     }
     // #endregion
 }
+
+
+
+// #region Exports
+
+// Default export
+export default inputHandler
+
+// #endregion

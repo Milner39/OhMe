@@ -1,29 +1,63 @@
 <script>
-    // https://svelte.dev/docs/svelte#onmount
-    // onMount: runs a function as soon as component has been mounted on the DOM
-    // Import functions to handle lifecycle events
+    // #region Imports
+
+    /*
+       https://svelte.dev/docs/svelte#onmount
+       Subroutine that runs when the component is mounted
+    */
     import { onMount } from "svelte"
 
-    // https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
-    // "Without an argument, use:enhance will emulate the browser-native behaviour, just without the full-page reloads."
+    /*
+        https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
+        Form action to improve the default behaviour of form elements
+    */
     import { enhance } from "$app/forms"
+    // #endregion
+
+
 
     // Get `forms` prop from parent
+    /**
+     * @type {{
+            attributes: {
+                "": any[]
+            },
+            inputs: {
+                id: String,
+                label: {
+                    attributes: {
+                        "": any[]
+                    },
+                    text: String
+                },
+                attributes: {
+                    "": any[]
+                }
+            }[]
+        }[]}
+     */
     export let forms
 
-    // The form html elements
-    let formElements = []
-
-    // The child of each label html element in 2D array
-    let labelTexts = []
-    for (let i = 0; i < forms.length; i++) {labelTexts.push([])}
-
-    // The width of the widest label
+    // The width of the widest label in px
     export let labelWidth = 0
 
-    // Define function to be ran on mount and resize
+
+    /** @type {HTMLFormElement[]} - The form HTML elements. */
+    let formElements = []
+
+    /**
+     * @type {HTMLElement[][]} - 2D array of the children of the label elements.
+     * - 1st dimension indicates the index of the form it is in.
+     * - 2nd dimension indicates the index of the label it is in.
+    */
+    let labelTexts = []
+    for (let i = 0; i < forms.length; i++) labelTexts.push([])
+
+
+
+    // Define subroutine to be ran on mount and resize
     const onResize = () => {
-        // Calculate widest width of labels
+        // Calculate widest width of `labelText` items
         labelWidth = Math.max(...[].concat(...labelTexts).map(label => label.clientWidth))
     }
 
@@ -31,18 +65,17 @@
     onMount(() => {
         // Create a resize observer
         const resizeObserver = new ResizeObserver(_ => {
-            // Run resize function
             onResize()
         })
 
-        // Observe the `formElements` elements
+        // Observe the `formElements`
         for (const form of formElements) {
             resizeObserver.observe(form)
         }
 
         // When component is unmounted
         return () => {
-            // Unobserve all elements
+            // Stop observing
             resizeObserver.disconnect()
         }
     })
@@ -58,22 +91,22 @@
         use:enhance
     >
         <!-- Create a label and input for every item in `form.inputs` -->
-        {#each form?.inputs || [] as input, j}
+        {#each form.inputs || [] as input, j}
             <div class="inputContainer">
                 <!-- Set width as largest label so all inputs line up -->
                 <label 
-                    {...input.label?.attributes} 
+                    {...input?.label?.attributes} 
                     style="width: {labelWidth}px" 
-                    for={input.id}
+                    for={input?.id}
                 >
                     <!-- Bind h6 to `labelTexts[i][j]` so it can be accessed by the script -->
                     <h6 bind:this={labelTexts[i][j]}>
-                        {input.label?.text}
+                        {input?.label?.text}
                     </h6>
                 </label>
                 <input 
-                    {...input.attributes} 
-                    id={input.id}
+                    {...input?.attributes} 
+                    id={input?.id}
                     on:keypress={(e) => {
                         // Form with multiple inputs wont submit by default on "Enter"
                         if (e.key === "Enter") {

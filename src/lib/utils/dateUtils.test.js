@@ -1,14 +1,19 @@
+// #region Imports
 import { describe, test, expect, assert } from "vitest"
-import { format } from "./dateUtils.js"
+import { format, dateFromNow } from "./dateUtils.js"
+// #endregion
 
-describe("format", () => {
-    describe("Returns the string value of a given 'Date' object in 'DD/MM/YYYY hh:mm:ss' format", () => {
-        test("Fails if the 'date' argument is not valid 'Date' object", () => {
+
+
+// #region format()
+describe("format()", () => {
+    describe("Returns the string value of a given `Date` object in 'DD/MM/YYYY hh:mm:ss' format", () => {
+        test("Fails if `date` is not valid `Date` object", () => {
             assert.throws(() => format(null))
         })
     
-        describe("Given 'date' argument is valid 'Date' object", () => {
-            test("Correct values extracted from 'date' argument", () => {
+        describe("Given `date` argument is valid `Date` object", () => {
+            test("Correct values extracted from `date` argument", () => {
                 const result = format(new Date("November 10, 2024 16:20:30"))
                 expect(result).toBe("10/11/2024 16:20:30")
             })
@@ -19,3 +24,26 @@ describe("format", () => {
         })
     })
 })
+// #endregion
+
+
+// #region dateFromNow()
+describe("dateFromNow()", () => {
+    describe("Returns a `Date` object `difference`ms in the future", () => {
+        test("Fails if `difference` is not type `number`", () => {
+            assert.throws(() => dateFromNow(null))
+        })
+
+        describe("Given `difference` is type `number`", () => {
+            test("Correct date returned", () => {
+                const result = dateFromNow(24 * (60 ** 2) * 1000)
+
+                const tomorrow = new Date()
+                tomorrow.setDate(tomorrow.getDate() + 1)
+        
+                expect(result).toEqual(tomorrow)
+            })
+        })
+    })
+})
+// #endregion

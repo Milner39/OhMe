@@ -1,4 +1,6 @@
 <script>
+    // #region Imports
+
     // Import svgs
     import UserAdd from "$lib/assets/svgs/UserAdd.svelte"
     import Search from "$lib/assets/svgs/Search.svelte"
@@ -11,34 +13,156 @@
     import AutoScroll from "$lib/components/AutoScroll.svelte"
     import LoadingAnimation from "$lib/components/LoadingAnimation.svelte"
 
-    // https://kit.svelte.dev/docs/modules#$app-stores
-    // Import `page` to get page data
+    /*
+        https://kit.svelte.dev/docs/modules#$app-stores-page
+        Store containing page information
+    */
     import { page } from "$app/stores"
 
-    // https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
-    // "Without an argument, use:enhance will emulate the browser-native behaviour, just without the full-page reloads."
+    /*
+        https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
+        Form action to improve the default behaviour of form elements
+    */
     import { enhance } from "$app/forms"
+    // #endregion
 
-    // Variable containing all search information
+
+
+    // Object containing all search information
     const search = {
         value: "",
         result: null,
         loading: false
     }
 
-    // Variable controlling which pane to show
+    /*
+        `boolean` indicating if the received friend 
+        requests pane is shown. Otherwise show sent 
+        friend request pane.
+    */
     let showReceived = true
 
-    // Reactive statements are indicated by the `$:` label
-    // https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
-    // "Reactive statements run
-    //  after other script code
-    //  before the component markup is rendered
-    //  whenever the values that they depend on have changed."
 
-    // https://kit.svelte.dev/docs/load#$page-data
-    // "...has access to its own data plus all the data from its parents."
-    // Get data from load functions
+
+    // #region Form Submissions
+        // #region submit_sendFriendRequest
+    /**
+     * Form submit function to send a `POST` request to
+     * an endpoint that sends a friend request to another `User`
+     * https://kit.svelte.dev/docs/types#public-types-submitfunction
+     * 
+     * 
+     * @param {{
+	        action: URL,
+	        formData: FormData,
+	        formElement: HTMLFormElement,
+	        controller: AbortController,
+	        submitter: HTMLElement | null,
+	        cancel(): void
+        }} submissionDetails
+     *
+     * @param {String} username - The username of a `User` 
+       entry to send friend request.
+     *
+     *
+     * @returns {
+            ((options: {
+                formData: FormData,
+                formElement: HTMLFormElement,
+                action: URL,
+                result: import("@sveltejs/kit").ActionResult<Success, Failure>,
+                update(options?: {
+                    reset?: Boolean,
+                    invalidateAll?: Boolean
+                }): Promise<void>
+            }) => void)
+        }
+     */
+    const submit_sendFriendRequest = ({ formData }, username) => {
+        // Add username to `formData`
+        formData.append("username", username)
+
+        // Submit form
+        return async ({ result, update }) => {
+            // If success
+            if (result.data?.status === 200) {
+                /*
+                    If `username` is the username of any `User` 
+                    entry that has been returned in the search result.
+                */
+                if (search.result?.users?.[username]) {
+                    // Update search results to reflect change
+                    search.result.users[username].sent = true
+                }
+            }
+            await update()
+        }
+    }
+        // #endregion
+
+
+        // #region submit_cancelFriendRequest
+    /**
+     * Form submit function to send a `POST` request to
+     * an endpoint that cancels a friend request to another `User`
+     * https://kit.svelte.dev/docs/types#public-types-submitfunction
+     * 
+     * 
+     * @param {{
+	        action: URL,
+	        formData: FormData,
+	        formElement: HTMLFormElement,
+	        controller: AbortController,
+	        submitter: HTMLElement | null,
+	        cancel(): void
+        }} submissionDetails
+     *
+     * @param {String} username - The username of a `User` 
+       entry to send friend request.
+     *
+     *
+     * @returns {
+            ((options: {
+                formData: FormData,
+                formElement: HTMLFormElement,
+                action: URL,
+                result: import("@sveltejs/kit").ActionResult<Success, Failure>,
+                update(options?: {
+                    reset?: Boolean,
+                    invalidateAll?: Boolean
+                }): Promise<void>
+            }) => void)
+        }
+     */
+     const submit_cancelFriendRequest = ({ formData }, username) => {
+        // Add username to `formData`
+        formData.append("username", username)
+
+        // Submit form
+        return async ({ result, update }) => {
+            // If success
+            if (result.data?.status === 200) {
+                /*
+                    If `username` is the username of any `User` 
+                    entry that has been returned in the search result.
+                */
+                if (search.result?.users?.[username]) {
+                    // Update search results to reflect change
+                    search.result.users[username].sent = false
+                }
+            }
+            await update()
+        }
+    }
+        // #endregion
+    // #endregion
+
+
+
+    /*
+        https://kit.svelte.dev/docs/load#$page-data
+        Get data from load subroutines
+    */
     $: data = $page.data
 </script>
 
@@ -84,6 +208,11 @@
                                 search: search.value
                             }),
                             headers: {
+                                /*
+                                    TODO: Move the contents of `./+server.js` into 
+                                    a form action and use
+                                    "x-sveltekit-action": "true"
+                                */
                                 "Content-Type": "application/json"
                             }
                         })
@@ -110,18 +239,8 @@
                                 <!-- Display if client has not sent friend request to this user  -->
                                 {#if !status.sent}
                                     <form method="POST" action="?/sendFriendRequest"
-                                        use:enhance={({ formData }) => {
-                                            // Add username to `formData`
-                                            formData.append("username", username)
-                                            // Submit form
-                                            return async ({ result, update }) => {
-                                                // If success
-                                                if (result.data?.status === 200) {
-                                                    // Update search results to reflect change
-                                                    search.result.users[username].sent = true
-                                                }
-                                                await update()
-                                            }
+                                        use:enhance={(submissionDetails) => { 
+                                            return submit_sendFriendRequest(submissionDetails, username) 
                                         }}
                                     >
                                         <button class="button-pill" type="submit">
@@ -132,18 +251,8 @@
                                 <!-- Display if client has sent friend request to this user  -->
                                 {:else}
                                     <form method="POST" action="?/cancelFriendRequest"
-                                        use:enhance={({ formData }) => {
-                                            // Add username to `formData`
-                                            formData.append("username", username)
-                                            // Submit form
-                                            return async ({ result, update }) => {
-                                                // If success
-                                                if (result.data?.status === 200) {
-                                                    // Update search results to reflect change
-                                                    search.result.users[username].sent = false
-                                                }
-                                                await update()
-                                            }
+                                        use:enhance={(submissionDetails) => {
+                                            return submit_cancelFriendRequest(submissionDetails, username)
                                         }}
                                     >
                                         <button class="button-slim button-svg" type="submit">
@@ -200,19 +309,8 @@
                                         <Close/>
                                     </button>
                                     <form method="POST" action="?/sendFriendRequest"
-                                        use:enhance={({ formData }) => {
-                                            // Add username to `formData`
-                                            formData.append("username", username)
-                                            // Submit form
-                                            return async ({ result, update }) => {
-                                                // If success
-                                                if (result.data?.status === 200) {
-                                                    // Update search results to reflect change
-                                                    const user = search.result?.users[username]
-                                                    if (user) search.result.users[username].sent = true
-                                                }
-                                                await update()
-                                            }
+                                        use:enhance={(submissionDetails) => {
+                                            return submit_sendFriendRequest(submissionDetails, username)
                                         }}
                                     >
                                         <button class="button-pill" type="submit">
@@ -243,19 +341,8 @@
                                         <h6>{username}</h6>
                                     </div>
                                     <form method="POST" action="?/cancelFriendRequest"
-                                        use:enhance={({ formData }) => {
-                                            // Add username to `formData`
-                                            formData.append("username", username)
-                                            // Submit form
-                                            return async ({ result, update }) => {
-                                                // If success
-                                                if (result.data?.status === 200) {
-                                                    // Update search results to reflect change
-                                                    const user = search.result?.users[username]
-                                                    if (user) search.result.users[username].sent = false
-                                                }
-                                                await update()
-                                            }
+                                        use:enhance={(submissionDetails) => {
+                                            return submit_cancelFriendRequest(submissionDetails, username)
                                         }}
                                     >
                                         <button class="button-slim button-svg" type="submit">
@@ -290,19 +377,8 @@
                                     <h6>{username}</h6>
                                 </div>
                                 <form method="POST" action="?/cancelFriendRequest"
-                                    use:enhance={({ formData }) => {
-                                        // Add username to `formData`
-                                        formData.append("username", username)
-                                        // Submit form
-                                        return async ({ result, update }) => {
-                                            // If success
-                                            if (result.data?.status === 200) {
-                                                // Update search results to reflect change
-                                                const user = search.result?.users[username]
-                                                if (user) search.result.users[username].sent = false
-                                            }
-                                            await update()
-                                        }
+                                    use:enhance={(submissionDetails) => {
+                                        return submit_cancelFriendRequest(submissionDetails, username)
                                     }}
                                 >
                                     <button class="button-slim button-svg" type="submit">

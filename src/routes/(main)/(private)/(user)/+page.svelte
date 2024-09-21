@@ -1,4 +1,6 @@
 <script>
+    // #region Imports
+
     // Import svgs
     import Wallet from "$lib/assets/svgs/Wallet.svelte"
 
@@ -6,6 +8,7 @@
     import Banner from "$lib/components/Banner.svelte"
     import AutoScroll from "$lib/components/AutoScroll.svelte"
     import BarChart from "$lib/components/BarChart.svelte"
+    // #endregion
 </script>
 
 <Banner>
@@ -34,7 +37,7 @@
                     }
                 ]}
             />
-            <h6>Total Cashflow: <span class="thickFW">£241</span></h6>
+            <h6>Total Cash Flow: <span class="thickFW">£241</span></h6>
         </div>
     </div>
 </div>
