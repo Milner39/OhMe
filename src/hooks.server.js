@@ -6,7 +6,7 @@
 */
 import { sequence } from "@sveltejs/kit/hooks"
 
-import { settings }  from "./lib/settings"
+import { settings }  from "$lib/settings"
 // #endregion
 
 
@@ -14,10 +14,10 @@ import { settings }  from "./lib/settings"
 // #region Handles
     // #region auth()
         // #region Specific Imports
-import dbClient from "./lib/server/prisma.js"
-import inputHandler from "./lib/server/inputHandler.js"
-import logError from "./lib/server/errorLogger.js"
-import { dateFromNow } from "./lib/utils/dateUtils"
+import dbClient from "$lib/server/prisma.js"
+import inputHandler from "$lib/server/inputHandler.js"
+import logError from "$lib/server/errorLogger.js"
+import { dateFromNow } from "$lib/utils/dateUtils"
         // #endregion
 
 

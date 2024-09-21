@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+      "baseUrl": ".",
+      "paths": {
+        // Map "$lib" to the `/src/lib` directory
+        "$lib/*": ["src/lib/*"]
+      }
+    },
+    "exclude": ["node_modules", ".svelte-kit"]
+}
