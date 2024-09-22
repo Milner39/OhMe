@@ -1,5 +1,5 @@
 // #region Imports
-import dbClient from "$lib/server/database/prisma/prisma.js"
+import dbClient from "$lib/server/database/prisma/dbClient.js"
 import inputHandler from "$lib/server/utils/inputHandler.js"
 import logError from "$lib/server/utils/errorLogger.js"
 import { settings }  from "$lib/settings.js"
