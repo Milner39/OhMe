@@ -34,6 +34,11 @@ const config = {
 			envPrefix: "NODE_SERVER_",
 		}),
 
+		// Paths to various files / directories
+		files: {
+			lib: "src/lib"
+		},
+
 		// The directory for SvelteKit to write temp files and cache
 		outDir: ".svelte-kit",
 
