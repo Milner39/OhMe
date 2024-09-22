@@ -1,6 +1,6 @@
 // #region Imports
-import dbClient from "$lib/server/prisma.js"
-import inputHandler from "$lib/server/inputHandler.js"
+import dbClient from "./prisma.js"
+import inputHandler from "../../inputHandler.js"
 // #endregion
 
 

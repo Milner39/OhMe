@@ -14,7 +14,7 @@ import { settings }  from "$lib/settings"
 // #region Handles
     // #region auth()
         // #region Specific Imports
-import dbClient from "$lib/server/prisma.js"
+import dbClient from "$lib/server/database/prisma/prisma.js"
 import inputHandler from "$lib/server/inputHandler.js"
 import logError from "$lib/server/errorLogger.js"
 import { dateFromNow } from "$lib/utils/dateUtils"

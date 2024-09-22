@@ -121,7 +121,7 @@ export const load = async ({ locals }) => {
 
 // #region actions
     // #region Specific Imports
-import dbClient from "$lib/server/prisma.js"
+import dbClient from "$lib/server/database/prisma/prisma.js"
 import logError from "$lib/server/errorLogger.js"
     // #endregion
 

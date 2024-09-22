@@ -1,5 +1,5 @@
 // #region Imports
-import dbClient from "./prisma.js"
+import dbClient from "$lib/server/database/prisma/prisma.js"
 import dataUtils from "../utils/dateUtils.js"
 import chalk from "chalk"
 // #endregion

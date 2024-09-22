@@ -1,5 +1,5 @@
 // #region Imports
-import dbClient from "$lib/server/prisma.js"
+import dbClient from "$lib/server/database/prisma/prisma.js"
 import inputHandler from "$lib/server/inputHandler.js"
 import logError from "$lib/server/errorLogger.js"
 
@@ -50,7 +50,7 @@ export const POST = async ({ request, locals }) => {
     */
     try {
         // Get `User` entry with exactly matching username
-        let exactMatch = await dbClient.User.findFirst({
+        let exactMatch = await dbClient.user.findFirst({
             // Set field filters
             where: {
                 AND: [
@@ -73,7 +73,7 @@ export const POST = async ({ request, locals }) => {
         })
 
         // Get `User` entries with partially matching username
-        let partialMatch = await dbClient.User.findMany({
+        let partialMatch = await dbClient.user.findMany({
             /* 
                 Set quantity of results
                 - If an exact match was found, 9, else 10

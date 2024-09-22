@@ -27,7 +27,7 @@ export const load = async ({ url }) => {
 
 
 // #region Imports
-import dbClient from "$lib/server/prisma.js"
+import dbClient from "$lib/server/database/prisma/prisma.js"
 import inputHandler from "$lib/server/inputHandler.js"
 import { stringHasher } from "$lib/server/hashUtils.js"
 import { emailer } from "$lib/server/emailUtils.js"
@@ -216,7 +216,7 @@ export const actions = {
         // TODO: Move to db operations file
         // Create `Session` entry connected to a `User` in db
         try {
-            const dbResponse = await dbClient.User.update({
+            const dbResponse = await dbClient.user.update({
                 // Set field filters
                 where: {
                     id: user.id
@@ -335,7 +335,7 @@ export const actions = {
         // TODO: Move to db operations file
         // Get `User` entries with the same username or email as submitted by client
         try {
-            const dbResponse = await dbClient.User.findMany({
+            const dbResponse = await dbClient.user.findMany({
                 // Set field filters
                 where: {
                     OR: [
@@ -405,7 +405,7 @@ export const actions = {
         // TODO: Move to db operations file
         // Create `User` entry connected to created `Session` entry in db
         try {
-            const dbResponse = await dbClient.User.create({
+            const dbResponse = await dbClient.user.create({
                 // Set field data
                 data: {
                     username: sanitizedUsername,
@@ -585,7 +585,7 @@ export const actions = {
         // TODO: Move to db operations file
         // Update `User` entry with new password reset code in db 
         try {
-            const dbResponse = await dbClient.User.update({
+            const dbResponse = await dbClient.user.update({
                 // Set field filters
                 where: {
                     id: user.id

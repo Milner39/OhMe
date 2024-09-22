@@ -1,5 +1,5 @@
 // #region Imports
-import dbClient from "$lib/server/prisma.js"
+import dbClient from "$lib/server/database/prisma/prisma.js"
 import inputHandler from "$lib/server/inputHandler.js"
 import logError from "$lib/server/errorLogger.js"
 import { settings }  from "$lib/settings.js"
@@ -115,7 +115,7 @@ export const load = async ({ url }) => {
         // TODO: Move to db operations file
         // Update `User` entry in db
         try {
-            await dbClient.User.update({
+            await dbClient.user.update({
                 // Set field filters
                 where: {
                     id: userId,

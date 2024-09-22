@@ -1,5 +1,5 @@
 // #region Imports
-import dbClient from "$lib/server/prisma.js"
+import dbClient from "$lib/server/database/prisma/prisma.js"
 import inputHandler from "$lib/server/inputHandler.js"
 import { dateFromNow } from "$lib/utils/dateUtils.js"
 import { stringHasher } from "$lib/server/hashUtils.js"
