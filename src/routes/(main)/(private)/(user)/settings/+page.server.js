@@ -360,7 +360,7 @@ export const actions = {
         const hash = await stringHasher.hash(formData.newPassword)
 
         try {
-            await prismaClient.User.update({
+            await dbClient.user.update({
                 // Set field filters
                 where: {
                     id: user.id
