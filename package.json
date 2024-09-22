@@ -16,7 +16,10 @@
 	},
 	"prisma": {
 		"schema": "src/lib/server/database/prisma/schema.prisma",
-		"seed": "node src/lib/server/database/prisma/seed.js"
+		"seed": "node --no-warnings --loader ./aliasLoader.mjs src/lib/server/database/prisma/seed.js"
+	},
+	"aliases": {
+		"$lib": "src/lib"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "^5.0.1",

@@ -1,13 +1,6 @@
 // #region Imports
-import dbClient from "./prisma.js"
-import inputHandler from "../../utils/inputHandler.js"
-/*
-    ISSUE: "$lib" alias does not work.
-
-    FIX: 
-        Create a script to run this file with vite,
-        since vite resolves the aliases.
-*/
+import dbClient from "$lib/server/database/prisma/prisma.js"
+import inputHandler from "$lib/server/utils/inputHandler.js"
 // #endregion
 
 
