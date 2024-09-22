@@ -1,6 +1,6 @@
 // #region Imports
 import { describe, test, expect, assert } from "vitest"
-import { deleteKeys, deepMerge, mapWithRule } from "./objectUtils.js"
+import { deleteKeys, deepMerge, mapWithRule } from "$lib/client/utils/objectUtils.js"
 // #endregion
 
 

@@ -1,6 +1,6 @@
 // #region Imports
 import { describe, test, expect, assert } from "vitest"
-import { format, dateFromNow } from "./dateUtils.js"
+import { format, dateFromNow } from "$lib/client/utils/dateUtils.js"
 // #endregion
 
 

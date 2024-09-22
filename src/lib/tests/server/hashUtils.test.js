@@ -1,6 +1,6 @@
 // #region Imports
 import { describe, test, expect } from "vitest"
-import { stringHasher } from "./hashUtils.js"
+import { stringHasher } from "$lib/server/utils/hashUtils.js"
 // #endregion
 
 

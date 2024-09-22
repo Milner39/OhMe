@@ -1,9 +1,9 @@
 // #region Imports
 import dbClient from "$lib/server/database/prisma/prisma.js"
-import inputHandler from "$lib/server/inputHandler.js"
-import { stringHasher } from "$lib/server/hashUtils.js"
-import { emailer } from "$lib/server/emailUtils.js"
-import logError from "$lib/server/errorLogger.js"
+import inputHandler from "$lib/server/utils/inputHandler.js"
+import { stringHasher } from "$lib/server/utils/hashUtils.js"
+import { emailer } from "$lib/server/utils/emailUtils.js"
+import logError from "$lib/server/utils/errorLogger.js"
 // #endregion
 
 

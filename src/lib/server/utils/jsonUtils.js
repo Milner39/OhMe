@@ -1,6 +1,6 @@
 // #region Imports
 import fs from "fs"
-import { deepMerge } from "../utils/objectUtils.js"
+import { deepMerge } from "../../client/utils/objectUtils.js"
 // #endregion
 
 

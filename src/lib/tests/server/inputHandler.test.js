@@ -1,6 +1,6 @@
 // #region General Imports
 import { describe, test, expect, assert } from "vitest"
-import inputHandler from "./inputHandler.js"
+import inputHandler from "$lib/server/utils/inputHandler.js"
 // #endregion
 
 
@@ -125,7 +125,7 @@ describe("validate", () => {
 // #region (De)Sanitization
     // #region Specific Imports
 // Import settings
-import { settings as allSettings } from "../settings"
+import { settings as allSettings } from "../../settings.js"
 const { sanitization: settings } = allSettings
     // #endregion
 

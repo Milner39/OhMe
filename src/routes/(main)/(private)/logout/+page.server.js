@@ -1,6 +1,6 @@
 // #region Imports
 import dbClient from "$lib/server/database/prisma/prisma.js"
-import logError from "$lib/server/errorLogger.js"
+import logError from "$lib/server/utils/errorLogger.js"
 // #endregion
 
 

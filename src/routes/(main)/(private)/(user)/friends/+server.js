@@ -1,7 +1,7 @@
 // #region Imports
 import dbClient from "$lib/server/database/prisma/prisma.js"
-import inputHandler from "$lib/server/inputHandler.js"
-import logError from "$lib/server/errorLogger.js"
+import inputHandler from "$lib/server/utils/inputHandler.js"
+import logError from "$lib/server/utils/errorLogger.js"
 
 /*
     https://kit.svelte.dev/docs/modules#sveltejs-kit-json

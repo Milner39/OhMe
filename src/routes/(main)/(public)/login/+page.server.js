@@ -28,11 +28,11 @@ export const load = async ({ url }) => {
 
 // #region Imports
 import dbClient from "$lib/server/database/prisma/prisma.js"
-import inputHandler from "$lib/server/inputHandler.js"
-import { stringHasher } from "$lib/server/hashUtils.js"
-import { emailer } from "$lib/server/emailUtils.js"
-import logError from "$lib/server/errorLogger.js"
-import { dateFromNow } from "$lib/utils/dateUtils"
+import inputHandler from "$lib/server/utils/inputHandler.js"
+import { stringHasher } from "$lib/server/utils/hashUtils.js"
+import { emailer } from "$lib/server/utils/emailUtils.js"
+import logError from "$lib/server/utils/errorLogger.js"
+import { dateFromNow } from "$lib/client/utils/dateUtils"
 import { settings }  from "$lib/settings.js"
 // #endregion
 

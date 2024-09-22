@@ -1,7 +1,7 @@
 // #region Imports
 
 // Import settings
-import { settings as allSettings } from "../settings.js"
+import { settings as allSettings } from "$lib/settings.js"
 const { sanitization: settings } = allSettings
 // #endregion
 

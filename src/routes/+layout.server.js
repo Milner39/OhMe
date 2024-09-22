@@ -1,6 +1,6 @@
 // #region Imports
-import { deleteKeys, mapWithRule } from "$lib/utils/objectUtils.js"
-import inputHandler from "$lib/server/inputHandler.js"
+import { deleteKeys, mapWithRule } from "$lib/client/utils/objectUtils.js"
+import inputHandler from "$lib/server/utils/inputHandler.js"
 // #endregion
 
 

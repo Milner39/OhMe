@@ -3,7 +3,7 @@
 /TODO.txt
 
 # Installed dependencies
-node_modules
+/node_modules
 
 # SvelteKit temp files
 /.svelte-kit
@@ -25,4 +25,4 @@ vite.config.ts.timestamp-*
 *.sqlite-journal
 
 # Test data files
-/tests/testData.*
+**/tests/testData.*json

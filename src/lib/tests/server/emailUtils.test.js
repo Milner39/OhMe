@@ -1,15 +1,15 @@
 // #region Imports
 import { describe, test, expect, onTestFinished } from "vitest"
-import { createTransport, createEmailer } from "./emailUtils.js"
+import { createTransport, createEmailer } from "$lib/server/utils/emailUtils.js"
 import path from "path"
-import jsonUtils from "./jsonUtils.js"
+import jsonUtils from "$lib/server/utils/jsonUtils.js"
 // #endregion
 
 
 
 // #region Test Data
 // Get test data object from JSON file
-const testDataPath = path.resolve(process.cwd(), "tests/testData.json")
+const testDataPath = path.resolve(process.cwd(), "src/lib/tests/testData.json")
 const testData = jsonUtils.read_createIfNotExists(testDataPath).emailUtils || {}
 
 const updateTestDataKey_clearIfFail = (state, key) => {

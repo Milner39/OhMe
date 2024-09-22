@@ -1,5 +1,5 @@
 // #region General Imports
-import inputHandler from "$lib/server/inputHandler.js"
+import inputHandler from "$lib/server/utils/inputHandler.js"
 // #endregion
 
 
@@ -122,7 +122,7 @@ export const load = async ({ locals }) => {
 // #region actions
     // #region Specific Imports
 import dbClient from "$lib/server/database/prisma/prisma.js"
-import logError from "$lib/server/errorLogger.js"
+import logError from "$lib/server/utils/errorLogger.js"
     // #endregion
 
 
