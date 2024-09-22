@@ -10,6 +10,7 @@ export const load = async ({ url }) => {
         login: "You must be logged in to access that page.",
         admin: "Admin privileges are required to access that page."
     }
+
     // Set `notice` based on search parameter
     const notice = notices[url.searchParams.get("protected")] || null
 
