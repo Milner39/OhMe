@@ -43,12 +43,13 @@ const getAbsoluteAliases = () => {
 	const aliases = npmPackage.aliases || {}
 
 	const absoluteAliases = Object.entries(aliases).reduce((aliasesObject, [alias, path_]) => {
-		return {...aliasesObject, [alias]:
-
-			// If alias is set to an absolute path
-			path_ === '/' ? 
-				path_ : 
-				path.join(platformPrefix, base, path_)
+		return {
+			...aliasesObject, 
+			[alias]: 
+				// If alias is set to an absolute path
+				path_ === '/' ? 
+					path_ : 
+					path.join(platformPrefix, base, path_)
 		}
 	}, {})
 
