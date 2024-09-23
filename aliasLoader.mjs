@@ -1,6 +1,15 @@
 /*
 	https://nodejs.org/api/esm.html#esm_loaders
-	Create custom ESM loader to resolve path aliases in `package.json`
+	Create custom ESM loader to resolve path aliases in `package.json`.
+
+	This should be used when a script is run with node but imports files
+	using path aliases.
+
+
+	How to use:
+	`node --no-warnings --loader {path_to_this_file} {path_to_target_script}`
+
+	`--no-warnings` is optional.
 */
 
 // #region Imports
