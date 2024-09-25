@@ -28,7 +28,7 @@ const sessionInclude = {
 
 // #region findUnique()
 /**
- * Fetch a single `Session` entry from the database.
+ * Fetch a single `Session` entry.
  * @async
  * 
  * @param {Prisma.SessionWhereInput} filter - 
@@ -93,7 +93,7 @@ const findUnique = async (filter) => {
 
 // #region findMany()
 /**
- * Fetch multiple `Session` entries from the database.
+ * Fetch multiple `Session` entries.
  * @async
  * 
  * @param {Prisma.SessionFindManyArgs} options - 

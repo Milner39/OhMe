@@ -22,7 +22,7 @@ const userInclude = {
 
 // #region findUnique()
 /**
- * Fetch a single `User` entry from the database.
+ * Fetch a single `User` entry.
  * @async
  * 
  * @param {Prisma.UserWhereInput} filter - 
@@ -86,7 +86,7 @@ const findUnique = async (filter) => {
 
 // #region findMany()
 /**
- * Fetch multiple `User` entries from the database.
+ * Fetch multiple `User` entries.
  * @async
  * 
  * @param {Prisma.UserFindManyArgs} options - 
