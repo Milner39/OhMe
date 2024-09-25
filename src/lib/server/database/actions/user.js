@@ -136,3 +136,21 @@ const findMany = async (options) => {
 // #endregion
 
 // #endregion
+
+
+
+// #region Exports
+
+// Define object to hold all `User` actions
+const userActions = {
+    findUnique,
+    findMany
+}
+
+// Default export for the entire object
+export default userActions
+
+// Named export for each action
+export { findUnique, findMany }
+
+// #endregion
