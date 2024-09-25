@@ -12,11 +12,13 @@ import { Prisma } from "@prisma/client" // For type definitions
 /** @type {Prisma.SessionInclude} */
 const sessionInclude = {
     user: {
-        email: true,
-        password: true,
-        sessions: true,
-        frRqSent: true,
-        frRqReceived: true
+        include: {
+            email: true,
+            password: true,
+            sessions: true,
+            frRqSent: true,
+            frRqReceived: true
+        }
     }
 }
 
