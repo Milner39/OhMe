@@ -116,7 +116,7 @@ const auth = async ({ event, resolve }) => {
 
         if (refreshResponse.success) {
             // Update `session` object
-            session.expiresAt = expiryDate
+            session.expiresAt = refreshResponse.expiryDate
         }
     }
 
