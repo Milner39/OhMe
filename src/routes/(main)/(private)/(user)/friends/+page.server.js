@@ -1,6 +1,6 @@
 // #region General Imports
 import inputHandler from "$lib/server/utils/inputHandler.js"
-// #endregion
+// #endregion General Imports
 
 
 
@@ -113,21 +113,22 @@ export const load = async ({ locals }) => {
         } 
     }
 }
-// #endregion
+// #endregion load()
 
 
 
 
 
 // #region actions
-    // #region Specific Imports
-import dbClient from "$lib/server/database/prisma/dbClient.js"
+
+// #region Specific Imports
+import dbActions from "$lib/server/database/actions/all.js"
 import logError from "$lib/server/utils/errorLogger.js"
-    // #endregion
+// #endregion Specific Imports
 
 
 
-    // #region Extras
+// #region Extras
 /**
  * Get an `Object` containing a key for each input 
    in a form submission and their respective values.
@@ -146,50 +147,7 @@ import logError from "$lib/server/utils/errorLogger.js"
 const getFormData = async (request) => {
     return Object.fromEntries(await request.formData())
 }
-
-
-// TODO: Move to db operations file
-/**
- * Get `User.id` of the entry with `User.username` equal to `username`.
- * @async
- * 
- * @param {String} username 
- * 
- * @returns {Promise<
- *      null |
- *      { id: String }
- * >}
- */
-const getUser_id__by_username = async (username) => {
-    if (typeof username !== "string") return null
-
-    try {
-        return await dbClient.user.findUnique({
-            // Set field filters
-            where: {
-                username: username
-            },
-            // Set fields to return
-            select: {
-                id: true,
-            }
-        })
-
-    // Catch errors
-    } catch (error) {
-        // Log error details
-        logError({
-            filepath: "src/routes/(main)/(private)/(user)/friends/+page.server.js",
-            message: "Error while fetching `User` entry from db using username",
-            arguments: {
-                username: username
-            }
-        })
-
-        return null
-    }
-}
-    // #endregion
+// #endregion Extras
 
 
 
@@ -235,69 +193,47 @@ export const actions = {
 
 
         // Get `User` entry to send friend request
-        const recipient = await getUser_id__by_username(inputHandler.sanitize(formData.username))
+        const userResponse = await dbActions.user.findUnique({
+            username: inputHandler.sanitize(formData.username)
+        })
 
         // If a recipient with the provided username does not exist
-        if (!recipient) {
+        if (userResponse.error === "No entry found") {
             return { 
                 status: 404,
                 notice: "User with that username does not exist..."
             }
         }
 
-
-        // TODO: Move to db operations file
-        /*
-            Create `FriendRequest` entry connected to two `User`s.
-            The sending being the client and the recipient being the
-            `User` entry which has the id: `recipient.id`.
-        */
-        try {
-            await dbClient.user.update({
-                // Set field filters
-                where: {
-                    id: user.id
-                },
-                // Set field data
-                data: {
-                    frRqSent : {
-                        create: {
-                            recipient: {
-                                connect: {
-                                    id: recipient.id
-                                }
-                            }
-                        }
-                    }
-                }
-            })
-        
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(private)/(user)/friends/+page.server.js",
-                message: "Error while creating `FriendRequest` entry in db",
-                arguments: {
-                    senderId: user.id,
-                    recipientId: recipient.id
-                },
-                error
-            })
-
+        // If there was an error while fetching the `User` entry
+        if (!userResponse.success) {
             return {
                 status: 503,
                 notice: "We couldn't send a friend request, try again later..."
             }
         }
 
+        const recipient = userResponse.user
+
+
+        const friendRequestResponse = await dbActions.friendRequest.create(
+            user.id,
+            recipient.id
+        )
+
+        if (!friendRequestResponse.success) {
+            return {
+                status: 503,
+                notice: "We couldn't send a friend request, try again later..."
+            }
+        }
 
         return {
             status: 200,
             notice: "Successfully friended user!"
         }
     },
-    // #endregion
+    // #endregion sendFriendRequest()
 
 
     // #region cancelFriendRequest()
@@ -336,46 +272,35 @@ export const actions = {
 
 
         // Get `User` entry to cancel friend request
-        const recipient = await getUser_id__by_username(inputHandler.sanitize(formData.username))
+        const userResponse = await dbActions.user.findUnique({
+            username: inputHandler.sanitize(formData.username)
+        })
 
         // If a recipient with the provided username does not exist
-        if (!recipient) {
+        if (userResponse.error === "No entry found") {
             return { 
                 status: 404,
                 notice: "User with that username does not exist..."
             }
         }
 
-        // TODO: Move to db operations file
-        /*
-            Delete `FriendRequest` entry connected to two `User`s.
-            The sending being the client and the recipient being the
-            `User` entry which has the id: `recipient.id`.
-        */
-        try {
-            await dbClient.friendRequest.delete({
-                // Set field filters
-                where: {
-                    users: {
-                        senderId: user.id,
-                        recipientId: recipient.id
-                    }
-                }
-            })
+        // If there was an error while fetching the `User` entry
+        if (!userResponse.success) {
+            return {
+                status: 503,
+                notice: "We couldn't send a friend request, try again later..."
+            }
+        }
 
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(private)/(user)/friends/+page.server.js",
-                message: "Error while deleting `FriendRequest` entry in db",
-                arguments: {
-                    senderId: user.id,
-                    recipientId: recipient.id
-                },
-                error
-            })
+        const recipient = userResponse.user
 
+
+        const friendRequestResponse = await dbActions.friendRequest.delete(
+            user.id,
+            recipient.id
+        )
+
+        if (!friendRequestResponse.success) {
             return {
                 status: 503,
                 notice: "We couldn't cancel a friend request, try again later..."
@@ -387,10 +312,10 @@ export const actions = {
             notice: "Successfully unfriended user!"
         }
     }
-    // #endregion
+    // #endregion cancelFriendRequest()
 
 
     // #region declineFriendRequest()
         // TODO: Make a decline friend request action
-    // #endregion 
+    // #endregion declineFriendRequest()
 }
