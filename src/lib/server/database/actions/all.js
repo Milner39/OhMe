@@ -4,7 +4,7 @@ import sessionActions from "./session"
 
 
 // export all database actions as a single object
-export default dbActions = {
+export default {
     user: userActions,
     session: sessionActions
 }
