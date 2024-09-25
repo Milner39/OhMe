@@ -1,6 +1,8 @@
 // #region Imports
 import dbClient from "$lib/server/database/prisma/dbClient.js"
-import logError from "$lib/server/utils/errorLogger"
+import { dateFromNow } from "$lib/client/utils/dateUtils.js"
+import logError from "$lib/server/utils/errorLogger.js"
+import { settings }  from "$lib/settings.js"
 
 import { Prisma } from "@prisma/client" // For type definitions
 // #endregion
@@ -63,14 +65,15 @@ const findUnique = async (filter) => {
         // Return the single result
         return {
             session: sessions[0],
-            success: true
+            success: true,
+            error: null
         }
 
     } catch (error) {
         // Log error details
         logError({
             filepath: "src/lib/server/database/actions/session.js",
-            message: "Error while fetching `Session` entry from db",
+            message: "Error while fetching `Session` entry",
             arguments: {
                 where: filter
             },
@@ -84,7 +87,7 @@ const findUnique = async (filter) => {
         }
     }
 }
-// #endregion
+// #endregion findUnique()
 
 
 
@@ -116,14 +119,15 @@ const findMany = async (options) => {
         // Return the results
         return {
             sessions: sessions,
-            success: true
+            success: true,
+            error: null
         }
 
     } catch (error) {
         // Log error details
         logError({
             filepath: "src/lib/server/database/actions/session.js",
-            message: "Error while fetching `Session` entries from db",
+            message: "Error while fetching `Session` entries",
             arguments: {
                 options: options
             },
@@ -137,9 +141,59 @@ const findMany = async (options) => {
         }
     }
 }
-// #endregion
+// #endregion findMany()
 
-// #endregion
+
+// #region refreshSessionExpiry()
+/**
+ * Update the expiry date of a `Session` entry.
+ * @async
+ * 
+ * @param {string} sessionId - The id of the `Session` entry.
+ */
+const refreshSessionExpiry = async (sessionId) => {
+    try {
+        // Get date set number of days from now
+        const expiryDate = dateFromNow(settings.session.duration * 24 * (60 ** 2) * 1000)
+
+        // Update the `Session` entry
+        await dbClient.session.update({
+            where: {
+                id: sessionId
+            },
+            data: {
+                expiresAt: expiryDate
+            }
+        })
+
+        // Return the new expiry date
+        return {
+            expiryDate: expiryDate,
+            success: true,
+            error: null
+        }
+
+    } catch (error) {
+        // Log error details
+        logError({
+            filepath: "src/lib/server/database/actions/session.js",
+            message: "Error while refreshing `Session` entry expiry date",
+            arguments: {
+                sessionId: sessionId
+            },
+            error
+        })
+
+        return {
+            expiryDate: null,
+            success: false,
+            error: "An error occurred"
+        }
+    }
+}
+// #endregion refreshSessionExpiry()
+
+// #endregion Actions
 
 
 
@@ -148,13 +202,14 @@ const findMany = async (options) => {
 // Define object to hold all `Session` actions
 const sessionActions = {
     findUnique,
-    findMany
+    findMany,
+    refreshSessionExpiry
 }
 
 // Default export for the entire object
 export default sessionActions
 
 // Named export for each action
-export { findUnique, findMany }
+export { findUnique, findMany, refreshSessionExpiry }
 
-// #endregion
+// #endregion Exports

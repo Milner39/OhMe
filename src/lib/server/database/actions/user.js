@@ -1,9 +1,9 @@
 // #region Imports
 import dbClient from "$lib/server/database/prisma/dbClient.js"
-import logError from "$lib/server/utils/errorLogger"
+import logError from "$lib/server/utils/errorLogger.js"
 
 import { Prisma } from "@prisma/client" // For type definitions
-// #endregion
+// #endregion Imports
 
 
 
@@ -59,14 +59,15 @@ const findUnique = async (filter) => {
         // Return the single result
         return {
             user: users[0],
-            success: true
+            success: true,
+            error: null
         }
 
     } catch (error) {
         // Log error details
         logError({
             filepath: "src/lib/server/database/actions/user.js",
-            message: "Error while fetching `User` entry from db",
+            message: "Error while fetching `User` entry",
             arguments: {
                 where: filter
             },
@@ -80,8 +81,7 @@ const findUnique = async (filter) => {
         }
     }
 }
-// #endregion
-
+// #endregion findUnique()
 
 
 // #region findMany()
@@ -112,14 +112,15 @@ const findMany = async (options) => {
         // Return the results
         return {
             users: users,
-            success: true
+            success: true,
+            error: null
         }
 
     } catch (error) {
         // Log error details
         logError({
             filepath: "src/lib/server/database/actions/user.js",
-            message: "Error while fetching `User` entries from db",
+            message: "Error while fetching `User` entries",
             arguments: {
                 options: options
             },
@@ -133,9 +134,9 @@ const findMany = async (options) => {
         }
     }
 }
-// #endregion
+// #endregion findMany()
 
-// #endregion
+// #endregion Actions
 
 
 
@@ -153,4 +154,4 @@ export default userActions
 // Named export for each action
 export { findUnique, findMany }
 
-// #endregion
+// #endregion Exports

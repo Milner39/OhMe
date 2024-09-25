@@ -7,22 +7,23 @@
 import { sequence } from "@sveltejs/kit/hooks"
 
 import { settings }  from "$lib/settings.js"
-// #endregion
+// #endregion General Imports
 
 
 
 // #region Handles
-    // #region auth()
-        // #region Specific Imports
-import dbClient from "$lib/server/database/prisma/dbClient.js"
+
+// #region auth()
+        
+// #region Specific Imports
+import dbActions from "$lib/server/database/actions/all.js"
 import inputHandler from "$lib/server/utils/inputHandler.js"
-import logError from "$lib/server/utils/errorLogger.js"
 import { dateFromNow } from "$lib/client/utils/dateUtils.js"
-        // #endregion
+// #endregion Specific Imports
 
 
 
-        // #region Extras
+// #region Extras
 /** 
  * Delete the cookies used for authentication from 
    the client's browser.
@@ -42,125 +43,7 @@ const deleteAuthCookies = async (cookies) => {
         secure: false
     })
 }
-
-
-// TODO: Move to db operations file
-/**
- * Get a `Session` entry and connected `User` entry from the database.
-   Only if the ids of the `Session` and `User` are defined.
- * @async 
- * 
- * 
- * @param {{
-        id: String,
-        userId: String,
-        "": any[]
-    }} filter - The filter used to search the database.
- * 
- * 
- * @returns {Promise<
-        null |
-        {
-            user: {"": any[]},
-            "": any[]
-        }
-    >}
- * - No database results?: `null`
- * - Else: `Session` entry and connected `User` entry.
- */
-const secure_getSessionFromDB = async (filter) => {
-    if (
-        typeof filter.id !== "string" || 
-        typeof filter.userId !== "string"
-    ) return null
-
-    try {
-        const dbResponse = await dbClient.session.findUnique({
-            // Set field filters
-            where: filter,
-            // Set fields to return
-            include: {
-                user: {
-                    include: {
-                        email: true,
-                        password: true,
-                        sessions: true,
-                        frRqSent: true,
-                        frRqReceived: true
-                    }
-                }
-            }
-        })
-
-        return dbResponse
-
-    // Catch errors
-    } catch (error) {
-        // Log error details
-        logError({
-            filepath: "src/hooks.server.js",
-            message: "Error while fetching `Session` entry from db",
-            arguments: {
-                where: filter
-            },
-            error
-        })
-
-        return null
-    }
-}
-
-
-// TODO: Move to db operations file
-/**
- * Update the expiry date of a `Session` entry.
- * @async
- * 
- * 
- * @param {{
-        id: string,
-        "": any[]
-    }} filter - The filter used to search the database.
- * 
- * @param {Date} date - The new expiry date.
- * 
- * 
- * @returns {Promise<Boolean>}
- * A `Boolean` to indicate if the `Session` was updated.
- */
-const setSessionExpiry = async (filter, date) => {
-    if (typeof filter.id !== "string") return false
-
-    try {
-        await dbClient.session.update({
-            // Set field filters
-            where: filter,
-            // Set field data
-            data: {
-                expiresAt: date
-            }
-        })
-
-        return true
-
-    // Catch errors
-    } catch (error) {
-        // Log error details
-        logError({
-            filepath: "src/hooks.server.js",
-            message: "Error while setting `Session` entry expiry date",
-            arguments: {
-                sessionId,
-                expiresAt: session.expiresAt,
-                extendTo: expiryDate
-            },
-            error
-        })
-
-        return false
-    }
-}
-        // #endregion
+// #endregion Extras
 
 
 // Define handle to manage client authentication
@@ -177,7 +60,6 @@ const auth = async ({ event, resolve }) => {
 
     // If client does not have both cookies
     if (!userId || !sessionId) {
-        // End handle
         return await resolve(event)
     }
 
@@ -186,7 +68,6 @@ const auth = async ({ event, resolve }) => {
         // Delete client's cookies
         await deleteAuthCookies(event.cookies)
 
-        // End handle
         return await resolve(event)
     }
 
@@ -199,21 +80,20 @@ const auth = async ({ event, resolve }) => {
         they would have to correctly guess a valid `Session.id` and the corresponding `User.id`,
         with random UUIDs this should be impossible to brute force since sessions expire.
     */
-    const sessionEntry = await secure_getSessionFromDB({ 
+    const sessionResponse = await dbActions.session.findUnique({
         id: sessionId,
         userId: userId
     })
 
-    // If no session found
-    if (!sessionEntry) {
+    // If query failed
+    if (!sessionResponse.success) {
         // Delete client's cookies
         await deleteAuthCookies(event.cookies)
 
-        // End handle
         return await resolve(event)
     }
 
-    const { user, ...session } = sessionEntry
+    const { user, ...session } = sessionResponse.session
 
 
     // If `session` is expired
@@ -221,7 +101,6 @@ const auth = async ({ event, resolve }) => {
         // Delete client's cookies
         await deleteAuthCookies(event.cookies)
 
-        // End handle
         return await resolve(event)
     }
 
@@ -232,13 +111,10 @@ const auth = async ({ event, resolve }) => {
     // If `session` expires sooner than renew date
     if (session.expiresAt < renewBefore) {
 
-        // Get date set number of days from now to control when sessions expire
-        const expiryDate = dateFromNow(settings.session.duration * 24 * (60 ** 2) * 1000)
+        // Extend expiry date in db for current `Session` entry
+        const refreshResponse = await dbActions.session.refreshSessionExpiry(sessionId)
 
-        // Extend expiry date in db for current session
-        const sessionExtended = await setSessionExpiry({ id: sessionId }, expiryDate)
-
-        if (sessionExtended) {
+        if (refreshResponse.success) {
             // Update `session` object
             session.expiresAt = expiryDate
         }
@@ -249,22 +125,22 @@ const auth = async ({ event, resolve }) => {
     event.locals.user = user
     event.locals.session = session
 
-    // End handle
     return await resolve(event)
 }
-    // #endregion
+// #endregion auth()
 
 
 
-    // #region privateGuard()
-        // #region Specific Imports
+// #region privateGuard()
+
+// #region Specific Imports
 
 /*
     https://kit.svelte.dev/docs/load#redirects
     Subroutine to redirect clients to another route
 */
 import { redirect } from "@sveltejs/kit"
-        // #endregion
+// #endregion Specific Imports
 
 
 
@@ -283,12 +159,11 @@ const privateGuard = async ({ event, resolve }) => {
     }
 
     // Allow the client to access the route
-    // End handle
     return await resolve(event)
 }
-    // #endregion
+// #endregion privateGuard()
 
-// #endregion
+// #endregion Handles
 
 
 
