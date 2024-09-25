@@ -1,7 +1,6 @@
 // #region Imports
-import dbClient from "$lib/server/database/prisma/dbClient.js"
+import dbActions from "$lib/server/database/actions/all.js"
 import inputHandler from "$lib/server/utils/inputHandler.js"
-import logError from "$lib/server/utils/errorLogger.js"
 
 /*
     https://kit.svelte.dev/docs/modules#sveltejs-kit-json
@@ -43,88 +42,69 @@ export const POST = async ({ request, locals }) => {
     // Sanitize search
     const sanitizedSearch = inputHandler.sanitize(search)
 
-    // TODO: Move to db operations file
     /*
         Get `User` entries which usernames contain `search`.
         Look for exact matches first, then partial matches.
+        Do not include the client's username in the results.
     */
-    try {
-        // Get `User` entry with exactly matching username
-        let exactMatch = await dbClient.user.findFirst({
-            // Set field filters
-            where: {
-                AND: [
-                    {
-                        username: sanitizedSearch
-                    },
-                    {
-                        username: {
-                            not: user.username
-                        }
-                    }
-                ]
+
+    // Exact match
+    const exactMatchResponse = await dbActions.user.findUnique({
+        AND: [
+            {
+                username: sanitizedSearch
             },
-            // Set fields to return
-            select: {
-                username: true,
-                frRqSent: true,
-                frRqReceived: true
+            {
+                username: {
+                    not: user.username
+                }
             }
-        })
+        ]
+    })
 
-        // Get `User` entries with partially matching username
-        let partialMatch = await dbClient.user.findMany({
-            /* 
-                Set quantity of results
-                - If an exact match was found, 9, else 10
-            */
-            take: exactMatch ? 9 : 10,
-            // Set field filters
-            where: {
-                AND: [
-                    {
-                        username: {
-                            startsWith: sanitizedSearch
-                        }
-                    },
-                    {
-                        username: {
-                            not: sanitizedSearch
-                        }
-                    },
-                    {
-                        username: {
-                            not: user.username
-                        }
+    const exactMatch = exactMatchResponse.user
+    // Exact match
+
+
+    // Partial matches
+    const partialMatchResponse = await dbActions.user.findMany({
+        /* 
+            Set quantity of results
+            - If an exact match was found, 9, else 10
+        */
+        take: exactMatch ? 9 : 10,
+        where: {
+            AND: [
+                {
+                    username: {
+                        startsWith: sanitizedSearch
                     }
-                ]
-            },
-            // Set fields to return
-            select: {
-                username: true,
-                frRqSent: true,
-                frRqReceived: true
-            }
-        })
+                },
+                {
+                    username: {
+                        not: sanitizedSearch
+                    }
+                },
+                {
+                    username: {
+                        not: user.username
+                    }
+                }
+            ]
+        }
+    })
 
-        // Combine results and filter out `null`
-        var users = [exactMatch, ...partialMatch].filter((match) => { return match })
+    const partialMatches = partialMatchResponse.users
+    // Partial matches
 
-    // Catch errors
-    } catch (error) {
-        // Log error details
-        logError({
-            filepath: "src/routes/(main)/(private)/(user)/friends/+server.js",
-            message: "Error while fetching `User` entries from db using username search",
-            arguments: {
-                search: search
-            },
-            error
-        })
 
-        return json({ status: 503 })
-    }
+    // Combine results and filter out `null` values
+    const users = [exactMatch, ...partialMatches].filter((match) => { 
+        if (match === null) { return undefined }
 
+        return match
+    })
+        
 
     /*
         Structure the results into an object which keys are the 
@@ -136,7 +116,7 @@ export const POST = async ({ request, locals }) => {
             "": {
                 sent: Boolean,
                 received: Boolean 
-            }}
+            }[]
         } 
      */
     const userFrRqStatuses = users.reduce((obj, match) => {
