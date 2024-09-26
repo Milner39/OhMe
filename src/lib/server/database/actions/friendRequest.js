@@ -139,7 +139,7 @@ const findMany = async (options) => {
  * 
  * @param {string} senderId - 
    The id of the `User` entry sending the request.
-
+ *
  * @param {string} recipientId - 
    The id of the `User` entry receiving the request.
  */
@@ -198,12 +198,33 @@ const create = async (senderId, recipientId) => {
  * 
  * @param {string} senderId - 
    The id of the `User` entry deleting the request.
-
+ *
  * @param {string} recipientId - 
    The id of the `User` entry the request was for.
  */
 const delete_ = async (senderId, recipientId) => {
     try {
+        /*
+            Get the `FriendRequest` entry that matches 
+            the sender and recipient ids.
+        */
+        const findUniqueResponse = await findUnique({
+            users: {
+                senderId: senderId,
+                recipientId: recipientId
+            }
+        })
+
+        // Check a `FriendRequest` entry was found
+        if (!findUniqueResponse.success) {
+            return {
+                success: false,
+                error: findUniqueResponse.error
+            }
+        }
+
+
+        // Delete the `FriendRequest` entry
         await dbClient.friendRequest.delete({
             where: {
                 users: {
