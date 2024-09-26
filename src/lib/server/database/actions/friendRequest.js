@@ -192,7 +192,7 @@ const create = async (senderId, recipientId) => {
 
 // #region delete()
 /**
- * Create a `FriendRequest` entry.
+ * Delete a `FriendRequest` entry.
  * @async
  * 
  * 
