@@ -22,7 +22,7 @@ const userInclude = {
 
 // #region findUnique()
 /**
- * Fetch a single `User` entry.
+ * Get a single `User` entry.
  * @async
  * 
  * @param {Prisma.UserWhereInput} filter - 
@@ -67,7 +67,7 @@ const findUnique = async (filter) => {
         // Log error details
         logError({
             filepath: "src/lib/server/database/actions/user.js",
-            message: "Error while fetching `User` entry",
+            message: "Error while getting `User` entry",
             arguments: {
                 where: filter
             },
@@ -86,7 +86,7 @@ const findUnique = async (filter) => {
 
 // #region findMany()
 /**
- * Fetch multiple `User` entries.
+ * Get multiple `User` entries.
  * @async
  * 
  * @param {Prisma.UserFindManyArgs} options - 
@@ -120,7 +120,7 @@ const findMany = async (options) => {
         // Log error details
         logError({
             filepath: "src/lib/server/database/actions/user.js",
-            message: "Error while fetching `User` entries",
+            message: "Error while getting `User` entries",
             arguments: {
                 options: options
             },

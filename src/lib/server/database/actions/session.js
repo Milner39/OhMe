@@ -28,7 +28,7 @@ const sessionInclude = {
 
 // #region findUnique()
 /**
- * Fetch a single `Session` entry.
+ * Get a single `Session` entry.
  * @async
  * 
  * @param {Prisma.SessionWhereInput} filter - 
@@ -73,7 +73,7 @@ const findUnique = async (filter) => {
         // Log error details
         logError({
             filepath: "src/lib/server/database/actions/session.js",
-            message: "Error while fetching `Session` entry",
+            message: "Error while getting `Session` entry",
             arguments: {
                 where: filter
             },
@@ -93,7 +93,7 @@ const findUnique = async (filter) => {
 
 // #region findMany()
 /**
- * Fetch multiple `Session` entries.
+ * Get multiple `Session` entries.
  * @async
  * 
  * @param {Prisma.SessionFindManyArgs} options - 
@@ -127,7 +127,7 @@ const findMany = async (options) => {
         // Log error details
         logError({
             filepath: "src/lib/server/database/actions/session.js",
-            message: "Error while fetching `Session` entries",
+            message: "Error while getting `Session` entries",
             arguments: {
                 options: options
             },

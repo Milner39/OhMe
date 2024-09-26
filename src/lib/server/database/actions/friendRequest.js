@@ -16,7 +16,7 @@ const friendRequestInclude = {}
 
 // #region findUnique()
 /**
- * Fetch a single `FriendRequest` entry.
+ * Get a single `FriendRequest` entry.
  * @async
  * 
  * @param {Prisma.FriendRequestWhereInput} filter - 
@@ -61,7 +61,7 @@ const findUnique = async (filter) => {
         // Log error details
         logError({
             filepath: "src/lib/server/database/actions/friendRequest.js",
-            message: "Error while fetching `FriendRequest` entry",
+            message: "Error while getting `FriendRequest` entry",
             arguments: {
                 where: filter
             },
@@ -80,7 +80,7 @@ const findUnique = async (filter) => {
 
 // #region findMany()
 /**
- * Fetch multiple `FriendRequest` entries.
+ * Get multiple `FriendRequest` entries.
  * @async
  * 
  * @param {Prisma.FriendRequestFindManyArgs} options - 
@@ -114,7 +114,7 @@ const findMany = async (options) => {
         // Log error details
         logError({
             filepath: "src/lib/server/database/actions/friendRequest.js",
-            message: "Error while fetching `FriendRequest` entries",
+            message: "Error while getting `FriendRequest` entries",
             arguments: {
                 options: options
             },
