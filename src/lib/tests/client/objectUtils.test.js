@@ -24,7 +24,7 @@ describe("deleteKeys()", () => {
         // #region Results
         describe("Given all arguments are valid", () => {
             // #region Basic Deletes
-            describe("Basic Maps", () => {
+            describe("Basic Deletes", () => {
                 test("Only values of keys the `target` get deleted if the matching key in `rule` is true", () => {
                     const target = {
                         a: "A",

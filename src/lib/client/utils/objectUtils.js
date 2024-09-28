@@ -8,7 +8,7 @@
  * - Nested objects
  *
  * @param {{"": any[]}} target - The `Object` to delete keys from.
- * @param {{"": true[]}} rule - The `Object` containing the keys to delete.
+ * @param {{"": (true | {})[]}} rule - The `Object` containing the keys to delete.
  */
 const deleteKeys = (target, rule) => {
     // Throw error if `target` or `rule` are not type `object` or are `null`
@@ -31,7 +31,7 @@ const deleteKeys = (target, rule) => {
         // If `value` is type `object` and is not `null`
         else if (typeof value === "object" && value !== null) {
             // If `target[key]` is not type `object` or is `null`
-            if (typeof target[key] !== "object" || value === null) {
+            if (typeof target[key] !== "object" || target[key] === null) {
                 target[key] = {}
             }
 
