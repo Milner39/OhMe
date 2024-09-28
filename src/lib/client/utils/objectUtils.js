@@ -331,6 +331,39 @@ const splitKeysIntoArray = (target) => {
 // #endregion
 
 
+// #region getDotNotation()
+/**
+ * Get the dot notation of an object with a single "path".
+ * 
+ * 
+ * With support for:
+ * - Nested objects
+ * 
+ * 
+ * @param {{"": any[]}} target - The `Object` to get the dot notation of.
+ * @param {string} [parentKey=""] - The parent key of the current object.
+ * 
+ * @returns {string} - The dot notation of the object.
+ */
+const getDotNotation = (target, parentKey = "") => {
+    // Throw error if `target` is not type `object` or is `null`
+    if (typeof target !== "object" || target === null) {
+        throw new Error("`target` must be type `object` and not null")
+    }
+
+
+    const key = Object.keys(target)[0] 
+    const notation = parentKey ? `${parentKey}.${key}` : key
+
+    if (typeof target[key] === "object" && target[key] !== null) {
+        return getDotNotation(target[key], notation)
+    }
+
+    return notation
+}
+// #endregion
+
+
 
 // #region Exports
 // Define object to hold all object utils
@@ -340,12 +373,21 @@ const objectUtils = {
     checkKeyMatch,
     deepMerge,
     mapWithRule,
-    splitKeysIntoArray
+    splitKeysIntoArray,
+    getDotNotation
 }
 
 // Default export for the entire object
 export default objectUtils
 
 // Named exports for each method
-export { deleteKeys, keepKeys, checkKeyMatch, deepMerge, mapWithRule, splitKeysIntoArray }
+export { 
+    deleteKeys, 
+    keepKeys, 
+    checkKeyMatch, 
+    deepMerge, 
+    mapWithRule, 
+    splitKeysIntoArray,
+    getDotNotation
+}
 // #endregion

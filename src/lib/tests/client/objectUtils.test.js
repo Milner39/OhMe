@@ -1,6 +1,6 @@
 // #region Imports
 import { describe, test, expect, assert } from "vitest"
-import { deleteKeys, keepKeys, checkKeyMatch, deepMerge, mapWithRule, splitKeysIntoArray } from "$lib/client/utils/objectUtils.js"
+import { deleteKeys, keepKeys, checkKeyMatch, deepMerge, mapWithRule, splitKeysIntoArray, getDotNotation } from "$lib/client/utils/objectUtils.js"
 // #endregion
 
 
@@ -649,4 +649,59 @@ describe("splitKeysIntoArray()", () => {
         // #endregion
     })
 })
-//#endregion
+// #endregion
+
+
+// #region getDotNotation()
+describe("getDotNotation()", () => {
+    describe("Convert an object into a dot notation string", () => {
+        // #region Arguments
+        test("Fails if `target` is not type `object` or is null", () => {
+            assert.throws(() => getDotNotation(0))
+            assert.throws(() => getDotNotation(null))
+        })
+        // #endregion
+
+
+        // #region Results
+        describe("Given all arguments are valid", () => {
+            // #region Basic Conversions
+            describe("Basic Conversions", () => {
+                test("Converts key into a dot notation string", () => {
+                    const target = {
+                        a: "A",
+                    }
+                    expect(getDotNotation(target)).toEqual("a")
+                })
+
+                test("Converts nested keys into a dot notation string", () => {
+                    const target = {
+                        a: {
+                            b: "B"
+                        }
+                    }
+                    expect(getDotNotation(target)).toEqual("a.b")
+                })
+            })
+            // #endregion
+
+
+            // #region Other Cases
+            describe("Other Cases", () => {
+                test("If object has multiple paths, first key is chosen", () => {
+                    const target = {
+                        a: {
+                            A: "A",
+                            B: "B",
+                            C: "C"
+                        }
+                    }
+                    expect(getDotNotation(target)).toEqual("a.A")
+                })
+            })
+            // #endregion
+        })
+        // #endregion
+    })
+})
+// #endregion
