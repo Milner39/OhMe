@@ -1,6 +1,6 @@
 // #region Imports
 import { describe, test, expect, assert } from "vitest"
-import { deleteKeys, keepKeys, deepMerge, mapWithRule } from "$lib/client/utils/objectUtils.js"
+import { deleteKeys, keepKeys, deepMerge, mapWithRule, splitKeysIntoArray } from "$lib/client/utils/objectUtils.js"
 // #endregion
 
 
@@ -395,7 +395,7 @@ describe("mapWithRule()", () => {
             assert.throws(() => mapWithRule(null, null, (value) => {return value}))
         })
 
-        test("Fails if `func` argument is not type `function`", () => {
+        test("Fails if `func` is not type `function`", () => {
             assert.throws(() => mapWithRule({}, {}, null))
         })
         // #endregion
@@ -495,3 +495,64 @@ describe("mapWithRule()", () => {
         // #endregion
     })
 })
+//#endregion
+
+
+// #region splitKeysIntoArray()
+describe("splitKeysIntoArray()", () => {
+    describe("Split an object into an array where each non-object value is stored in an object with a key matching the original key", () => {
+        // #region Arguments
+        test("Fails if `target` is not type `object` or is null", () => {
+            assert.throws(() => splitKeysIntoArray(0))
+            assert.throws(() => splitKeysIntoArray(null))
+        })
+        // #endregion
+
+
+        // #region Results
+        describe("Given all arguments are valid", () => {
+            // #region Basic Splits
+            describe("Basic Splits", () => {
+                test("Separates key-value pairs into entries of an array", () => {
+                    const target = {
+                        a: "A",
+                        b: "B",
+                        c: "C"
+                    }
+                    const result = splitKeysIntoArray(target)
+                    expect(result).toEqual([
+                        { a: "A" },
+                        { b: "B" },
+                        { c: "C" }
+                    ])
+                })
+            })
+            // #endregion
+
+
+            // #region Nested Objects
+            describe("Nested Objects", () => {
+                test("Keys in `target` that values are type `object` and are not null, can have their nested keys split", () => {
+                    const target = {
+                        a: "A",
+                        b: { bee: "B" },
+                        c: { 
+                            see: "C",
+                            sea: "C"
+                        }
+                    }
+                    const result = splitKeysIntoArray(target)
+                    expect(result).toEqual([
+                        { a: "A" },
+                        { b: { bee: "B" } },
+                        { c: { see: "C" } },
+                        { c: { sea: "C" } }
+                    ])
+                })
+            })
+            // #endregion
+        })
+        // #endregion
+    })
+})
+//#endregion

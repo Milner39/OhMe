@@ -237,6 +237,50 @@ const mapWithRule = (target, rule, func) => {
 // #endregion
 
 
+// #region splitKeysIntoArray()
+/**
+ * Split an object into an array where each non-object value is
+   stored in an object with a key matching the original key.
+ *
+ *
+ * With support for:
+ * - Nested objects
+ * 
+ * 
+ * @param {{"": any[]}} target - The `Object` to flatten.
+ * 
+ * @returns {any[]} - The flattened array.
+ */
+const splitKeysIntoArray = (target) => {
+    // Throw error if `target` is not type `object` or is `null`
+    if (typeof target !== "object" || target === null) {
+        throw new Error("`target` must be type `object` and not null")
+    }
+
+
+    const result = []
+
+    for (const [key, value] of Object.entries(target)) {
+        // If `value` is type `object` and is not `null`
+        if (typeof value === "object" && value !== null) {
+            // Recurse
+            const nested = splitKeysIntoArray(value)
+            for (const item of nested) {
+                result.push({ [key]: item })
+            }
+        } 
+        
+        // If `value` is not type `object` or is `null`
+        else {
+            result.push({ [key]: value })
+        }
+    }
+
+    return result
+}
+// #endregion
+
+
 
 // #region Exports
 // Define object to hold all object utils
@@ -244,12 +288,13 @@ const objectUtils = {
     deleteKeys,
     keepKeys,
     deepMerge,
-    mapWithRule
+    mapWithRule,
+    splitKeysIntoArray
 }
 
 // Default export for the entire object
 export default objectUtils
 
 // Named exports for each method
-export { deleteKeys, keepKeys, deepMerge, mapWithRule }
+export { deleteKeys, keepKeys, deepMerge, mapWithRule, splitKeysIntoArray }
 // #endregion
