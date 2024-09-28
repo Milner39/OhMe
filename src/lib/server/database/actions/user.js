@@ -128,7 +128,7 @@ const findMany = async (options) => {
         })
 
         return {
-            user: null, // `null` because the query failed
+            users: null, // `null` because the query failed
             success: false,
             error: "An error occurred"
         }
