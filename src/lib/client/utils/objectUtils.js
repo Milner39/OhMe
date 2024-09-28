@@ -299,7 +299,7 @@ const mapWithRule = (target, rule, func) => {
  * 
  * @param {{"": any[]}} target - The `Object` to flatten.
  * 
- * @returns {any[]} - The flattened array.
+ * @returns {{"": any[]}[]} - The flattened array.
  */
 const splitKeysIntoArray = (target) => {
     // Throw error if `target` is not type `object` or is `null`
