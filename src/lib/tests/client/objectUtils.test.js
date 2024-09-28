@@ -1,6 +1,6 @@
 // #region Imports
 import { describe, test, expect, assert } from "vitest"
-import { deleteKeys, keepKeys, deepMerge, mapWithRule, splitKeysIntoArray } from "$lib/client/utils/objectUtils.js"
+import { deleteKeys, keepKeys, checkKeyMatch, deepMerge, mapWithRule, splitKeysIntoArray } from "$lib/client/utils/objectUtils.js"
 // #endregion
 
 
@@ -135,6 +135,100 @@ describe("keepKeys()", () => {
             // #endregion
         })
         // #endregion
+    })
+})
+// #endregion
+
+
+
+// #region checkKeyMatch()
+describe("checkKeyMatch()", () => {
+    describe("Check if the keys in one object equal the value of the matching keys in another object", () => {
+        // #region Arguments
+        test("Fails if `actual` or `expected` are not type `object` or are null", () => {
+            assert.throws(() => checkKeyMatch(0, {}))
+            assert.throws(() => checkKeyMatch({}, 0))
+            assert.throws(() => checkKeyMatch(0, 0))
+            
+            assert.throws(() => checkKeyMatch(null, {}))
+            assert.throws(() => checkKeyMatch({}, null))
+            assert.throws(() => checkKeyMatch(null, null))
+        })
+        // #endregion
+
+
+        // #region Results
+        describe("Given all arguments are valid", () => {
+            // #region Basic Matches
+            describe("Basic Matches", () => {
+                test("Returns `true` if the keys in `expected` equal the value of the matching keys in `actual`", () => {
+                    const target = {
+                        a: "A",
+                        b: "B"
+                    }
+                    const check = {
+                        a: "A"
+                    }
+                    expect(checkKeyMatch(target, check)).toEqual(true)
+                })
+    
+                test("Returns `false` if the keys in `expected` do not equal the value of the matching keys in `actual`", () => {
+                    const target = {
+                        a: "A",
+                        b: "B"
+                    }
+                    const check = {
+                        a: "B"
+                    }
+                    expect(checkKeyMatch(target, check)).toEqual(false)
+                })
+
+                test("Multiple keys can be checked at once", () => {
+                    const target = {
+                        a: "A",
+                        b: "B",
+                        c: "C"
+                    }
+                    const check = {
+                        a: "A",
+                        c: "C"
+                    }
+                    expect(checkKeyMatch(target, check)).toEqual(true)
+                })
+            })
+            // #endregion
+
+
+            // #region Nested Objects
+            describe("Nested Objects", () => {
+                test("Keys in `actual` that values are type `object` and are not null, can have their nested keys checked", () => {
+                    const target = {
+                        a: {
+                            b: "B",
+                            c: "C"
+                        }
+                    }
+                    const check = {
+                        a: {
+                            b: "B"
+                        }
+                    }
+                    expect(checkKeyMatch(target, check)).toEqual(true)
+                })
+    
+                test("Keys in `actual` that are not type `object` or are null, can be checked with an object with nested keys in `expected`", () => {
+                    const target = {
+                        a: "A"
+                    }
+                    const check = {
+                        a: {
+                            b: "B"
+                        }
+                    }
+                    expect(checkKeyMatch(target, check)).toEqual(false)
+                })
+            })
+        })
     })
 })
 // #endregion

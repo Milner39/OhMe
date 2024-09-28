@@ -93,6 +93,57 @@ const keepKeys = (target, rule) => {
 // #endregion
 
 
+// #region checkKeyMatch()
+/**
+ * Check if the keys in one object equal the value of the
+   matching keys in another object.
+ * 
+ * 
+ * With support for:
+ * - Nested objects
+ * 
+ * @param {{"": any[]}} actual - The `Object` containing the keys.
+ * @param {{"": any[]}} expected - The `Object` containing the keys to compare.
+ */
+const checkKeyMatch = (actual, expected) => {
+    // Throw error if `actual` or `expected` are not type `object` or are `null`
+    if (
+        (typeof actual !== "object" || actual === null) ||
+        (typeof expected !== "object" || expected === null)
+    ) {
+        throw new Error("`actual` and `expected` must be type `object` and not null")
+    }
+
+
+    let match = true
+
+    for (const [key, value] of Object.entries(expected)) {
+        // If `value` is type `object` and is not `null`
+        if (typeof value === "object" && value !== null) {
+            // If `actual[key]` is not type `object` or is `null`
+            if (typeof actual[key] !== "object" || actual[key] === null) {
+                match = false
+                return false
+            }
+
+            // Recurse
+            if (!checkKeyMatch(actual[key], value)) {
+                match = false
+                return false
+            }
+        } 
+        
+        // If `actual[key]` does not equal `value`
+        else if (actual[key] !== value) {
+            match = false
+            return false
+        }
+    }
+
+    return match
+}
+// #endregion
+
 
 // #region deepMerge()
 /**
@@ -286,6 +337,7 @@ const splitKeysIntoArray = (target) => {
 const objectUtils = {
     deleteKeys,
     keepKeys,
+    checkKeyMatch,
     deepMerge,
     mapWithRule,
     splitKeysIntoArray
@@ -295,5 +347,5 @@ const objectUtils = {
 export default objectUtils
 
 // Named exports for each method
-export { deleteKeys, keepKeys, deepMerge, mapWithRule, splitKeysIntoArray }
+export { deleteKeys, keepKeys, checkKeyMatch, deepMerge, mapWithRule, splitKeysIntoArray }
 // #endregion
