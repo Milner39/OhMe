@@ -16,7 +16,7 @@ const deleteKeys = (target, rule) => {
         (typeof target !== "object" || target === null) ||
         (typeof rule !== "object" || rule === null)
     ) {
-        throw new Error("`target` and `source` must be type `object` and not null")
+        throw new Error("`target` and `rule` must be type `object` and not null")
     }
 
 
@@ -44,7 +44,6 @@ const deleteKeys = (target, rule) => {
 // #endregion
 
 
-
 // #region keepKeys()
 /**
  * Keep certain keys in one object, only if the value of the 
@@ -57,13 +56,13 @@ const deleteKeys = (target, rule) => {
  * @param {{"": any[]}} target - The `Object` to delete keys from.
  * @param {{"": (true | {})[]}} rule - The `Object` containing the keys to keep.
  */
-   const keepKeys = (target, rule) => {
+const keepKeys = (target, rule) => {
     // Throw error if `target` or `rule` are not type `object` or are `null`
     if (
         (typeof target !== "object" || target === null) ||
         (typeof rule !== "object" || rule === null)
     ) {
-        throw new Error("`target` and `source` must be type `object` and not null")
+        throw new Error("`target` and `rule` must be type `object` and not null")
     }
 
 
@@ -199,7 +198,7 @@ const mapWithRule = (target, rule, func) => {
         (typeof target !== "object" || target === null) ||
         (typeof rule !== "object" || rule === null)
     ) {
-        throw new Error("`target` and `source` must be type `object` and not null")
+        throw new Error("`target` and `rule` must be type `object` and not null")
     }
 
     // Throw error if `func` is not type `function`
