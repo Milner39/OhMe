@@ -1,6 +1,6 @@
 // #region Imports
 import { describe, test, expect, assert } from "vitest"
-import { deleteKeys, deepMerge, mapWithRule } from "$lib/client/utils/objectUtils.js"
+import { deleteKeys, keepKeys, deepMerge, mapWithRule } from "$lib/client/utils/objectUtils.js"
 // #endregion
 
 
@@ -60,6 +60,74 @@ describe("deleteKeys()", () => {
                     expect(target).toEqual({
                         a: {
                             c: "C"
+                        }
+                    })
+                })
+            })
+            // #endregion
+        })
+        // #endregion
+    })
+})
+// #endregion
+
+
+
+// #region keepKeys()
+describe("keepKeys()", () => {
+    describe("Keeps only the keys in the first object that are true in the second object", () => {
+        // #region Arguments
+        test("Fails if `target` or `rule` are not type `object` or are null", () => {
+            assert.throws(() => keepKeys(0, {}))
+            assert.throws(() => keepKeys({}, 0))
+            assert.throws(() => keepKeys(0, 0))
+            
+            assert.throws(() => keepKeys(null, {}))
+            assert.throws(() => keepKeys({}, null))
+            assert.throws(() => keepKeys(null, null))
+        })
+        // #endregion
+
+
+        // #region Results
+        describe("Given all arguments are valid", () => {
+            // #region Basic Deletes
+            describe("Basic Deletes", () => {
+                test("Only values of keys the `target` get kept if the matching key in `rule` is true", () => {
+                    const target = {
+                        a: "A",
+                        b: "B"
+                    }
+                    const rule = {
+                        a: true
+                    }
+                    keepKeys(target, rule)
+                    expect(target).toEqual({
+                        a: "A"
+                    })
+                })
+            })
+            // #endregion
+
+
+            // #region Nested Objects
+            describe("Nested Objects", () => {
+                test("Keys in `target` that values are type `object` and are not null, can have their nested keys kept", () => {
+                    const target = {
+                        a: {
+                            b: "B",
+                            c: "C"
+                        }
+                    }
+                    const rule = {
+                        a: {
+                            b: true
+                        }
+                    }
+                    keepKeys(target, rule)
+                    expect(target).toEqual({
+                        a: {
+                            b: "B"
                         }
                     })
                 })

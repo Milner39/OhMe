@@ -45,6 +45,56 @@ const deleteKeys = (target, rule) => {
 
 
 
+// #region keepKeys()
+/**
+ * Keep certain keys in one object, only if the value of the 
+   matching key in another object is true.
+ *
+ *
+ * With support for:
+ * - Nested objects
+ *
+ * @param {{"": any[]}} target - The `Object` to delete keys from.
+ * @param {{"": (true | {})[]}} rule - The `Object` containing the keys to keep.
+ */
+   const keepKeys = (target, rule) => {
+    // Throw error if `target` or `rule` are not type `object` or are `null`
+    if (
+        (typeof target !== "object" || target === null) ||
+        (typeof rule !== "object" || rule === null)
+    ) {
+        throw new Error("`target` and `source` must be type `object` and not null")
+    }
+
+
+
+    // Iterate over keys in `target`
+    for (const key of Object.keys(target)) {
+        // If `rule[key]` is true, go to next key
+        if (rule[key] === true) {
+            continue
+        } 
+        
+        // If `rule[key]` is type `object` and is not `null`
+        else if (typeof rule[key] === "object" && rule[key] !== null) {
+            // If `target[key]` is not type `object` or is `null`
+            if (typeof target[key] !== "object" || target[key] === null) {
+                target[key] = {}
+            }
+
+            // Recurse
+            keepKeys(target[key], rule[key])
+        }
+
+        // If `rule[key]` is not true, delete `target[key]`
+        else delete target[key]
+    }
+}
+
+// #endregion
+
+
+
 // #region deepMerge()
 /**
  * Replace the value of keys in one object with the value of the
@@ -192,6 +242,7 @@ const mapWithRule = (target, rule, func) => {
 // Define object to hold all object utils
 const objectUtils = {
     deleteKeys,
+    keepKeys,
     deepMerge,
     mapWithRule
 }
@@ -200,5 +251,5 @@ const objectUtils = {
 export default objectUtils
 
 // Named exports for each method
-export { deleteKeys, deepMerge, mapWithRule }
+export { deleteKeys, keepKeys, deepMerge, mapWithRule }
 // #endregion
