@@ -34,16 +34,22 @@
         password: { hash: "example" }
     }
  */
+// TODO: Update tests with isPlainObject check
 const collapseDBActionDataRecord = (data) => {
-    // Throw error if `data` is not type `object` or is `null`
-    if (typeof data !== "object" || data === null) {
-        throw new Error("`data` must be type `object` and not null")
+    // TODO: Move to objectUtils.js with tests
+    const isPlainObject = (obj) => {
+        return Object.prototype.toString.call(obj) === "[object Object]"
+    }
+
+    // Throw error if `data` is not plain object
+    if (!isPlainObject(data)) {
+        throw new Error("`data` must be plain object")
     }
 
     const collapsedFields = {}
 
     for (const [key, value] of Object.entries(data)) {
-        if (typeof value === "object" && value !== null) {
+        if (isPlainObject(value)) {
             collapsedFields[key] = collapseDBActionDataRecord(value[Object.keys(value)[0]])
         }
 
