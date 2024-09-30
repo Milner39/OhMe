@@ -1,5 +1,7 @@
 // #region Imports
 import dbClient from "$lib/server/database/prisma/dbClient.js"
+import { collapseDBActionDataRecord } from "$lib/server/database/actions/utils.js"
+import { keepKeys, checkKeyMatch, splitKeysIntoArray, getDotNotation } from "$lib/client/utils/objectUtils.js"
 import logError from "$lib/server/utils/errorLogger.js"
 
 import { Prisma } from "@prisma/client" // For type definitions
@@ -8,6 +10,7 @@ import { Prisma } from "@prisma/client" // For type definitions
 
 
 // #region Actions
+
 // Define record to include specific relations in the `User` table
 /** @type {Prisma.UserInclude} */
 const userInclude = {
@@ -16,6 +19,24 @@ const userInclude = {
     sessions: true,
     frRqSent: true,
     frRqReceived: true
+}
+
+// Define record to include unique fields in the `User` table
+const userUnique = {
+    id: true,
+    username: true,
+    email: {
+        id: true,
+        address: true,
+        verifyCode: true
+    },
+    password: {
+        id: true,
+        resetCode: true
+    },
+    sessions: {
+        id: true
+    }
 }
 
 
@@ -136,6 +157,194 @@ const findMany = async (options) => {
 }
 // #endregion findMany()
 
+
+// #region findUnique__PerUniqueField()
+/**
+ * Take the data passed into other subroutines,
+   parse it to remove fields that do not have 
+   unique constraints.
+ *
+ *
+ * Separate the fields into individual records, then
+   use `findMany()` to get all the entries that match
+   one or more of the unique fields.
+ * 
+ *
+ * Return all the fields that values are "taken"
+   along with the matching entry.
+ * 
+ *
+ * 
+ * @param {{"": any[]}} data - 
+   The data to check for taken unique fields.
+ */
+const findUnique__perUniqueField = async (data) => {
+    try {
+        // Define subroutine to parse `data`
+        const getUniqueFields = (() => {
+            const obj = data
+            keepKeys(obj, userUnique)
+            return obj
+        })
+
+        // Get the unique fields
+        const uniqueFields = getUniqueFields()
+
+
+        // Split the unique fields into individual records
+        const splitFields = splitKeysIntoArray(uniqueFields)
+
+
+        // Find all the entries that match one of the unique fields
+        const findManyResponse = await findMany({
+            where: { OR: splitFields }
+        })
+
+        // Check if the query was successful
+        if (!findManyResponse.success) {
+            return {
+                fieldMatches: null,
+                success: false,
+                error: findManyResponse.error
+            }
+        }
+
+        /* 
+            Add a key-value pair for each field that has a match
+            in the returned entries.
+        */
+        const fieldMatches = {}
+        for (const user of findManyResponse.users) {
+            for (const [index, field] of splitFields.entries()) {
+                /*
+                    Check if the key or nested keys in the field 
+                    object match the same key(s) in the user
+                    object.
+                */
+                if (checkKeyMatch(user, field)) {
+                    // Set the key-value pair
+                    fieldMatches[getDotNotation(field)] = user
+
+                    /*
+                        Remove the field from the array since it 
+                        is unique and will only find one match.
+                    */
+                    splitFields.splice(index, 1)
+                }
+            }
+        }
+
+        return {
+            fieldMatches: Object.keys(fieldMatches).length > 0 ? 
+                fieldMatches : 
+                null,
+            success: true,
+            error: null
+        }
+
+    } catch (error) {
+        // Log error details
+        logError({
+            filepath: "src/lib/server/database/actions/user.js",
+            message: "Error while finding `User` entry for each unique field",
+            arguments: {
+                data: data
+            },
+            error
+        })
+
+        return {
+            fieldMatches: null,
+            success: false,
+            error: "An error occurred"
+        }
+    }
+}
+// #endregion findUniquePerUniqueField()
+
+
+// #region update()
+/**
+ * Update a the fields of a `User` entry.
+ * @async
+ * 
+ * 
+ * @param {Prisma.UserWhereInput} filter - 
+   The filter used to check `User` entries.
+ *
+ * @param {Prisma.UserUpdateInput} data - 
+   The data to update the `User` entry.
+ */
+const update = async (filter, data) => {
+    try {
+        // Get the `User` entry that matches the filter
+        const findUniqueResponse = await findUnique(filter)
+
+        // Check a `User` entry was found
+        if (!findUniqueResponse.success) {
+            return {
+                success: false,
+                error: findUniqueResponse.error
+            }
+        }
+
+
+
+        // Get the unique fields in `data` that are already taken
+        const fU_pUFResponse = await findUnique__perUniqueField(collapseDBActionDataRecord(data))
+
+        // Check the query was successful
+        if (!fU_pUFResponse.success) {
+            return {
+                success: false,
+                error: fU_pUFResponse.error
+            }
+        }
+
+        // Check if any unique fields are already taken
+        if (fU_pUFResponse.fieldMatches !== null) {
+            return {
+                success: false,
+                error: "Unique fields already taken",
+                target: Object.keys(fU_pUFResponse.fieldMatches)
+            }
+        }
+
+
+
+        // Update the `User` entry
+        await dbClient.user.update({
+            where: {
+                id: findUniqueResponse.user.id
+            },
+            data: data
+        })
+
+        return {
+            success: true,
+            error: null
+        }
+
+    } catch (error) {
+        // Log error details
+        logError({
+            filepath: "src/lib/server/database/actions/user.js",
+            message: "Error while updating `User` entry",
+            arguments: {
+                filter: filter,
+                data: data
+            },
+            error
+        })
+
+        return {
+            success: false,
+            error: "An error occurred"
+        }
+    }
+}
+// #endregion update()
+
 // #endregion Actions
 
 
@@ -145,13 +354,14 @@ const findMany = async (options) => {
 // Define object to hold all `User` actions
 const userActions = {
     findUnique,
-    findMany
+    findMany,
+    update
 }
 
 // Default export for the entire object
 export default userActions
 
 // Named export for each action
-export { findUnique, findMany }
+export { findUnique, findMany, update }
 
 // #endregion Exports
