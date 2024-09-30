@@ -283,6 +283,7 @@ const update = async (filter, data) => {
         // Check a `User` entry was found
         if (!findUniqueResponse.success) {
             return {
+                user: null,
                 success: false,
                 error: findUniqueResponse.error
             }
@@ -296,6 +297,7 @@ const update = async (filter, data) => {
         // Check the query was successful
         if (!fU_pUFResponse.success) {
             return {
+                user: null,
                 success: false,
                 error: fU_pUFResponse.error
             }
@@ -304,6 +306,7 @@ const update = async (filter, data) => {
         // Check if any unique fields are already taken
         if (fU_pUFResponse.fieldMatches !== null) {
             return {
+                user: null,
                 success: false,
                 error: "Unique fields already taken",
                 target: Object.keys(fU_pUFResponse.fieldMatches)
@@ -313,7 +316,8 @@ const update = async (filter, data) => {
 
 
         // Update the `User` entry
-        await dbClient.user.update({
+        const user = await dbClient.user.update({
+            include: userInclude,
             where: {
                 id: findUniqueResponse.user.id
             },
@@ -321,11 +325,13 @@ const update = async (filter, data) => {
         })
 
         return {
+            user: user,
             success: true,
             error: null
         }
 
     } catch (error) {
+        console.log(error)
         // Log error details
         logError({
             filepath: "src/lib/server/database/actions/user.js",
@@ -338,6 +344,7 @@ const update = async (filter, data) => {
         })
 
         return {
+            user: null,
             success: false,
             error: "An error occurred"
         }

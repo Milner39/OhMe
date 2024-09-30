@@ -1,9 +1,8 @@
 // #region Imports
-import dbClient from "$lib/server/database/prisma/dbClient.js"
+import dbUserActions from "$lib/server/database/actions/user.js"
 import inputHandler from "$lib/server/utils/inputHandler.js"
 import { stringHasher } from "$lib/server/utils/hashUtils.js"
 import { emailer } from "$lib/server/utils/emailUtils.js"
-import logError from "$lib/server/utils/errorLogger.js"
 // #endregion
 
 
@@ -54,15 +53,6 @@ export const actions = {
         }}
      */
     username: async ({ request, locals }) => {
-        /* 
-            Variables to hold:
-                - notice message
-                - error messages
-        */
-        let notice = null
-        let errors = {}
-        
-
         // Get `user` from locals
         const { user } = locals
 
@@ -95,47 +85,36 @@ export const actions = {
         }
 
 
-        // TODO: Move to db operations file
-        // Update `User.username` in db for client's `User` entry
-        try {
-            await dbClient.user.update({
-                // Set field filters
-                where: {
-                    id:  user.id
-                },
-                // Set field data
-                data: {
-                    username: sanitizedUsername
+        // Update username in db for client's `User` entry
+        const updateResponse = await dbUserActions.update(
+            // Filter
+            {
+                id: user.id
+            },
+
+            // Data
+            {
+                username: sanitizedUsername
+            }
+        )
+
+        // If there was an error while updating username
+        if (!updateResponse.success) {
+            if (
+                updateResponse.error === "Unique fields already taken" &&
+                updateResponse.target.includes("username")
+            ) {
+                return {
+                    status: 422,
+                    errors: { username: "Username taken" }
                 }
-            })
-
-        // Catch errors
-        } catch (error) {
-            // Match error code
-            switch (error.code) {
-                // Code for prisma unique constraint failing
-                case "P2002":
-                    errors.username = "Username taken"
-                    break
-
-                default:
-                    // Log error details
-                    logError({
-                        filepath: "src/routes/(main)/(private)/(user)/settings/+page.server.js",
-                        message: "Error while updating username for `User` entry in db",
-                        arguments: {
-                            username: formData.username
-                        },
-                        error
-                    })
-
-                    notice = "We couldn't update your username, try again later..."
             }
 
-            return {
-                status: 503,
-                errors,
-                notice
+            else {
+                return {
+                    status: 503,
+                    notice: "We couldn't update your username, try again later..."
+                }
             }
         }
 
@@ -210,71 +189,53 @@ export const actions = {
         }
 
 
-        // TODO: Move to db operations file
-        // Update `User.email.address` in db for client's `User` entry
-        try {
-            const { email } = await dbClient.user.update({
-                // Set field filters
-                where: {
-                    id:  user.id
-                },
-                // Set field data
-                data: {
-                    email: {
-                        update: {
-                            address: sanitizedEmail,
-                            verified: false,
-                            verifyCode: crypto.randomUUID(),
-                            codeSentAt: new Date()
-                        }
-                    }
-                },
-                // Set fields to return
-                select: {
-                    email: {
-                        select: {
-                            address: true,
-                            verifyCode: true
-                        }
+        // Update email address in db for client's `User` entry
+        const updateResponse = await dbUserActions.update(
+            // Filter
+            {
+                id: user.id
+            },
+
+            // Data
+            {
+                email: {
+                    update: {
+                        address: sanitizedEmail,
+                        verified: false,
+                        verifyCode: crypto.randomUUID(),
+                        codeSentAt: new Date()
                     }
                 }
-            })
+            }
+        )
 
-            /*
-                Send email with link to verify updated email
-                inputHandler.desanitize(email.address) replaces my email in production
-            */
-            await emailer.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
-
-        // Catch errors
-        } catch (error) {
-            // Match error code
-            switch (error.code) {
-                // Code for prisma unique constraint failing
-                case "P2002":
-                    errors.email = "Email taken"
-                    break
-
-                default:
-                    // Log error details
-                    logError({
-                        filepath: "src/routes/(main)/(private)/(user)/settings/+page.server.js",
-                        message: "Error while updating email address for `User` entry in db",
-                        arguments: {
-                            emailAddress: formData.email
-                        },
-                        error
-                    })
-
-                    notice = "We couldn't update your email address, try again later..."
+        // If there was an error while updating email address
+        if (!updateResponse.success) {
+            if (
+                updateResponse.error === "Unique fields already taken" &&
+                updateResponse.target.includes("email.address")
+            ) {
+                return {
+                    status: 422,
+                    errors: { email: "Email taken" }
+                }
             }
 
-            return {
-                status: 503,
-                errors,
-                notice
+            else {
+                return {
+                    status: 503,
+                    notice: "We couldn't update your email address, try again later..."
+                }
             }
         }
+
+
+        // Send email with link to verify updated email
+        await emailer.sendVerification(
+            "finn.milner@outlook.com", // inputHandler.desanitize(updateResponse.user.email.address),
+            user.id, 
+            updateResponse.user.email.verifyCode
+        )
 
 
         return {
@@ -355,38 +316,25 @@ export const actions = {
         }
 
 
-        // TODO: Move to db operations file
-        // Update `User.password.hash` in db for client's `User` entry
-        const hash = await stringHasher.hash(formData.newPassword)
+        // Update password hash in db for client's `User` entry
+        const updateResponse = await dbUserActions.update(
+            // Filter
+            {
+                id: user.id
+            },
 
-        try {
-            await dbClient.user.update({
-                // Set field filters
-                where: {
-                    id: user.id
-                },
-                // Set field data
-                data: {
-                    password: {
-                        update: {
-                            hash: hash
-                        }
+            // Data
+            {
+                password: {
+                    update: {
+                        hash: await stringHasher.hash(formData.newPassword)
                     }
                 }
-            })
+            }
+        )
 
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(private)/(user)/settings/+page.server.js",
-                message: "Error while updating password hash for `User` entry in db",
-                arguments: {
-                    passwordHash: hash
-                },
-                error
-            })
-
+        // If there was an error while updating password hash
+        if (!updateResponse.success) {
             return {
                 status: 503,
                 notice: "We couldn't update your password, try again later..."
