@@ -112,7 +112,7 @@ const auth = async ({ event, resolve }) => {
     if (session.expiresAt < renewBefore) {
 
         // Extend expiry date in db for current `Session` entry
-        const refreshResponse = await dbActions.session.refreshSessionExpiry(sessionId)
+        const refreshResponse = await dbActions.session.refreshExpiry(sessionId)
 
         if (refreshResponse.success) {
             // Update `session` object

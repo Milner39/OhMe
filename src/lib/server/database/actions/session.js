@@ -144,14 +144,14 @@ const findMany = async (options) => {
 // #endregion findMany()
 
 
-// #region refreshSessionExpiry()
+// #region refreshExpiry()
 /**
  * Update the expiry date of a `Session` entry.
  * @async
  * 
  * @param {string} sessionId - The id of the `Session` entry.
  */
-const refreshSessionExpiry = async (sessionId) => {
+const refreshExpiry = async (sessionId) => {
     try {
         // Get date set number of days from now
         const expiryDate = dateFromNow(settings.session.duration * 24 * (60 ** 2) * 1000)
@@ -191,7 +191,7 @@ const refreshSessionExpiry = async (sessionId) => {
         }
     }
 }
-// #endregion refreshSessionExpiry()
+// #endregion refreshExpiry()
 
 // #endregion Actions
 
@@ -203,13 +203,13 @@ const refreshSessionExpiry = async (sessionId) => {
 const sessionActions = {
     findUnique,
     findMany,
-    refreshSessionExpiry
+    refreshExpiry
 }
 
 // Default export for the entire object
 export default sessionActions
 
 // Named export for each action
-export { findUnique, findMany, refreshSessionExpiry }
+export { findUnique, findMany, refreshExpiry }
 
 // #endregion Exports
