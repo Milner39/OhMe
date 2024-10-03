@@ -1,5 +1,6 @@
 // #region Imports
 import dbClient from "$lib/server/database/prisma/dbClient.js"
+import userActions from "./user.js"
 import { dateFromNow } from "$lib/client/utils/dateUtils.js"
 import logError from "$lib/server/utils/errorLogger.js"
 import { settings }  from "$lib/settings.js"
@@ -24,6 +25,63 @@ const sessionInclude = {
     }
 }
 
+
+
+// #region create()
+/**
+ * Create a `Session` entry.
+ * @async
+ * 
+ * @param {Prisma.SessionCreateInput} data - 
+   The data used to create the `Session` entry.
+ */
+const create = async (data) => {
+    try {
+        // Get user with the provided filter
+        const user_fUResponse = await userActions.findUnique(data.user.connect)
+
+        // Check one user was found
+        if (!user_fUResponse.success) {
+                return {
+                session: null,
+                success: false,
+                error: `user.findUnique(): ${user_fUResponse.error}`
+            }
+        }
+
+        
+        // Create the `Session` entry
+        const session = await dbClient.session.create({
+            include: sessionInclude,
+            data: data
+        })
+
+
+        return {
+            session: session,
+            success: true,
+            error: null
+        }
+
+    } catch (error) {
+        // Log error details
+        logError({
+            filepath: "src/lib/server/database/actions/session.js",
+            message: "Error while creating `Session` entry",
+            arguments: {
+                data: data
+            },
+            error
+        })
+
+        return {
+            session: null,
+            success: false,
+            error: "An error occurred"
+        }
+    }
+}
+// #endregion create()
 
 
 // #region findUnique()
@@ -88,7 +146,6 @@ const findUnique = async (filter) => {
     }
 }
 // #endregion findUnique()
-
 
 
 // #region findMany()
@@ -201,6 +258,7 @@ const refreshExpiry = async (sessionId) => {
 
 // Define object to hold all `Session` actions
 const sessionActions = {
+    create,
     findUnique,
     findMany,
     refreshExpiry
@@ -210,6 +268,11 @@ const sessionActions = {
 export default sessionActions
 
 // Named export for each action
-export { findUnique, findMany, refreshExpiry }
+export { 
+    create,
+    findUnique,
+    findMany,
+    refreshExpiry
+}
 
 // #endregion Exports

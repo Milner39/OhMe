@@ -27,11 +27,10 @@ export const load = async ({ url }) => {
 
 
 // #region Imports
-import dbClient from "$lib/server/database/prisma/dbClient.js"
+import dbActions from "$lib/server/database/actions/all.js"
 import inputHandler from "$lib/server/utils/inputHandler.js"
 import { stringHasher } from "$lib/server/utils/hashUtils.js"
 import { emailer } from "$lib/server/utils/emailUtils.js"
-import logError from "$lib/server/utils/errorLogger.js"
 import { dateFromNow } from "$lib/client/utils/dateUtils"
 import { settings }  from "$lib/settings.js"
 // #endregion
@@ -133,63 +132,44 @@ export const actions = {
         */
 
 
-        // TODO: Move to db operations file
         // Get password hash of `User` entry to be logged into
-        try {
-            const dbResponse = await dbClient.user.findFirst({
-                // Set field filters
-                where: {
-                    email: {
-                        address: inputHandler.sanitize(formData.email.toLowerCase())
-                    }
-                },
-                // Set fields to return
-                select: {
-                    id: true,
-                    password: {
-                        select: {
-                            hash: true
-                        }
-                    }
-                }
-            })
-
-            // If `dbResponse` is not `null`
-            if (dbResponse) {
-                var { password, ...user } = dbResponse
+        const user_fUResponse = await dbActions.user.findUnique({
+            email: {
+                address: inputHandler.sanitize(formData.email.toLowerCase())
             }
-        
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(public)/login/+page.server.js",
-                message: "Error while fetching `User` entry from db using form-submitted email address",
-                arguments: {
-                    action: "login",
-                    emailAddress: formData.email
-                },
-                error
-            })
+        })
 
+        // Check if there was an error while getting the `User` entry
+        if (
+            user_fUResponse.error &&
+            user_fUResponse.error !== "No entry found"
+        ) {
             return {
                 status: 503,
                 notice: "We couldn't log you in, try again later..."
             }
         }
 
+
+        // Get `User` entry data
+        const { 
+            password: passwordEntry = null, 
+            ...userEntry 
+        } = user_fUResponse.user || {}
+
         
+        // Check if submitted password matches hash in db
         let correctPassword = false
 
         /*
             If `User` entry with matching credentials does not exist, `null` will be returned,
             in which case instead of verifying `User.password.hash`, the `stringHasher.failVerify()` 
-            subroutine that simulates the time it would take to verify a found hash is executed.
+            subroutine executed to simulate the time it would take to verify a real hash.
         */
-        if (!password) {
+        if (!passwordEntry) {
             await stringHasher.failVerify()
         } else {
-            correctPassword = await stringHasher.verify(password.hash, formData.password)
+            correctPassword = await stringHasher.verify(passwordEntry.hash, formData.password)
         }
         /*
             This is done because returning immediately allows malicious clients to figure out
@@ -210,50 +190,21 @@ export const actions = {
         }
 
 
-        // Get date set number of days from now to control when sessions expire
+        // Get date set number of days from now to control when session expires
         const expiryDate = dateFromNow(settings.session.duration * 24 * (60 ** 2) * 1000)
 
-        // TODO: Move to db operations file
-        // Create `Session` entry connected to a `User` in db
-        try {
-            const dbResponse = await dbClient.user.update({
-                // Set field filters
-                where: {
-                    id: user.id
-                },
-                // Set field data
-                data: {
-                    sessions: {
-                        create: {
-                            expiresAt: expiryDate
-                        }
-                    }
-                },
-                // Set fields to return
-                select: {
-                    sessions: {
-                        select: {
-                            id: true
-                        }
-                    }
+        // Create `Session` entry connected to a `User` entry
+        const session_cResponse = await dbActions.session.create({
+            expiresAt: expiryDate,
+            user: {
+                connect: {
+                    id: userEntry.id
                 }
-            })
+            }
+        })
 
-            var { sessions } = dbResponse
-        
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(public)/login/+page.server.js", 
-                message: "Error while creating `Session` entry in db",
-                arguments: {
-                    action: "login",
-                    userId: user.id
-                },
-                error
-            })
-
+        // Check if there was an error while creating the `Session` entry
+        if (!session_cResponse.success) {
             return {
                 status: 503,
                 notice: "We couldn't log you in, try again later..."
@@ -262,7 +213,7 @@ export const actions = {
 
 
         // Set client's cookies
-        await setAuthCookies(cookies, user.id, sessions.at(-1).id)
+        await setAuthCookies(cookies, userEntry.id, session_cResponse.session.id)
 
         return {
             status: 200,
@@ -331,151 +282,66 @@ export const actions = {
         const sanitizedUsername = inputHandler.sanitize(formData.username)
         const sanitizedEmail = inputHandler.sanitize(formData.email.toLowerCase())
 
-
-        // TODO: Move to db operations file
-        // Get `User` entries with the same username or email as submitted by client
-        try {
-            const dbResponse = await dbClient.user.findMany({
-                // Set field filters
-                where: {
-                    OR: [
-                        {
-                            username: sanitizedUsername
-                        },
-                        {
-                            email: {
-                                address: sanitizedEmail
-                            }
-                        }
-                    ]
-                },
-                // Set fields to be returned
-                select: {
-                    username: true,
-                    email: {
-                        select: {
-                            address: true
-                        }
-                    }
-                }
-            })
-
-            // Check if username or email match for each `User` entry returned
-            for (const user of dbResponse) {
-                if (user.username === sanitizedUsername) {
-                    errors.username = "Username taken"
-                }
-                if (user.email.address === sanitizedEmail) {
-                    errors.email = "Email taken"
-                }
-            }
-        
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(public)/login/+page.server.js",
-                message: "Error while fetching `User` entries from db using form-submitted username and email address",
-                arguments: {
-                    action: "register",
-                    username: formData.username,
-                    emailAddress: formData.email
-                },
-                error
-            })
-
-            return {
-                status: 503,
-                notice: "We couldn't register your account, try again later..."
-            }
-        }
-
-        // If username or email is taken
-        if (Object.keys(errors).length > 0) {
-            return {
-                status: 409,
-                errors
-            }
-        }
-
-
-        // Get date set number of days from now to control when sessions expire
+        // Get date set number of days from now to control when session expires
         const expiryDate = dateFromNow(settings.session.duration * 24 * (60 ** 2) * 1000)
 
-        // TODO: Move to db operations file
-        // Create `User` entry connected to created `Session` entry in db
-        try {
-            const dbResponse = await dbClient.user.create({
-                // Set field data
-                data: {
-                    username: sanitizedUsername,
-                    email: {
-                        create: {
-                            address: sanitizedEmail,
-                            verifyCode: crypto.randomUUID(),
-                            codeSentAt: new Date()
-                        }
-                    },
-                    password: {
-                        create: {
-                            hash: await stringHasher.hash(formData.password)
-                        }
-                    },
-                    sessions: {
-                        create: {
-                            expiresAt: expiryDate
-                        }
-                    }
-                },
-                // Set fields to return
-                select: {
-                    id: true,
-                    email: {
-                        select: {
-                            address: true,
-                            verifyCode: true
-                        }
-                    },
-                    sessions: {
-                        select: {
-                            id: true
-                        }
+        // Create a `User` and `Session` entry
+        const user_cResponse = await dbActions.user.create({
+            username: sanitizedUsername,
+            email: {
+                create: {
+                    address: sanitizedEmail,
+                    verifyCode: crypto.randomUUID(),
+                    codeSentAt: new Date()
+                }
+            },
+            password: {
+                create: {
+                    hash: await stringHasher.hash(formData.password)
+                }
+            },
+            sessions: {
+                create: {
+                    expiresAt: expiryDate
+                }
+            }
+        })
+
+        // Check if there was an error while creating the `User` entry
+        if (!user_cResponse.success) {
+            if (user_cResponse.error === "Unique fields already taken") {
+                return {
+                    status: 422,
+                    errors: {
+                        username: user_cResponse.target.includes("username") ? "Username taken" : null,
+                        email: user_cResponse.target.includes("email.address") ? "Email taken" : null
                     }
                 }
-            })
+            }
 
-
-            var { sessions, email, ...user } = dbResponse
-
-            /*
-                Send email with link to verify updated email
-                inputHandler.desanitize(email.address) replaces my email in production
-            */
-            await emailer.sendVerification("finn.milner@outlook.com", user.id, email.verifyCode)
-
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(public)/login/+page.server.js",
-                message: "Error while creating `User` entry in db",
-                arguments: {
-                    action: "register",
-                    username: formData.username,
-                    emailAddress: formData.email
-                },
-                error
-            })
-
-            return {
-                status: 503,
-                notice: "We couldn't register your account, try again later..."
+            else {
+                return {
+                    status: 503,
+                    notice: "We couldn't register your account, try again later..."
+                }
             }
         }
+
+
+        // Send email with link to verify email
+        await emailer.sendVerification(
+            "finn.milner@outlook.com", // inputHandler.desanitize(user_cResponse.user.email.address),
+            user_cResponse.user.id, 
+            user_cResponse.user.email.verifyCode
+        )
 
 
         // Set client's cookies
-        await setAuthCookies(cookies, user.id, sessions.at(-1).id)
+        await setAuthCookies(
+            cookies, 
+            user_cResponse.user.id,
+            user_cResponse.user.sessions.at(-1).id  // Last session created
+        )
 
         return {
             status: 200,
@@ -516,64 +382,40 @@ export const actions = {
         */
 
 
-        // TODO: Move to db operations file
         // Get `User` entry to send password reset email
-        try {
-            const dbResponse = await dbClient.user.findFirst({
-                // Set field filters
-                where: {
-                    email: {
-                        address: inputHandler.sanitize(formData.email.toLowerCase())
-                    }
-                },
-                // Set fields to return
-                select: {
-                    id: true,
-                    password: {
-                        select: {
-                            codeSentAt: true
-                        }
-                    }
-                }
-            })
-
-            // If `dbResponse` is not `null`
-            if (dbResponse) {
-                var { password, ...user } = dbResponse
-            } else {
-                return {
-                    status: 401,
-                    errors: { email: "Email incorrect" }
-                }
+        const user_fUResponse = await dbActions.user.findUnique({
+            email: {
+                address: inputHandler.sanitize(formData.email.toLowerCase())
             }
+        })
 
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(public)/login/+page.server.js",
-                message: "Error while fetching `User` entry from db using form-submitted email address",
-                arguments: {
-                    action: "reset",
-                    emailAddress: formData.email
-                },
-                error
-            })
-
+        // Check if there was an error while getting the `User` entry
+        if (
+            user_fUResponse.error &&
+            user_fUResponse.error !== "No entry found"
+        ) {
             return {
                 status: 503,
                 notice: "We couldn't email you a password reset link, try again later..."
             }
         }
 
+        // Check if there is no `User` entry with the submitted email
+        if (!user_fUResponse.success) {
+            return {
+                status: 401,
+                errors: { email: "Email incorrect" }
+            }
+        }
+
 
         // Get the time the last password reset code was sent
-        const { codeSentAt } = password
+        const { password } = user_fUResponse.user
 
         // If last link was sent less than set number of hours ago
         if (
-            codeSentAt && 
-            codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.password.cooldown) > new Date()
+            password.codeSentAt && 
+            password.codeSentAt > dateFromNow(settings.password.cooldown * -1 * (60 ** 2) * 1000)
         ) {
             return {
                 status: 422,
@@ -582,66 +424,34 @@ export const actions = {
         }
 
 
-        // TODO: Move to db operations file
         // Update `User` entry with new password reset code in db 
-        try {
-            const dbResponse = await dbClient.user.update({
-                // Set field filters
-                where: {
-                    id: user.id
-                },
-                // Set field data
-                data: {
-                    password: {
-                        update: {
-                            resetCode: crypto.randomUUID(),
-                            codeSentAt: new Date()
-                        }
-                    }
-                },
-                // Set fields to return
-                select: {
-                    email: {
-                        select: {
-                            address: true
-                        }
-                    },
-                    password: {
-                        select: {
-                            resetCode: true
-                        }
+        const user_uResponse = await dbActions.user.update(
+            { id: user_fUResponse.user.id },
+            {
+                password: {
+                    update: {
+                        resetCode: crypto.randomUUID(),
+                        codeSentAt: new Date()
                     }
                 }
-            })
-
-
-            const { email, password } = dbResponse
-
-            /*
-                Send email with link to reset password
-                inputHandler.desanitize(email.address) replaces my email
-            */
-            await emailer.sendPasswordReset("finn.milner@outlook.com", user.id, password.resetCode)
+            }
+        )
         
-        // Catch errors
-        } catch (error) {
-            console.log(error)
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(public)/login/+page.server.js",
-                message: "Error updating `User` entry in db with new password reset code",
-                arguments: {
-                    action: "reset",
-                    userId: user.id
-                },
-                error
-            })
-
+        // Check if there was an error while updating the `User` entry
+        if (!user_uResponse.success) {
             return {
                 status: 503,
                 notice: "We couldn't email you a password reset link, try again later..."
             }
         }
+
+
+        // Send email with link to reset password
+        await emailer.sendPasswordReset(
+            "finn.milner@outlook.com", // inputHandler.desanitize(user_uResponse.user.email.address),
+            user_uResponse.user.id, 
+            user_fUResponse.user.password.resetCode
+        )
 
 
         return {

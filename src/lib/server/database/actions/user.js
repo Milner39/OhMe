@@ -41,6 +41,72 @@ const userUnique = {
 
 
 
+// #region create()
+/**
+ * Create a `User` entry.
+ * @async
+ * 
+ * @param {Prisma.UserCreateInput} data -
+   The data used to create the `User` entry.
+ */
+const create = async (data) => {
+    try {
+        // Get the unique fields in `data` that are already taken
+        const fU_pUFResponse = await findUnique__perUniqueField(collapseDBActionDataRecord(data))
+
+        // Check the query was successful
+        if (!fU_pUFResponse.success) {
+            return {
+                user: null,
+                success: false,
+                error: `user.findUnique__perUniqueField(): ${fU_pUFResponse.error}`
+            }
+        }
+
+        // Check if any unique fields are already taken
+        if (fU_pUFResponse.fieldMatches !== null) {
+            return {
+                user: null,
+                success: false,
+                error: "Unique fields already taken",
+                target: Object.keys(fU_pUFResponse.fieldMatches)
+            }
+        }
+
+
+        // Create the `User` entry
+        const user = await dbClient.user.create({
+            include: userInclude,
+            data: data
+        })
+
+        return {
+            user: user,
+            success: true,
+            error: null
+        }
+
+    } catch (error) {
+        // Log error details
+        logError({
+            filepath: "src/lib/server/database/actions/user.js",
+            message: "Error while creating `User` entry",
+            arguments: {
+                data: data
+            },
+            error
+        })
+
+        return {
+            user: null,
+            success: false,
+            error: "An error occurred"
+        }
+    }
+}
+// #endregion create()
+
+
 // #region findUnique()
 /**
  * Get a single `User` entry.
@@ -160,29 +226,26 @@ const findMany = async (options) => {
 
 // #region findUnique__PerUniqueField()
 /**
- * Take the data passed into other subroutines,
-   parse it to remove fields that do not have 
-   unique constraints.
- *
+ * Take a filter and parse it to remove fields that 
+   do not have unique constraints.
  *
  * Separate the fields into individual records, then
    use `findMany()` to get all the entries that match
    one or more of the unique fields.
  * 
- *
  * Return all the fields that values are "taken"
    along with the matching entry.
  * 
  *
  * 
- * @param {{"": any[]}} data - 
-   The data to check for taken unique fields.
+ * @param {{"": any[]}} filter - 
+   The filter to check for taken unique fields.
  */
-const findUnique__perUniqueField = async (data) => {
+const findUnique__perUniqueField = async (filter) => {
     try {
         // Define subroutine to parse `data`
         const getUniqueFields = (() => {
-            const obj = data
+            const obj = filter
             keepKeys(obj, userUnique)
             return obj
         })
@@ -248,7 +311,7 @@ const findUnique__perUniqueField = async (data) => {
             filepath: "src/lib/server/database/actions/user.js",
             message: "Error while finding `User` entry for each unique field",
             arguments: {
-                data: data
+                filter: filter
             },
             error
         })
@@ -290,7 +353,6 @@ const update = async (filter, data) => {
         }
 
 
-
         // Get the unique fields in `data` that are already taken
         const fU_pUFResponse = await findUnique__perUniqueField(collapseDBActionDataRecord(data))
 
@@ -314,7 +376,6 @@ const update = async (filter, data) => {
         }
 
 
-
         // Update the `User` entry
         const user = await dbClient.user.update({
             include: userInclude,
@@ -331,7 +392,6 @@ const update = async (filter, data) => {
         }
 
     } catch (error) {
-        console.log(error)
         // Log error details
         logError({
             filepath: "src/lib/server/database/actions/user.js",
@@ -360,6 +420,7 @@ const update = async (filter, data) => {
 
 // Define object to hold all `User` actions
 const userActions = {
+    create,
     findUnique,
     findMany,
     update
@@ -369,6 +430,11 @@ const userActions = {
 export default userActions
 
 // Named export for each action
-export { findUnique, findMany, update }
+export { 
+    create,
+    findUnique, 
+    findMany, 
+    update 
+}
 
 // #endregion Exports
