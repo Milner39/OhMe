@@ -250,6 +250,61 @@ const refreshExpiry = async (sessionId) => {
 }
 // #endregion refreshExpiry()
 
+
+// #region delete()
+/**
+ * Delete a `Session` entry.
+ * @async
+ * 
+ * @param {Prisma.SessionWhereInput} filter - 
+   The filter used to check `Session` entries.
+ */
+const delete_ = async (filter) => {
+    try {
+        // Get the `Session` entry that matches the filter.
+        const fUResponse = await findUnique(filter)
+
+        // Check a `Session` entry was found
+        if (!fUResponse.success) {
+            return {
+                success: false,
+                error: `session.findUnique(): ${fUResponse.error}`
+            }
+        }
+
+
+        // Delete the `Session` entry
+        await dbClient.session.delete({
+            where: {
+                id: fUResponse.session.id
+            }
+        })
+
+        
+        return {
+            success: true,
+            error: null
+        }
+
+    } catch (error) {
+        // Log error details
+        logError({
+            filepath: "src/lib/server/database/actions/session.js",
+            message: "Error while deleting `Session` entry",
+            arguments: {
+                where: filter
+            },
+            error
+        })
+
+        return {
+            success: false,
+            error: "An error occurred"
+        }
+    }
+}
+// #endregion delete()
+
 // #endregion Actions
 
 
@@ -261,7 +316,8 @@ const sessionActions = {
     create,
     findUnique,
     findMany,
-    refreshExpiry
+    refreshExpiry,
+    delete: delete_
 }
 
 // Default export for the entire object
@@ -272,7 +328,8 @@ export {
     create,
     findUnique,
     findMany,
-    refreshExpiry
+    refreshExpiry,
+    delete_
 }
 
 // #endregion Exports

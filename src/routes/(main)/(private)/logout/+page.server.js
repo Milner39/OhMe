@@ -1,6 +1,5 @@
 // #region Imports
-import dbClient from "$lib/server/database/prisma/dbClient.js"
-import logError from "$lib/server/utils/errorLogger.js"
+import dbSessionActions from "$lib/server/database/actions/session.js"
 // #endregion
 
 
@@ -34,28 +33,13 @@ export const actions = {
         }
 
 
-        // TODO: Move to db operations file
         // Delete `Session` entry
-        try {
-            await dbClient.session.delete({
-                // Set field filters
-                where: {
-                    id: session.id
-                }
-            })
+        const session_dResponse = await dbSessionActions.delete({
+            id: session.id
+        })
 
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(private)/(user)/+page.server.js",
-                message: "Error while deleting `Session` entry in db",
-                arguments: {
-                    sessionId: session.id
-                },
-                error
-            })
-
+        // Check if session deletion was successful
+        if (!session_dResponse.success) {
             return {
                 status: 503,
                 notice: "We couldn't log you out, try again later..."
