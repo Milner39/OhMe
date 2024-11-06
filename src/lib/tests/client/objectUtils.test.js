@@ -228,7 +228,9 @@ describe("checkKeyMatch()", () => {
                     expect(checkKeyMatch(target, check)).toEqual(false)
                 })
             })
+            // #endregion
         })
+        // #endregion
     })
 })
 // #endregion
