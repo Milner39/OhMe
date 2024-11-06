@@ -31,7 +31,7 @@ import dbActions from "$lib/server/database/actions/all.js"
 import inputHandler from "$lib/server/utils/inputHandler.js"
 import { stringHasher } from "$lib/server/utils/hashUtils.js"
 import { emailer } from "$lib/server/utils/emailUtils.js"
-import { dateFromNow } from "$lib/client/utils/dateUtils"
+import { dateFromNow } from "$lib/client/utils/dateUtils.js"
 import { settings }  from "$lib/settings.js"
 // #endregion
 
@@ -450,7 +450,7 @@ export const actions = {
         await emailer.sendPasswordReset(
             "finn.milner@outlook.com", // inputHandler.desanitize(user_uResponse.user.email.address),
             user_uResponse.user.id, 
-            user_fUResponse.user.password.resetCode
+            user_uResponse.user.password.resetCode
         )
 
 
