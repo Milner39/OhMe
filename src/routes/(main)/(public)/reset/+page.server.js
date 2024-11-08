@@ -22,14 +22,7 @@ export const load = async ({ url }) => {
 
     // https://kit.svelte.dev/docs/load#streaming-with-promises
     // Wrap main script in a async subroutine so it can be streamed as a promise
-    /**
-     * Check if the reset code is correct.
-     * 
-     * @async
-     * 
-     * @param {URL} url - The `URL` object of the current page.
-     */
-    const checkCode = async (url) => {
+    const checkCode = async () => {
 
         // Get search parameters
         const userId = url.searchParams.get("user")
@@ -69,10 +62,10 @@ export const load = async ({ url }) => {
         }
 
 
-        // Get the time the last password reset code was sent
+        // Get the time the password reset code was sent
         const { codeSentAt } = user_fUResponse.user.password
 
-        // If last link was sent more than set number of hours ago
+        // If link was sent more than set number of hours ago
         if (
             !codeSentAt ||
             codeSentAt < dateFromNow(-1 * settings.password.duration * (60 ** 2) * 1000)
@@ -91,7 +84,7 @@ export const load = async ({ url }) => {
 
 
     return {
-        checkResetCode: checkCode(url)
+        checkResetCode: checkCode()
     }
 }
 // #endregion load()
@@ -194,7 +187,7 @@ export const actions = {
             }
         )
 
-        // Check if there was an error while updating the `User` entry
+        // If query failed
         if (!user_uResponse.success) {
             return {
                 status: 503,

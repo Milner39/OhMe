@@ -1,7 +1,7 @@
 // #region Imports
-import dbClient from "$lib/server/database/prisma/dbClient.js"
+import dbActions from "$lib/server/database/actions/all.js"
 import inputHandler from "$lib/server/utils/inputHandler.js"
-import logError from "$lib/server/utils/errorLogger.js"
+import { dateFromNow } from "$lib/client/utils/dateUtils.js"
 import { settings }  from "$lib/settings.js"
 // #endregion
 
@@ -14,16 +14,17 @@ import { settings }  from "$lib/settings.js"
 
     - Check if search parameters are valid.
 
-    - Check if reset code is correct.
+    - Check if verify code is correct.
 
     - Set the matching `User` entry's email to verified.
 */
 /** @type {import("./$types").PageServerLoad} */
 export const load = async ({ url }) => {
+
     // https://kit.svelte.dev/docs/load#streaming-with-promises
     // Wrap main script in a function so it can be streamed as a promise
-    // TODO: Unwrap
     const verify = async () => {
+
         // Get search parameters
         const userId = url.searchParams.get("user")
         const verifyCode = url.searchParams.get("code")
@@ -37,73 +38,46 @@ export const load = async ({ url }) => {
         }
 
 
-        // TODO: Move to db operations file
         // Get `User` entry to have email verified
-        try {
-            const dbResponse = await dbClient.user.findUnique({
-                // Set field filters
-                where: {
-                    id: userId,
-                    email: {
-                        verifyCode: verifyCode
-                    }
-                },
-                // Set fields to return
-                select: {
-                    email: {
-                        select: {
-                            verified: true,
-                            codeSentAt: true
-                        }
-                    }
-                }
-            })
-
-            // If `dbResponse` is `null`
-            if (!dbResponse) {
-                return {
-                    status: 422,
-                    errors: { client: "Incorrect verification code..." }
-                }
+        const user_fUResponse = await dbActions.user.findUnique({
+            id: userId,
+            email: {
+                verifyCode: verifyCode,
             }
+        })
 
-            var { email } = dbResponse
+        // If no `User` entry with given id and email verification code exists
+        if (user_fUResponse.error === "No entry found") {
+            return {
+                status: 422,
+                errors: { client: "Incorrect verify code..." }
+            }
+        }
 
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(public)/verify/+page.server.js",
-                message: "Error while fetching `User` entry from db using user id and verification code from url param",
-                arguments: {
-                    userId,
-                    verifyCode
-                },
-                error
-            })
-
+        // If query failed
+        if (!user_fUResponse.success) {
             return {
                 status: 503,
-                errors: { client: "Something went wrong, try again later..."},
+                errors: { client: "Something went wrong, try again later..." }
             }
         }
 
 
         // If email is already verified
-        if (email.verified) {
+        if (user_fUResponse.user.email.verified) {
             return {
                 status: 409,
                 errors: { client: "Your email address if already verified..." }
             }
         }
 
+        // Get the time the email verification code was sent
+        const { codeSentAt } = user_fUResponse.user.email
 
-        // Get the time the last email verification code was sent
-        const { codeSentAt } = email
-        // If last link was sent more than set number of hours ago
+        // If link was sent more than set number of hours ago
         if (
             !codeSentAt || 
-            codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.email.duration) < new Date()
+            codeSentAt < dateFromNow(-1 * settings.email.duration * (60 ** 2) * 1000)
         ) {
             return {
                 status: 401,
@@ -112,42 +86,26 @@ export const load = async ({ url }) => {
         }
 
 
-        // TODO: Move to db operations file
         // Update `User` entry in db
-        try {
-            await dbClient.user.update({
-                // Set field filters
-                where: {
-                    id: userId,
-                    email: {
-                        verifyCode: verifyCode
-                    }
-                },
-                // Set field data
-                data: {
-                    email: {
-                        update: {
-                            verified: true,
-                            verifyCode: null,
-                            codeSentAt: null
-                        }
+        const user_uResponse = await dbActions.user.update(
+            {
+                id: userId,
+                email: {
+                    verifyCode: verifyCode
+                }
+            },
+            {
+                email: {
+                    update: {
+                        verified: true,
+                        verifyCode: null,
                     }
                 }
-            })
+            }
+        )
 
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(public)/verify/+page.server.js",
-                message: "Error while updating verified status to true for `User` entry in db",
-                arguments: {
-                    userId,
-                    verifyCode
-                },
-                error
-            })
-
+        // If query failed
+        if (!user_uResponse.success) {
             return {
                 status: 503,
                 errors: { client: "Something went wrong, try again later..." }
