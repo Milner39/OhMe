@@ -123,7 +123,6 @@ export const load = async ({ locals }) => {
 
 // #region Specific Imports
 import dbActions from "$lib/server/database/actions/all.js"
-import logError from "$lib/server/utils/errorLogger.js"
 // #endregion Specific Imports
 
 
