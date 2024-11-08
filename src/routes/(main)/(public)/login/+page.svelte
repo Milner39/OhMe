@@ -85,7 +85,6 @@
         goto(`/${url.searchParams.get("redirectTo").slice(1)}`)
     }
 
-    // TODO: hide passwords while typing, use button to toggle show password
 </script>
 
 <Banner>
@@ -134,14 +133,14 @@
                     <form class="form" method="POST" action="?/login" use:enhance>
                         <div>
                             <label for="email"><small>Email Address*</small></label>
-                            <input name="email" id="email" required autocomplete="email"
+                            <input type="text" name="email" id="email" required autocomplete="email"
                                 class:invalid={form?.errors?.email}
                                 placeholder={form?.errors?.email}
                             >
                         </div>
                         <div>
                             <label for="password"><small>Password*</small></label>
-                            <input name="password" id="password" required autocomplete="current-password"
+                            <input type="password" name="password" id="password" required autocomplete="current-password"
                                 class:invalid={form?.errors?.password}
                                 placeholder={form?.errors?.password}
                             >
@@ -160,21 +159,21 @@
                     <form class="form" method="POST" action="?/register" use:enhance>
                         <div>
                             <label for="username"><small>Username*</small></label>
-                            <input name="username" id="username" required autocomplete="username"
+                            <input type="text" name="username" id="username" required autocomplete="username"
                                 class:invalid={form?.errors?.username}
                                 placeholder={form?.errors?.username}
                             >
                         </div>
                         <div>
                             <label for="email"><small>Email Address*</small></label>
-                            <input name="email" id="email" required autocomplete="email"
+                            <input type="text" name="email" id="email" required autocomplete="email"
                                 class:invalid={form?.errors?.email}
                                 placeholder={form?.errors?.email}
                             >
                         </div>
                         <div>
                             <label for="password"><small>Password*</small></label>
-                            <input name="password" id="password" required autocomplete="new-password"
+                            <input type="password" name="password" id="password" required autocomplete="new-password"
                                 class:invalid={form?.errors?.password}
                                 placeholder={form?.errors?.password}
                             >
@@ -190,7 +189,7 @@
                     <form class="form" method="POST" action="?/reset" use:enhance>
                         <div>
                             <label for="email"><small>Email Address*</small></label>
-                            <input name="email" id="email" required autocomplete="email"
+                            <input type="text" name="email" id="email" required autocomplete="email"
                                 class:invalid={form?.errors?.email}
                                 placeholder={form?.errors?.email}
                             >
