@@ -242,13 +242,38 @@ const findMany = async (options) => {
    The filter to check for taken unique fields.
  */
 const findUnique__perUniqueField = async (filter) => {
+
+    // Define subroutine to parse `data`
+    const getUniqueFields = (() => {
+        const obj = filter
+        keepKeys(obj, userUnique)
+        return obj
+    })
+
+    // Define subroutine to check if deepest nested field is null
+    const checkDeepNull = (obj) => {
+        // Get the first value in the object
+        const firstValue = obj[Object.keys(obj)[0]]
+
+        // If first value is an object
+        if (
+            typeof firstValue === "object" && 
+            firstValue !== null
+        ) {
+            // Recurse
+            return checkDeepNull(firstValue)
+        }
+
+        // If first value is null
+        else if (firstValue === null) {
+            return true
+        }
+
+        return false
+    }
+
+
     try {
-        // Define subroutine to parse `data`
-        const getUniqueFields = (() => {
-            const obj = filter
-            keepKeys(obj, userUnique)
-            return obj
-        })
 
         // Get the unique fields
         const uniqueFields = getUniqueFields()
@@ -256,6 +281,14 @@ const findUnique__perUniqueField = async (filter) => {
 
         // Split the unique fields into individual records
         const splitFields = splitKeysIntoArray(uniqueFields)
+
+        // For each record, If deepest nested field is null, remove it from the Array
+        for (const [index, record] of splitFields.entries()) {
+            if (checkDeepNull(record)) {
+                splitFields.splice(index, 1)
+            }
+        }
+        // This is so unique fields with null values are not checked for uniqueness
 
 
         // Find all the entries that match one of the unique fields
