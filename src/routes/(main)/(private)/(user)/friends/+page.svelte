@@ -202,19 +202,9 @@
                         if (initVal !== search.value) return
 
                         // Send a request to fetch search results from api endpoint
-                        const response = await fetch($page.url.pathname, {
-                            method: "POST",
-                            body: JSON.stringify({
-                                search: search.value
-                            }),
-                            headers: {
-                                /*
-                                    TODO: Move the contents of `./+server.js` into 
-                                    a form action and use
-                                    "x-sveltekit-action": "true"
-                                */
-                                "Content-Type": "application/json"
-                            }
+                        const response = await fetch(`${$page.url.pathname}?search=${search.value}`, {
+                            method: "GET",
+                            headers: { "Content-Type": "application/json" }
                         })
 
                         // Set `search.result` to the returned users or an empty array

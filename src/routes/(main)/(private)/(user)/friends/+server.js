@@ -11,13 +11,13 @@ import { json } from "@sveltejs/kit"
 
 
 
-// #region POST()
+// #region GET()
 /*
     https://kit.svelte.dev/docs/routing#server
-    Define POST request handler
+    Define GET request handler
 */
 /** @type {import('./$types').RequestHandler} */
-export const POST = async ({ request, locals }) => {
+export const GET = async ({ url, locals }) => {
     // Get `user` form locals
     const { user } = locals
     
@@ -30,7 +30,7 @@ export const POST = async ({ request, locals }) => {
     
 
     // Get username `search` from client's request
-    const { search } = await request.json()
+    const search = url.searchParams.get("search")
 
     /*
         Do not validate search as existing usernames may not 
