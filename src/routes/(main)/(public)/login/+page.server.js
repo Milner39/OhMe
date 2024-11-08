@@ -1,31 +1,3 @@
-// TODO: Move to +page.server.js because this is client-side safe
-// #region load()
-/*
-    Define load subroutine to:
-    - Get the `mode` search parameter.
-
-    - Set `mode` to a default value if it is not one
-      of the valid options.
-
-    - Return the `mode` client-side.
-*/
-/** @type {import("./$types").PageServerLoad} */
-export const load = async ({ url }) => {
-    // Get the `mode` search parameter
-    let mode = url.searchParams.get("mode")
-
-    // Set `mode` to default value if not one of the valid options
-    mode = ["login", "register", "reset"].includes(mode) ? mode : "login"
-
-    // Return the form mode
-    return { mode }
-}
-// #endregion
-
-
-
-
-
 // #region Imports
 import dbActions from "$lib/server/database/actions/all.js"
 import inputHandler from "$lib/server/utils/inputHandler.js"
