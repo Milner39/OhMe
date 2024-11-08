@@ -209,10 +209,8 @@ const delete_ = async (senderId, recipientId) => {
             the sender and recipient ids.
         */
         const findUniqueResponse = await findUnique({
-            users: {
-                senderId: senderId,
-                recipientId: recipientId
-            }
+            senderId: senderId,
+            recipientId: recipientId
         })
 
         // Check a `FriendRequest` entry was found
