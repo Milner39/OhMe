@@ -47,17 +47,23 @@
 </script>
 
 <div class="page">
-    {#await data.streamed}
+    {#await data.checkResetCode}
         <div class="loading">
             <LoadingAnimation/>
         </div>
-    {:then streamed} 
+    {:then resetCode} 
         <div class="block loaded" class:valid={form?.status === 200}>
-            {#if form?.status === 200}
-                <Checkmark/>
-                <h4 class="thickFW">Password has been reset</h4>
-                <a class="button-pill" href="/"><h5>Return Home</h5></a>
-            {:else if streamed.status === 200}
+            {#if form}
+                {#if form?.status === 200}
+                    <Checkmark/>
+                    <h4 class="thickFW">Password has been reset</h4>
+                    <a class="button-pill" href="/"><h5>Return Home</h5></a>
+                {:else}
+                    <Close/>
+                    <h5>{form?.errors?.client || "Something went wrong, try again later..."}</h5>
+                    <a class="button-pill" href="/"><h5>Return Home</h5></a>
+                {/if}
+            {:else if resetCode.status === 200}
                 <h4 class="thickFW">Reset Your Password</h4>
                 <form method="POST" use:enhance>
                     <div>
@@ -71,7 +77,7 @@
                 </form>
             {:else}
                 <Close/>
-                <h5>{streamed.errors?.client || "Something went wrong, try again later..."}</h5>
+                <h5>{resetCode.errors?.client || "Something went wrong, try again later..."}</h5>
                 <a class="button-pill" href="/"><h5>Return Home</h5></a>
             {/if}
         </div>
