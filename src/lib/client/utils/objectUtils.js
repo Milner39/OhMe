@@ -1,3 +1,21 @@
+// #region isPlainObject()
+/**
+ * Return boolean depending on if the target is a plain object.
+ *
+ * @param {{"": any[]}} target - The `Object` to check.
+ * 
+ * @returns {boolean} - The result of the check.
+ */
+const isPlainObject = (target) => {
+    if (typeof target !== "object" || target === null) {
+        return false
+    }
+    return Object.prototype.toString.call(target) === "[object Object]"
+}
+
+// #endregion
+
+
 // #region deleteKeys()
 /**
  * Delete certain keys in one object, only if the value of the 
@@ -368,6 +386,7 @@ const getDotNotation = (target, parentKey = "") => {
 // #region Exports
 // Define object to hold all object utils
 const objectUtils = {
+    isPlainObject,
     deleteKeys,
     keepKeys,
     checkKeyMatch,
@@ -382,6 +401,7 @@ export default objectUtils
 
 // Named exports for each method
 export { 
+    isPlainObject,
     deleteKeys, 
     keepKeys, 
     checkKeyMatch, 

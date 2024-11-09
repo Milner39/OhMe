@@ -1,6 +1,41 @@
 // #region Imports
 import { describe, test, expect, assert } from "vitest"
-import { deleteKeys, keepKeys, checkKeyMatch, deepMerge, mapWithRule, splitKeysIntoArray, getDotNotation } from "$lib/client/utils/objectUtils.js"
+import { 
+    isPlainObject,
+    deleteKeys,
+    keepKeys,
+    checkKeyMatch,
+    deepMerge,
+    mapWithRule,
+    splitKeysIntoArray,
+    getDotNotation 
+} from "$lib/client/utils/objectUtils.js"
+// #endregion
+
+
+
+// #region isPlainObject()
+describe("isPlainObject()", () => {
+    describe("Checks if an object is a plain object", () => {
+        // #region Results
+        test("Primitive types", () => {
+            expect(isPlainObject(0)).toEqual(false)
+            expect(isPlainObject("")).toEqual(false)
+            expect(isPlainObject(true)).toEqual(false)
+        })
+
+        test("Null, Undefined", () => {
+            expect(isPlainObject(null)).toEqual(false)
+            expect(isPlainObject(undefined)).toEqual(false)
+        })
+
+        test("Non-plain objects", () => {
+            expect(isPlainObject([])).toEqual(false)
+            expect(isPlainObject(new Date())).toEqual(false)
+        })
+        // #endregion
+    })
+})
 // #endregion
 
 

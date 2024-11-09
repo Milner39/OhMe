@@ -1,3 +1,9 @@
+// #region Imports
+import { isPlainObject } from "$lib/client/utils/objectUtils"
+// #endregion Imports
+
+
+
 // #region collapseDBActionDataRecord
 /**
  * Collapses a DB action `data` record argument into just the fields,
@@ -34,13 +40,7 @@
         password: { hash: "example" }
     }
  */
-// TODO: Update tests with isPlainObject check
 const collapseDBActionDataRecord = (data) => {
-    // TODO: Move to objectUtils.js with tests
-    const isPlainObject = (obj) => {
-        return Object.prototype.toString.call(obj) === "[object Object]"
-    }
-
     // Throw error if `data` is not plain object
     if (!isPlainObject(data)) {
         throw new Error("`data` must be plain object")
