@@ -1,43 +1,37 @@
-// https://kit.svelte.dev/docs/hooks
-// "'Hooks' are app-wide functions you declare that SvelteKit will call in response to specific events..."
+// #region General Imports
 
-// The `event` object represents the request clients make to the server
-// Data can be passed down to server-side `load` functions by populating the `event.locals` object
-
-// The `resolve` function renders the route and generates a `Response` for the client
-
-
-
-
-
-// MARK: Imports
-// https://kit.svelte.dev/docs/modules#sveltejs-kit-hooks
-// "A helper function for sequencing multiple handle calls in a middleware-like manner."
+/*
+    https://kit.svelte.dev/docs/modules#sveltejs-kit-hooks
+    Subroutine to run hooks sequentially
+*/
 import { sequence } from "@sveltejs/kit/hooks"
 
-// Import settings
-import { settings }  from "$lib/settings"
+import { settings }  from "$lib/settings.js"
+// #endregion General Imports
 
 
 
+// #region Handles
+
+// #region auth()
+        
+// #region Specific Imports
+import dbActions from "$lib/server/database/actions/all.js"
+import inputHandler from "$lib/server/utils/inputHandler.js"
+import { dateFromNow } from "$lib/client/utils/dateUtils.js"
+// #endregion Specific Imports
 
 
-// MARK: auth
-// https://kit.svelte.dev/docs/modules#sveltejs-kit-isredirect
-// "Checks whether this is a redirect thrown by `redirect`"
-import { isRedirect } from "@sveltejs/kit"
 
-// Import prisma client instance to interact with db
-import { client as prismaClient } from "$lib/server/prisma"
-
-// Import inputHandler to validate and sanitize inputs
-import { inputHandler } from "$lib/server/inputHandler.js"
-
-// Import error logger to record error details
-import { logError } from "$lib/server/errorLogger"
-
-
-// Define function to delete auth cookies
+// #region Extras
+/** 
+ * Delete the cookies used for authentication from 
+   the client's browser.
+ * @async 
+ * 
+ * @param {import("@sveltejs/kit").Cookies} cookies - 
+   The SvelteKit `Cookies` object provided by a handle.
+ */
 const deleteAuthCookies = async (cookies) => {
     // Delete client's cookies
     cookies.delete("user", {
@@ -49,9 +43,11 @@ const deleteAuthCookies = async (cookies) => {
         secure: false
     })
 }
+// #endregion Extras
 
 
 // Define handle to manage client authentication
+/** @type {import("@sveltejs/kit").Handle} */
 const auth = async ({ event, resolve }) => {
     // Set both local objects to null by default
     event.locals.user = null
@@ -64,7 +60,6 @@ const auth = async ({ event, resolve }) => {
 
     // If client does not have both cookies
     if (!userId || !sessionId) {
-        // End handle
         return await resolve(event)
     }
 
@@ -73,67 +68,32 @@ const auth = async ({ event, resolve }) => {
         // Delete client's cookies
         await deleteAuthCookies(event.cookies)
 
-        // End handle
         return await resolve(event)
     }
 
 
-    // Get `Session` and connected `User` entries with matching ids from db
-    // Only get the session if both ids match the client's cookies
-    // This means in order for a malicious client to set their own cookie values,
-    // they would have to correctly guess a valid `Session.id` and the corresponding `User.id`,
-    // with random UUIDs this should be very secure.
-    try {
-        let dbResponse = await prismaClient.Session.findUnique({
-            // Set field filters
-            where: {
-                id: sessionId,
-                userId: userId
-            },
-            // Set fields to return
-            include: {
-                user: {
-                    include: {
-                        email: true,
-                        password: true,
-                        sessions: true,
-                        frRqSent: true,
-                        frRqReceived: true
-                    }
-                }
-            }
-        })
+    /*
+        Get `Session` and connected `User` entries with matching ids from db
+        Only get the session if both ids match the client's cookies
 
-        // If `dbResponse` is not `undefined`
-        if (dbResponse) {
-            var { user, ...session } = dbResponse
-        } else {
-            // Delete client's cookies
-            await deleteAuthCookies(event.cookies)
+        This means in order for a malicious client to access an account by setting their own cookie values,
+        they would have to correctly guess a valid `Session.id` and the corresponding `User.id`,
+        with random UUIDs this should be impossible to brute force since sessions expire.
+    */
+    const sessionResponse = await dbActions.session.findUnique({
+        id: sessionId,
+        userId: userId
+    })
 
-            // End handle
-            return await resolve(event)
-        }
+    // If query failed
+    if (!sessionResponse.success) {
+        // Delete client's cookies
+        await deleteAuthCookies(event.cookies)
 
-    // Catch errors
-    } catch (error) {
-        // If error was not caused by a redirect
-        if (!isRedirect(error)) {
-            // Log error details
-            logError({
-                filepath: "src/hooks.server.js",
-                message: "Error while fetching Session entry from db using client's cookies",
-                arguments: {
-                    sessionId,
-                    userId
-                },
-                error
-            })
-        }
-
-        // End handle
         return await resolve(event)
     }
+
+    const { user, ...session } = sessionResponse.session
 
 
     // If `session` is expired
@@ -141,72 +101,50 @@ const auth = async ({ event, resolve }) => {
         // Delete client's cookies
         await deleteAuthCookies(event.cookies)
 
-        // End handle
         return await resolve(event)
     }
 
 
     // Get date set number of days from now to control when sessions get renewed
-    const renewBefore = new Date()
-    renewBefore.setDate(renewBefore.getDate() + settings.session.renewalLead)
+    const renewBefore = dateFromNow(settings.session.renewalLead * 24 * (60 ** 2) * 1000)
 
     // If `session` expires sooner than renew date
     if (session.expiresAt < renewBefore) {
-        // Get date set number of days from now to control when sessions expire
-        const expiryDate = new Date()
-        expiryDate.setDate(expiryDate.getDate() + settings.session.duration)
 
-        // Extend `Session.expiresAt` date in db for current session
-        try {
-            await prismaClient.Session.update({
-                // Set field filters
-                where: {
-                    id: sessionId
-                },
-                // Set field data
-                data: {
-                    expiresAt: expiryDate
-                }
-            })
+        // Extend expiry date in db for current `Session` entry
+        const refreshResponse = await dbActions.session.refreshExpiry(sessionId)
+
+        if (refreshResponse.success) {
             // Update `session` object
-            session.expiresAt = expiryDate
-
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/hooks.server.js",
-                message: "Error while extending Session entry expiry date",
-                arguments: {
-                    sessionId,
-                    expiresAt: session.expiresAt,
-                    extendTo: expiryDate
-                },
-                error
-            })
+            session.expiresAt = refreshResponse.expiryDate
         }
     }
 
 
-    // Set both local objects to their respective objects
+    // Set both local objects
     event.locals.user = user
     event.locals.session = session
 
-    // End handle
     return await resolve(event)
 }
+// #endregion auth()
 
 
 
+// #region privateGuard()
 
+// #region Specific Imports
 
-// MARK: privateGuard
-// https://kit.svelte.dev/docs/load#redirects
-// "To redirect users, use the redirect helper from @sveltejs/kit to specify the location
-//  to which they should be redirected..."
+/*
+    https://kit.svelte.dev/docs/load#redirects
+    Subroutine to redirect clients to another route
+*/
 import { redirect } from "@sveltejs/kit"
+// #endregion Specific Imports
 
 
+
+/** @type {import("@sveltejs/kit").Handle} */
 const privateGuard = async ({ event, resolve }) => {
     // If the client has requested an non-existent route
     if (!event.route.id) return await resolve(event)
@@ -217,17 +155,26 @@ const privateGuard = async ({ event, resolve }) => {
     // If the client is requesting a private route and is not logged in
     if (privateRoute && !event.locals.user) {
         // Redirect the client with search params
-        redirect(302, `${settings.urls.login}?protected=login&redirectTo=${event.url.pathname+event.url.search}`)
+        redirect(307, `${settings.urls.login}?protected=login&redirectTo=${event.url.pathname+event.url.search}`)
     }
 
     // Allow the client to access the route
-    // End handle
     return await resolve(event)
 }
+// #endregion privateGuard()
 
-
+// #endregion Handles
 
 
 
 // Export handle sequence to be run on every request
 export const handle = sequence(auth, privateGuard)
+
+
+
+// #region DOCS
+
+// Resources explaining server hooks
+// https://kit.svelte.dev/docs/hooks
+
+// #endregion

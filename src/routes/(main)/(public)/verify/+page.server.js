@@ -1,115 +1,84 @@
-// Import prisma client instance to interact with db
-import { client as prismaClient } from "$lib/server/prisma"
-
-// Import inputHandler to validate and sanitize inputs
-import { inputHandler } from "$lib/server/inputHandler.js"
-
-// Import error logger to record error details
-import { logError } from "$lib/server/errorLogger"
-
-// Import settings
-import { settings }  from "$lib/settings"
+// #region Imports
+import dbActions from "$lib/server/database/actions/all.js"
+import inputHandler from "$lib/server/utils/inputHandler.js"
+import { dateFromNow } from "$lib/client/utils/dateUtils.js"
+import { settings }  from "$lib/settings.js"
+// #endregion
 
 
-// MARK: Load
-// https://kit.svelte.dev/docs/load#page-data
-// Define load function
+
+// #region load()
+/*
+    Define load subroutine to:
+    - Get the `user` and `code` search parameters.
+
+    - Check if search parameters are valid.
+
+    - Check if verify code is correct.
+
+    - Set the matching `User` entry's email to verified.
+*/
+/** @type {import("./$types").PageServerLoad} */
 export const load = async ({ url }) => {
+
     // https://kit.svelte.dev/docs/load#streaming-with-promises
     // Wrap main script in a function so it can be streamed as a promise
     const verify = async () => {
-        // Get URL parameters
+
+        // Get search parameters
         const userId = url.searchParams.get("user")
         const verifyCode = url.searchParams.get("code")
 
-
-        // If url does not have both search params
-        if (!userId || !verifyCode) {
-            // End function
-            return {
-                status: 400,
-                errors: { client: "This is not a valid verification link..." }
-            }
-        }
-
-        // If url params are not in valid format
+        // If search params are not valid
         if (!inputHandler.validate.uuid(userId) || !inputHandler.validate.uuid(verifyCode)) {
-            // End function
             return {
                 status: 400,
-                errors: { client: "This is not a valid verification link..." }
+                errors: { client: "This is not a valid reset link..." }
             }
         }
 
 
         // Get `User` entry to have email verified
-        try {
-            let dbResponse = await prismaClient.User.findUnique({
-                // Set field filters
-                where: {
-                    id: userId,
-                    email: {
-                        verifyCode: verifyCode
-                    }
-                },
-                // Set fields to return
-                select: {
-                    email: {
-                        select: {
-                            verified: true,
-                            codeSentAt: true
-                        }
-                    }
-                }
-            })
-
-            // If `dbResponse` is not `undefined`
-            if (dbResponse) {
-                var { email } = dbResponse
-            } else {
-                // End function
-                return {
-                    status: 422,
-                    errors: { client: "Incorrect verification code..." }
-                }
+        const user_fUResponse = await dbActions.user.findUnique({
+            id: userId,
+            email: {
+                verifyCode: verifyCode,
             }
+        })
 
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(public)/verify/+page.server.js",
-                message: "Error while fetching User entry from db using user id and verification code from url param",
-                arguments: {
-                    userId,
-                    verifyCode
-                },
-                error
-            })
+        // If no `User` entry with given id and email verification code exists
+        if (user_fUResponse.error === "No entry found") {
+            return {
+                status: 422,
+                errors: { client: "Incorrect verify code..." }
+            }
+        }
 
-            // End function
+        // If query failed
+        if (!user_fUResponse.success) {
             return {
                 status: 503,
-                errors: { client: "Something went wrong, try again later..."},
+                errors: { client: "Something went wrong, try again later..." }
             }
         }
 
 
         // If email is already verified
-        if (email.verified) {
-            // End function
+        if (user_fUResponse.user.email.verified) {
             return {
                 status: 409,
                 errors: { client: "Your email address if already verified..." }
             }
         }
 
+        // Get the time the email verification code was sent
+        const { codeSentAt } = user_fUResponse.user.email
 
-        // Get the time the last email verification code was sent
-        const { codeSentAt } = email
-        // If last link was sent more than set number of hours ago
-        if (!codeSentAt || codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.email.duration) < new Date()) {
-            // End function
+        // If link was sent more than set number of hours ago
+        if (
+            !codeSentAt || 
+            codeSentAt < dateFromNow(-1 * settings.email.duration * (60 ** 2) * 1000)
+        ) {
             return {
                 status: 401,
                 errors: { client: "Verification code expired..." }
@@ -118,41 +87,25 @@ export const load = async ({ url }) => {
 
 
         // Update `User` entry in db
-        try {
-            await prismaClient.User.update({
-                // Set field filters
-                where: {
-                    id: userId,
-                    email: {
-                        verifyCode: verifyCode
-                    }
-                },
-                // Set field data
-                data: {
-                    email: {
-                        update: {
-                            verified: true,
-                            verifyCode: null,
-                            codeSentAt: null
-                        }
+        const user_uResponse = await dbActions.user.update(
+            {
+                id: userId,
+                email: {
+                    verifyCode: verifyCode
+                }
+            },
+            {
+                email: {
+                    update: {
+                        verified: true,
+                        verifyCode: null,
                     }
                 }
-            })
+            }
+        )
 
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(public)/verify/+page.server.js",
-                message: "Error while updating verified status to true for User entry in db",
-                arguments: {
-                    userId,
-                    verifyCode
-                },
-                error
-            })
-
-            // End function
+        // If query failed
+        if (!user_uResponse.success) {
             return {
                 status: 503,
                 errors: { client: "Something went wrong, try again later..." }
@@ -160,14 +113,12 @@ export const load = async ({ url }) => {
         }
 
 
-        // End function
         return {
             status: 200
         }
     }
 
 
-    // End load
     return {
         streamed: verify(url)
     }

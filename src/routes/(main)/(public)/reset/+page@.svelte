@@ -1,6 +1,5 @@
 <script>
-    // Import styles
-    import "$lib/styles/global.scss"
+    // #region Imports
 
     // Import svgs
     import Checkmark from "$lib/assets/svgs/Checkmark.svelte"
@@ -9,45 +8,62 @@
     // Import components
     import LoadingAnimation from "$lib/components/LoadingAnimation.svelte"
     
-    // https://kit.svelte.dev/docs/modules#$app-stores
-    // Import `page` to get page data
+    /*
+        https://kit.svelte.dev/docs/modules#$app-stores-page
+        Store containing page information
+    */
     import { page } from "$app/stores"
 
-    // https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
-    // "Without an argument, use:enhance will emulate the browser-native behaviour, just without the full-page reloads."
+    /*
+        https://kit.svelte.dev/docs/form-actions#progressive-enhancement-use-enhance
+        Form action to improve the default behaviour of form elements
+    */
     import { enhance } from "$app/forms"
+    // #endregion
 
-    // Reactive statements are indicated by the `$:` label
-    // https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
-    // "Reactive statements run
-    //  after other script code
-    //  before the component markup is rendered
-    //  whenever the values that they depend on have changed."
 
-    // https://kit.svelte.dev/docs/load#$page-data
-    // "...has access to its own data plus all the data from its parents."
-    // Get data from load functions
+
+    /*
+        Reactive statements are indicated by the `$:` label
+        https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
+        "Reactive statements run:
+         - after other script code
+         - before the component markup is rendered
+         - whenever the values that they depend on have changed."
+    */
+
+    /*
+        https://kit.svelte.dev/docs/load#$page-data
+        Get data from load subroutines
+    */
     $: data = $page.data
 
-    // https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
-    // "...the action can respond with data that will be available through the form property"
-    // Get data returned from form actions
+    /*
+        https://kit.svelte.dev/docs/form-actions#anatomy-of-an-action
+        Get data from form actions
+    */
     $: form = $page.form
 
 </script>
 
 <div class="page">
-    {#await data.streamed}
+    {#await data.checkResetCode}
         <div class="loading">
             <LoadingAnimation/>
         </div>
-    {:then streamed} 
+    {:then resetCode} 
         <div class="block loaded" class:valid={form?.status === 200}>
-            {#if form?.status === 200}
-                <Checkmark/>
-                <h4 class="thickFW">Password has been reset</h4>
-                <a class="button-pill" href="/"><h5>Return Home</h5></a>
-            {:else if streamed.status === 200}
+            {#if form}
+                {#if form?.status === 200}
+                    <Checkmark/>
+                    <h4 class="thickFW">Password has been reset</h4>
+                    <a class="button-pill" href="/"><h5>Return Home</h5></a>
+                {:else}
+                    <Close/>
+                    <h5>{form?.errors?.client || "Something went wrong, try again later..."}</h5>
+                    <a class="button-pill" href="/"><h5>Return Home</h5></a>
+                {/if}
+            {:else if resetCode.status === 200}
                 <h4 class="thickFW">Reset Your Password</h4>
                 <form method="POST" use:enhance>
                     <div>
@@ -61,7 +77,7 @@
                 </form>
             {:else}
                 <Close/>
-                <h5>{streamed.errors?.client || "Something went wrong, try again later..."}</h5>
+                <h5>{resetCode.errors?.client || "Something went wrong, try again later..."}</h5>
                 <a class="button-pill" href="/"><h5>Return Home</h5></a>
             {/if}
         </div>

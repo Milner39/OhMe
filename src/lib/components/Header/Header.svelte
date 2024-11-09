@@ -1,11 +1,11 @@
 <script>
-    // Import components used in Header for cleaner components
+    // #region Imports
     import Nav from "./Nav.svelte"
     import Notice from "./Notice.svelte"
+    // #endregion
 </script>
 
 <header>
-    <!-- Allow parent components to use child components -->
     <slot {Nav}{Notice}/>
 </header>
 

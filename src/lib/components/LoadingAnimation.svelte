@@ -1,6 +1,7 @@
 <script>
-    // Import svgs
-    import Chart from "$lib/assets/svgs/Chart.svelte";
+    // #region Imports
+    import Chart from "$lib/assets/svgs/Chart.svelte"
+    // #endregion
 </script>
 
 <div class="animation">

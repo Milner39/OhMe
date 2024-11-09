@@ -1,131 +1,136 @@
-// Import prisma client instance to interact with db
-import { client as prismaClient } from "$lib/server/prisma"
+// #region Imports
+import dbActions from "$lib/server/database/actions/all.js"
+import inputHandler from "$lib/server/utils/inputHandler.js"
 
-// Import inputHandler to validate and sanitize inputs
-import { inputHandler } from "$lib/server/inputHandler.js"
-
-// Import error logger to record error details
-import { logError } from "$lib/server/errorLogger"
-
-// https://kit.svelte.dev/docs/modules#sveltejs-kit-json
-// "Create a JSON Response object from the supplied data."
+/*
+    https://kit.svelte.dev/docs/modules#sveltejs-kit-json
+    Subroutine to create a `Response` object 
+*/
 import { json } from "@sveltejs/kit"
+// #endregion
 
 
-// https://kit.svelte.dev/docs/form-actions#alternatives
-// "...you can also use +server.js files to expose (for example) a JSON API."
-// Define POST function
-export const POST = async ({ request, locals }) => {
-    // Get `user` object from locals
+
+// #region GET()
+/*
+    https://kit.svelte.dev/docs/routing#server
+    Define GET request handler
+*/
+/** @type {import('./$types').RequestHandler} */
+export const GET = async ({ url, locals }) => {
+    // Get `user` form locals
     const { user } = locals
     
-    // If `user` is `undefined`
+    // If client is not logged in
     if (!user) {
-        // End interface
         return json({ status: 401 })
     }
 
     // IMPROVE: stop users with unverified email making requests
     
 
-    // Get request data sent by client
-    const { search } = await request.json()
+    // Get username `search` from client's request
+    const search = url.searchParams.get("search")
 
-    // Do not validate search as existing usernames may not conform to current validation checks
-    // However these users should still be able to be searched for
+    /*
+        Do not validate search as existing usernames may not 
+        conform to current validation checks, however these users 
+        should still be able to be searched for.
+    */
 
+    
     // Sanitize search
     const sanitizedSearch = inputHandler.sanitize(search)
 
-    // Get `User` entries which usernames contain `search`
-    // Not including the client's username
-    try {
-        // Get `User` entry with exactly matching username
-        let exactMatch = await prismaClient.User.findFirst({
-            // Set field filters
-            where: {
-                AND: [
-                    {
-                        username: sanitizedSearch
-                    },
-                    {
-                        username: {
-                            not: locals.user.username
-                        }
-                    }
-                ]
+    /*
+        Get `User` entries which usernames contain `search`.
+        Look for exact matches first, then partial matches.
+        Do not include the client's username in the results.
+    */
+
+    // Exact match
+    const exactMatchResponse = await dbActions.user.findUnique({
+        AND: [
+            {
+                username: sanitizedSearch
             },
-            // Set fields to return
-            select: {
-                username: true,
-                frRqSent: true,
-                frRqReceived: true
+            {
+                username: {
+                    not: user.username
+                }
             }
-        })
+        ]
+    })
 
-        // Get `User` entry with partially matching username
-        let partialMatch = await prismaClient.User.findMany({
-            // Set quantity of results
-            // If an exact match is found, get 9, else 10
-            take: exactMatch ? 9 : 10,
-            // Set field filters
-            where: {
-                AND: [
-                    {
-                        username: {
-                            startsWith: sanitizedSearch
-                        }
-                    },
-                    {
-                        username: {
-                            not: sanitizedSearch
-                        }
-                    },
-                    {
-                        username: {
-                            not: locals.user.username
-                        }
+    const exactMatch = exactMatchResponse.user
+    // Exact match
+
+
+    // Partial matches
+    const partialMatchResponse = await dbActions.user.findMany({
+        /* 
+            Set quantity of results
+            - If an exact match was found, 9, else 10
+        */
+        take: exactMatch ? 9 : 10,
+        where: {
+            AND: [
+                {
+                    username: {
+                        startsWith: sanitizedSearch
                     }
-                ]
-            },
-            // Set fields to return
-            select: {
-                username: true,
-                frRqSent: true,
-                frRqReceived: true
-            }
-        })
+                },
+                {
+                    username: {
+                        not: sanitizedSearch
+                    }
+                },
+                {
+                    username: {
+                        not: user.username
+                    }
+                }
+            ]
+        }
+    })
 
-        // Combine results and filter out `undefined`
-        var users = [exactMatch, ...partialMatch].filter((match) => { return match })
+    const partialMatches = partialMatchResponse.users
+    // Partial matches
 
-        // Structure the results with booleans to indicate which users are friends
-        users = users.reduce((prev, match) => {
-            const sent = match.frRqReceived.some(entry => entry.senderId === user.id)
-            const received = match.frRqSent.some(entry => entry.recipientId === user.id)
-            return ({...prev, [inputHandler.desanitize(match.username)]: {
-                sent,
-                received
-        }})}, {})
 
-    // Catch errors
-    } catch (error) {
-        // Log error details
-        logError({
-            filepath: "src/routes/(main)/(private)/(user)/friends/+server.js",
-            message: "Error while fetching User entries from db using username search",
-            arguments: {
-                search: search
-            },
-            error
-        })
+    // Combine results and filter out `null` values
+    const users = [exactMatch, ...partialMatches].filter((match) => { 
+        if (match === null) { return undefined }
 
-        // End interface
-        return json({ status: 503 })
-    }
+        return match
+    })
+        
+
+    /*
+        Structure the results into an object which keys are the 
+        usernames and the values are nested objects with booleans 
+        to indicate friend requests statuses.
+    */
+    /** 
+     * @type {{
+            "": {
+                sent: Boolean,
+                received: Boolean 
+            }[]
+        } 
+     */
+    const userFrRqStatuses = users.reduce((obj, match) => {
+        const sent = match.frRqReceived.some(entry => entry.senderId === user.id)
+        const received = match.frRqSent.some(entry => entry.recipientId === user.id)
+
+        return ({...obj, [inputHandler.desanitize(match.username)]: {
+            sent,
+            received
+        }
+    })}, {})
     
 
     // Return fetched user data
-    // End interface
-    return json({ users }, { status: 200 })
+    return json({ users: userFrRqStatuses }, { status: 200 })
 }
+// #endregion

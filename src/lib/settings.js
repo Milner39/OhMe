@@ -25,8 +25,8 @@ export const settings = {
             { char: ";", code: "&scn" }
         ]
         // Rules:
-            // The "char" indicating the start of a "code" ("&") 
-            // must be the "char" of the first item in charCodes
+            // The `char` indicating the start of a `code` ("&") 
+            // must be the `char` of the first item in charCodes
             // ({ char: "&", code: "&amp" })
     },
     session: {
@@ -43,7 +43,7 @@ export const settings = {
         // How long a code persists before expiring
         duration: 1, // Hours
 
-        // How long a user has to wait between requesting another code
+        // How long a client has to wait between requesting another code
         cooldown: 1, // Hours
 
         // Rules:
@@ -53,7 +53,7 @@ export const settings = {
         // How long a code persists before expiring
         duration: 1, // Hours
 
-        // How long a user has to wait between requesting another code
+        // How long a client has to wait between requesting another code
         cooldown: 1, // Hours
 
         // Rules:

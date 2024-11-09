@@ -1,25 +1,32 @@
 <script>
-    // https://svelte.dev/docs/svelte#onmount
-    // onMount: runs a function as soon as component has been mounted on the DOM
-    // Import functions to handle lifecycle events
-    import { onMount } from "svelte"
+    // #region Imports
 
-    // The html element that will scroll
+    /*
+       https://svelte.dev/docs/svelte#onmount
+       Subroutine that runs when the component is mounted
+    */
+    import { onMount } from "svelte"
+    // #endregion
+
+
+
+    /** @type {HTMLElement} - The HTML element that will scroll. */
     let scroller
 
-    // The scroll position measured in px, starting at 0
+    // The scroll position in px
     let scroll = 0
 
-    // Define function to scroll across div
+
+    // Define subroutine to scroll across div
     const scrollRight = async () => {
-        // Check if `scroller` element is at starting position: Wait 3000ms
-        if (scroll === 0) {await new Promise(resolve => setTimeout(resolve, 3000))}
+        // Check if `scroller` is at starting position: Wait 3000ms
+        if (scroll === 0) await new Promise(resolve => setTimeout(resolve, 3000))
 
         // Increment scroll position
         scroll += 1
 
-        // Check `scroller` element has not been unmounted
-        if (!scroller) {return}
+        // Check if `scroller` has been unmounted
+        if (!scroller) return
 
         // Scroll to new position
         scroller.scrollTo({ left: scroll, behavior: "smooth" })
@@ -29,8 +36,8 @@
             // Wait 3000ms
             await new Promise(resolve => setTimeout(resolve, 3000))
 
-            // Check `scroller` element has not been unmounted
-            if (!scroller) {return}
+            // Check if `scroller` has been unmounted
+            if (!scroller) return
 
             // Reset scroll position
             scroller.scrollLeft = 0
@@ -38,11 +45,16 @@
         }
         // Wait 50ms
         await new Promise(resolve => setTimeout(resolve, 50))
+
+        // Recurse
         scrollRight()
     }
 
+
+
     // When component is mounted
     onMount(() => {
+        // Start scroller
         scrollRight()
     })
 </script>

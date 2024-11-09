@@ -1,12 +1,16 @@
-# gitignore defaults
-.DS_Store
-/package
+# Misc
+/.vscode
+/TODO.txt
 
 # Installed dependencies
-node_modules
+/node_modules
 
-# The folder that `npm run dev` outputs to
+# SvelteKit temp files
 /.svelte-kit
+
+# Vite temp files
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
 
 # The folder that `npm run build` outputs to
 /build
@@ -16,20 +20,9 @@ node_modules
 .env.*
 !.env.example
 
-# Vite temp files
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
-
 # Database files
 *.sqlite
 *.sqlite-journal
 
-# Media files
-*.png
-*.mp4
-
 # Test data files
-/tests/testData.*
-
-# VSCode settings
-/.vscode
+**/tests/testData.*json

@@ -1,6 +1,6 @@
 // #region Imports
 import fs from "fs"
-import { deepMerge } from "../utils/objectUtils.js"
+import { deepMerge } from "../../client/utils/objectUtils.js"
 // #endregion
 
 
@@ -20,9 +20,9 @@ const replace_handleCircularReference = () => {
 
     // Return a subroutine to alter each key-value pair
     return (key, value) => {
-        // If `value` is type `object` and is not null:
+        // If `value` is type `object` and is not null
         if (typeof value === "object" && value !== null) {
-            // If `value` has already been seen:
+            // If `value` has already been seen
             if (seen.has(value)) {
                 // Return the indicator for a circular reference
                 return "[Circular]"
@@ -51,7 +51,7 @@ const replace_handleFunction = (reviverData = {}) => {
 
     // Return a subroutine to alter each key-value pair
     return (key, value) => {
-        // If `value` is type `function`:
+        // If `value` is type `function`
         if (typeof value === "function") {
             // Add `value` to `functions` 
             functions.push(value)
@@ -137,11 +137,11 @@ const revive_handleFunction = (reviverData) => {
 
     // Return a subroutine to alter each key-value pair
     return (key, value) => {
-        // If `value` is type `string`:
+        // If `value` is type `string`
         if (typeof value === "string") {
             // Get match information using `regex`
             const match = value.match(regex)
-            // If `value` matches `regex`:
+            // If `value` matches `regex`
             if (match) {
                 /* 
                     Set `value` to the function stored in 
@@ -202,7 +202,7 @@ const reviverSequence = (reviverData) => {
 const stringify_reviverData = (reviverData) => {
     // Define the replacer
     const replacer = (key, value) => {
-        // If `value` is type `function`:
+        // If `value` is type `function`
         if (typeof value === "function") {
             // Get the string representation of `value`
             let funcString = value.toString()
@@ -218,7 +218,7 @@ const stringify_reviverData = (reviverData) => {
             */
             const namedFuncRegex = /^(?:function(\*)?\s+)?(\w+)\s*\(([^)]*)\)\s*\{/
             const namedFuncMatch = funcString.match(namedFuncRegex)
-            // If `funcString` matches the regex:
+            // If `funcString` matches the regex
             if (namedFuncMatch) {
                 // Get the function args from the match
                 const funcArgs = namedFuncMatch[3]
@@ -252,7 +252,7 @@ const stringify_reviverData = (reviverData) => {
 const parse_reviverData = (reviverData) => {
     // Define the reviver
     const reviver = (key, value) => {
-        // If `value` is type `string`:
+        // If `value` is type `string`
         if (typeof value === "string") {
             if (value.startsWith("[Function] ")) {
                 // Remove indicator
@@ -430,3 +430,4 @@ export { stringify, parse, createIfNotExists, read_createIfNotExists, update_cre
 // #endregion
 
 // ISSUE: Fix stringifying and parsing arrays
+// TODO: Phase this approach out, it is too complicated is not useful enough

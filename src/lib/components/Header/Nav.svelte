@@ -1,37 +1,55 @@
 <script>
-    // Import svgs
-    import Close from "$lib/assets/svgs/Close.svelte"
-    import Menu from "$lib/assets/svgs/Menu.svelte"
+    // #region Imports
+
+    /*
+       https://svelte.dev/docs/svelte#onmount
+       Subroutine that runs when the component is mounted
+    */
+    import { onMount } from "svelte"
+
+    /*
+        https://kit.svelte.dev/docs/modules#$app-navigation-onnavigate
+        Subroutine that runs when the client navigates
+    */
+    import { onNavigate } from "$app/navigation"
 
     // https://svelte.dev/docs/svelte-transition
     // Import transitions and easing functions
     import { fly, fade } from "svelte/transition"
     import { quadInOut } from "svelte/easing"
 
-    // https://svelte.dev/docs/svelte#onmount
-    // onMount: runs a function as soon as component has been mounted on the DOM
-    // Import functions to handle lifecycle events
-    import { onMount } from "svelte"
+    // Import svgs
+    import Close from "$lib/assets/svgs/Close.svelte"
+    import Menu from "$lib/assets/svgs/Menu.svelte"
+    // #endregion
 
-    // https://kit.svelte.dev/docs/modules#$app-navigation-onnavigate
-    // onNavigate: runs a function before navigation to a new URL
-    // Import function to handle navigation events
-    import { onNavigate } from "$app/navigation"
+    
 
     // Get `links` prop from parent
     export let links
 
-    // The nav html element
+
+    /** @type {HTMLElement} - The nav HTML element. */
     let nav
 
-    // The html element that toggles the dropdown
+    /** 
+     * @type {HTMLButtonElement} - The Button HTML element 
+       that toggles the dropdown. 
+    */
     let dropdownButton
 
-    // Variables indicating collapsed and dropdown state
+    // `boolean`s indicating collapsed and dropdown state
     let collapsed = true
     let dropdown = false
 
-    // Define function to be ran on mount and resize
+    // Define subroutine to toggle `dropdown`
+    const toggleDropdown = () => {
+        dropdown = !dropdown
+    }
+
+
+
+    // Define subroutine to be ran on mount and resize
     const onResize = () => {
         // Get element containing collapsible content
         const collapseEl = nav.getElementsByClassName("collapse")[0]
@@ -48,7 +66,7 @@
         // Get width of `collapse`
         const containerWidth = collapseEl.clientWidth
 
-        // Get all elements with the "collapsibleTarget" class in `collapse`
+        // Get all elements with the `.collapsibleTarget` class in `collapse`
         const collapsibleItems = [...collapseEl.getElementsByClassName("collapsibleTarget")]
         
         // Calculate total width of all items in `collapsibleItems`
@@ -72,19 +90,24 @@
         // Get width of `dropdownButton`
         const dropdownButtonWidth = dropdownButton.clientWidth
 
-        // Calculate the extra width taken up by elements that only appear when `collapsed === true`
-        // `collapsed` will be [ `true` or `false` ] therefore static difference will be [ somePixels or 0 ]
+        /*
+            Calculate the extra width taken up by elements that only appear when `collapsed === true`
+            `collapsed` will be [ `true` or `false` ] therefore static difference will be 
+            [ `staticGap + dropdownButtonWidth` or 0 ]
+        */
         const staticDifference = (staticGap + dropdownButtonWidth) * collapsed
 
-        // Set boolean to control `collapsible` is collapsed
+        // Set `collapsed` to control if `collapsible` is collapsed
         collapsed = (containerWidth + staticDifference < totalItemWidth + spacingWidth)
 
-        // If `collapsed === true`:
-        //   set `dropdown` to its current value
-        // If  `collapsed === false`:
-        //   set `dropdown` to `false`
-        // This logic closes the dropdown if there is enough space for `collapsible`,
-        // meaning the dropdown can be closed
+        /*
+            If `collapsed === true`:
+                set `dropdown` to its current value
+            If `collapsed === false`:
+                set `dropdown` to `false`
+            This logic closes the dropdown if there is enough space for `collapsible`,
+            meaning the dropdown can be closed
+        */
         dropdown = collapsed ? dropdown : false
     }
 
@@ -92,16 +115,15 @@
     onMount(() => {
         // Create a resize observer
         const resizeObserver = new ResizeObserver(_ => {
-            // Run resize function
             onResize()
         })
 
-        // Observe the `collapsible` element
+        // Observe the `collapsible`
         resizeObserver.observe(nav.getElementsByClassName("collapse")[0])
 
         // When component is unmounted
         return () => {
-            // Unobserve all elements
+            // Stop observing
             resizeObserver.disconnect()
         }
     })
@@ -111,11 +133,6 @@
         // Close the dropdown
         dropdown = false
     })
-
-    // Define function to toggle `dropdown`
-    const toggleDropdown = () => {
-        dropdown = !dropdown
-    }
 </script>
 
 <div class="zIndex">

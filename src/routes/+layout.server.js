@@ -1,52 +1,12 @@
-// Import inputHandler to validate and sanitize inputs
-import { inputHandler } from "$lib/server/inputHandler.js"
+// #region Imports
+import { deleteKeys, mapWithRule } from "$lib/client/utils/objectUtils.js"
+import inputHandler from "$lib/server/utils/inputHandler.js"
+// #endregion
 
-
-const formatObject = {
-    // Method to delete keys
-    deleteKeys: (object, rule) => {
-        // Clone the object to not make changes to the original
-        const obj = structuredClone(object)
-
-        // Iterate over key-value pairs of the `rule`
-        for (const [key, value] of Object.entries(rule)) {
-            // If value is true, delete the key
-            if (value === true) {
-                delete obj[key]
-
-            // If value is another object, recurse
-            } else if (typeof value === "object") {
-                obj[key] = formatObject.deleteKeys(obj[key], value)
-            }
-        }
-        // Return the new object
-        return obj
-    },
-
-    // Method to desanitize keys
-    desanitizeKeys: (object, rule) => {
-        // Clone the object to not make changes to the original
-        const obj = structuredClone(object)
-
-        // Iterate over key-value pairs of the `rule`
-        for (const [key, value] of Object.entries(rule)) {
-            // If value is true, desanitize the key
-            if (value === true) {
-                obj[key] = inputHandler.desanitize(obj[key])
-
-            // If value is another object, recurse
-            } else if (typeof value === "object") {
-                obj[key] = formatObject.desanitizeKeys(obj[key], value)
-            }
-        }
-        // Return the new object
-        return obj
-    }
-}
 
 
 // Define keys to delete from the `user` object
-const deleteKeys = {
+const deleteKeysRule = {
     id: true,
     email: {
         id: true,
@@ -65,7 +25,7 @@ const deleteKeys = {
 }
 
 // Define keys to desanitize in the `user` object
-const desanitizeKeys = {
+const desanitizeKeysRule = {
     username: true,
     email: {
         address: true
@@ -73,22 +33,50 @@ const desanitizeKeys = {
 }
 
 
-// https://kit.svelte.dev/docs/load#layout-data
-// Define load function
+
+/* 
+    Define load subroutine to:
+    Check if the client is logged in. If they are:
+        - Delete sensitive data from client's `User` entry.
+        - Desanitize sanitized data in client's `User` entry.
+*/
+/** @type {import("./$types").LayoutServerLoad} */
 export const load = async ({ locals }) => {
     // Get `user` from locals
-    let { user } = locals || null
+    const { user } = locals
 
-    if (user) {
-        // Delete keys containing sensitive data
-        // to avoid client-side data leaks
-        user = formatObject.deleteKeys(user, deleteKeys)
-
-        // Desanitize keys that have been sanitized
-        // so values are displayed the way the client entered them
-        user = formatObject.desanitizeKeys(user, desanitizeKeys)
+    // If client is not logged in
+    if (!user) {
+        return { user }
     }
 
-    // Return the formatted `user` object
-    return { user }
+    
+    // Create clone of `user` to not make changes to the original
+    const userClone = structuredClone(user)
+
+    /*
+        Delete keys containing sensitive data
+        to avoid client-side data leaks.
+    */
+    deleteKeys(userClone, deleteKeysRule)
+
+    /*
+        Desanitize keys that have been sanitized
+        so values are displayed the way the client 
+        entered them
+    */
+    mapWithRule(userClone, desanitizeKeysRule, inputHandler.desanitize)
+
+
+    // Return client-safe, desanitized user data
+    return { user: userClone }
 }
+
+
+
+// #region DOCS
+
+// Resources explaining layout load subroutines
+// https://kit.svelte.dev/docs/load#layout-data
+
+// #endregion

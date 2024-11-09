@@ -1,33 +1,36 @@
-// Import prisma client instance to interact with db
-import { client as prismaClient } from "./prisma"
-
-// Import format date utility
-import dataUtils from "../utils/dateUtils.js"
-
-// Import chalk to color console messages
+// #region Imports
+import dbClient from "$lib/server/database/prisma/dbClient.js"
+import dataUtils from "$lib/client/utils/dateUtils.js"
 import chalk from "chalk"
+// #endregion
 
 
-// Function to create entries in db
-// to store error information
+
+// #region logError()
+/**
+ * Log error in the database.
+ * @async
+ * 
+ * @param {{
+        filepath: String,
+        message: String,
+        arguments: {"": any[]},
+        error: any
+    }} details - Specific error information.
+ */
 const logError = async (details) => {
     // Get timestamp when error occurred
     const timestamp = dataUtils.format(new Date())
 
     try {
         // Create entry in db
-        await prismaClient.Error.create({
+        await dbClient.error.create({
             // Set field data
             data: {
                 json: JSON.stringify({
                     timestamp,
                     ...details
-                    // Details should include:
-                    //     filepath
-                    //     message
-                    //     arguments
-                    //     error
-                })
+                }, null, 4)
             }
         })
         console.log(chalk.green(`${timestamp} => Error logged`))
@@ -39,7 +42,13 @@ const logError = async (details) => {
         console.log(chalk.red(JSON.stringify(details, 0, 2)))
     }
 }
+// #endregion
 
 
-// Export
-export { logError }
+
+// #region Exports
+
+// Default export
+export default logError
+
+// #endregion

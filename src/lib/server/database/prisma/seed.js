@@ -1,8 +1,8 @@
-// Import prisma client instance to interact with db
-import { client as prismaClient } from "../src/lib/server/prisma.js"
+// #region Imports
+import dbClient from "$lib/server/database/prisma/dbClient.js"
+import inputHandler from "$lib/server/utils/inputHandler.js"
+// #endregion
 
-// Import inputHandler to validate and sanitize inputs
-import { inputHandler } from "../src/lib/server/inputHandler.js"
 
 
 // Define test data
@@ -28,7 +28,7 @@ const usernames = [
 // Loop over test data creating users
 for (const username of usernames) {
     try {
-        await prismaClient.User.create({
+        await dbClient.user.create({
             // Set data fields
             data: {
                 username,
@@ -56,6 +56,3 @@ for (const username of usernames) {
         }
     }
 }
-
-
-// Run with `npx prisma db seed`

@@ -1,43 +1,36 @@
-// Import prisma client instance to interact with db
-import { client as prismaClient } from "$lib/server/prisma"
-
-// Import inputHandler to validate and sanitize inputs
-import { inputHandler } from "$lib/server/inputHandler.js"
-
-// Import hashing functions to hash & verify hashes
-import { stringHasher } from "$lib/server/hashUtils"
-
-// Import error logger to record error details
-import { logError } from "$lib/server/errorLogger"
-
-// Import settings
-import { settings }  from "$lib/settings"
+// #region Imports
+import dbActions from "$lib/server/database/actions/all.js"
+import { getFormData } from "$lib/client/utils/formActionUtils.js"
+import inputHandler from "$lib/server/utils/inputHandler.js"
+import { stringHasher } from "$lib/server/utils/hashUtils.js"
+import { dateFromNow } from "$lib/client/utils/dateUtils.js"
+import { settings }  from "$lib/settings.js"
+// #endregion
 
 
-// MARK: Load
-// https://kit.svelte.dev/docs/load#page-data
-// Define load function
+
+// #region load()
+/*
+    Define load subroutine to:
+    - Get the `user` and `code` search parameters.
+
+    - Check if search parameters are valid.
+
+    - Check if reset code is correct.
+*/
+/** @type {import("./$types").PageServerLoad} */
 export const load = async ({ url }) => {
+
     // https://kit.svelte.dev/docs/load#streaming-with-promises
-    // Wrap main script in a function so it can be streamed as a promise
-    const checkCode = async (url) => {
-        // Get URL parameters
+    // Wrap main script in a async subroutine so it can be streamed as a promise
+    const checkCode = async () => {
+
+        // Get search parameters
         const userId = url.searchParams.get("user")
         const resetCode = url.searchParams.get("code")
 
-
-        // If url does not have both search params
-        if (!userId || !resetCode) {
-            // End function
-            return {
-                status: 400,
-                errors: { client: "This is not a valid reset link..." }
-            }
-        }
-
-        // If url params are not in valid format
+        // If search params are not valid
         if (!inputHandler.validate.uuid(userId) || !inputHandler.validate.uuid(resetCode)) {
-            // End function
             return {
                 status: 400,
                 errors: { client: "This is not a valid reset link..." }
@@ -46,50 +39,23 @@ export const load = async ({ url }) => {
 
 
         // Get `User` entry to have password reset
-        try {
-            let dbResponse = await prismaClient.User.findUnique({
-                // Set field filters
-                where: {
-                    id: userId,
-                    password: {
-                        resetCode: resetCode
-                    }
-                },
-                // Set fields to return
-                select: {
-                    password: {
-                        select: {
-                            codeSentAt: true
-                        }
-                    }
-                }
-            })
-
-            // If `dbResponse` is not `undefined`
-            if (dbResponse) {
-                var { password } = dbResponse
-            } else {
-                // End function
-                return {
-                    status: 422,
-                    errors: { client: "Incorrect reset code..." }
-                }
+        const user_fUResponse = await dbActions.user.findUnique({
+            id: userId,
+            password: {
+                resetCode: resetCode,
             }
-        
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(public)/reset/+page.server.js",
-                message: "Error while fetching User entry from db using user id and reset code from url param",
-                arguments: {
-                    userId,
-                    resetCode
-                },
-                error
-            })
+        })
 
-            // End function
+        // If no `User` entry with given id and password reset code exists
+        if (user_fUResponse.error === "No entry found") {
+            return {
+                status: 422,
+                errors: { client: "Incorrect reset code..." }
+            }
+        }
+
+        // If query failed
+        if (!user_fUResponse.success) {
             return {
                 status: 503,
                 errors: { client: "Something went wrong, try again later..." }
@@ -97,11 +63,14 @@ export const load = async ({ url }) => {
         }
 
 
-        // Get the time the last password reset code was sent
-        const { codeSentAt } = password
-        // If last link was sent more than set number of hours ago
-        if (!codeSentAt || codeSentAt.setTime(codeSentAt.getTime() + 1000 * 60 * 60 * settings.password.duration) < new Date()) {
-            // End function
+        // Get the time the password reset code was sent
+        const { codeSentAt } = user_fUResponse.user.password
+
+        // If link was sent more than set number of hours ago
+        if (
+            !codeSentAt ||
+            codeSentAt < dateFromNow(-1 * settings.password.duration * (60 ** 2) * 1000)
+        ) {
             return {
                 status: 401,
                 errors: { client: "Reset code expired..." }
@@ -109,56 +78,62 @@ export const load = async ({ url }) => {
         }
 
 
-        // End function
         return {
             status: 200
         }
     }
 
 
-    // End load
     return {
-        streamed: checkCode(url)
+        checkResetCode: checkCode()
     }
 }
+// #endregion load()
 
 
 
 
 
-// MARK: Action
-// https://kit.svelte.dev/docs/form-actions
-// "A +page.server.js file can export actions, which allow you to POST data to the server using the <form> element."
-// Define actions
+// #region actions
+/*
+    https://kit.svelte.dev/docs/form-actions#default-actions
+    Define form action
+*/ 
+/** @type {import("./$types").Actions} */
 export const actions = {
+    // #region default()
+    /**
+     * Action to set a `User` entry's username after verifying
+       it's id and password reset code
+     * @async
+     * 
+     * @param {import("@sveltejs/kit").RequestEvent} requestEvent 
+     * 
+     * @returns {{
+            status: Number,
+            errors?: {
+                password: String
+            },
+            notice?: String
+        }}
+     */
     default: async ({ url, request }) => {
-        // Get URL parameters
+
+        // Get search parameters
         const userId = url.searchParams.get("user")
         const resetCode = url.searchParams.get("code")
 
-        // If url does not have both search params
-        if (!userId || !resetCode) {
-            // End action
-            return {
-                status: 400
-            }
-        }
-
-        // If url params are not in valid format
+        // If search params are not valid
         if (!inputHandler.validate.uuid(userId) || !inputHandler.validate.uuid(resetCode)) {
-            // End action
-            return {
-                status: 400
-            }
+            return { status: 400 }
         }
 
 
         // Get form data sent by client
-        const formData = Object.fromEntries(await request.formData())
+        const formData = await getFormData(request)
 
-        // If `formData.password` does not fit password requirements
+        // If submitted password does not conform to validation checks
         if (!inputHandler.validate.password(formData.password)) {
-            // End action
             return {
                 status: 422,
                 errors: { password: "Invalid password" }
@@ -166,48 +141,32 @@ export const actions = {
         }
 
 
-        // Get time set number of hours in the past to filter out expired codes
-        const unexpired = new Date()
-        unexpired.setTime(unexpired.getTime() - 1000 * 60 * 60 * settings.password.duration)
+        // Get date set number of hours in the past to filter out expired codes
+        const unexpired = dateFromNow(-1 * settings.password.duration * (60 ** 2) * 1000)
 
         // Update `User` entry in db
-        try {
-            await prismaClient.User.update({
-                // Set field filters
-                where: {
-                    id: userId,
-                    password: {
-                        resetCode: resetCode,
-                        codeSentAt: {
-                            gte: unexpired
-                        }
-                    }
-                },
-                // Set field data
-                data: {
-                    password: {
-                        update: {
-                            hash: await stringHasher.hash(formData.password),
-                            resetCode: null,
-                        }
+        const user_uResponse = await dbActions.user.update(
+            {
+                id: userId,
+                password: {
+                    resetCode: resetCode,
+                    codeSentAt: {
+                        gte: unexpired
                     }
                 }
-            })
-        
-        // Catch errors
-        } catch (error) {
-            // Log error details
-            logError({
-                filepath: "src/routes/(main)/(public)/reset/+page.server.js",
-                message: "Error while updating password for User entry in db",
-                arguments: {
-                    userId,
-                    resetCode
-                },
-                error
-            })
-            
-            // End action
+            },
+            {
+                password: {
+                    update: {
+                        hash: await stringHasher.hash(formData.password),
+                        resetCode: null,
+                    }
+                }
+            }
+        )
+
+        // If query failed
+        if (!user_uResponse.success) {
             return {
                 status: 503,
                 errors: { client: "Something went wrong, try again later..." }
@@ -215,7 +174,6 @@ export const actions = {
         }
 
 
-        // End action
         return {
             status: 200
         }
