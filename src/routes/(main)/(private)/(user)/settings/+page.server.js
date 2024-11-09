@@ -1,5 +1,6 @@
 // #region Imports
 import dbUserActions from "$lib/server/database/actions/user.js"
+import { getFormData } from "$lib/client/utils/formActionUtils.js"
 import inputHandler from "$lib/server/utils/inputHandler.js"
 import { stringHasher } from "$lib/server/utils/hashUtils.js"
 import { emailer } from "$lib/server/utils/emailUtils.js"
@@ -8,29 +9,6 @@ import { emailer } from "$lib/server/utils/emailUtils.js"
 
 
 // #region actions
-    // #region Extras
-/**
- * Get an `Object` containing a key for each input 
-   in a form submission and their respective values.
- * @async
- *
- * 
- * @param {
-   import("@sveltejs/kit").RequestEvent["request"]
-} request - The `.request` property of a `RequestEvent`.
-*
-* 
-* @returns {Promise<{
-    "": any[]
-}>}
-*/
-const getFormData = async (request) => {
-return Object.fromEntries(await request.formData())
-}
-    // #endregion
-
-
-
 /*
     https://kit.svelte.dev/docs/form-actions#named-actions
     Define form actions

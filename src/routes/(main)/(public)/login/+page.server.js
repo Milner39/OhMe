@@ -1,5 +1,6 @@
 // #region Imports
 import dbActions from "$lib/server/database/actions/all.js"
+import { getFormData } from "$lib/client/utils/formActionUtils.js"
 import inputHandler from "$lib/server/utils/inputHandler.js"
 import { stringHasher } from "$lib/server/utils/hashUtils.js"
 import { emailer } from "$lib/server/utils/emailUtils.js"
@@ -11,26 +12,6 @@ import { settings }  from "$lib/settings.js"
 
 // #region actions
     // #region Extras
-/**
- * Get an `Object` containing a key for each input 
-   in a form submission and their respective values.
- * @async
- *
- * 
- * @param {
-   import("@sveltejs/kit").RequestEvent["request"]
-} request - The `.request` property of a `RequestEvent`.
-*
-* 
-* @returns {Promise<{
-    "": any[]
-}>}
-*/
-const getFormData = async (request) => {
-    return Object.fromEntries(await request.formData())
-}
-
-
 /**
  * Set the cookies used fir authentication 
    in the client's browser.

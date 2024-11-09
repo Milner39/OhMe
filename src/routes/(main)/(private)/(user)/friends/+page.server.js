@@ -123,31 +123,8 @@ export const load = async ({ locals }) => {
 
 // #region Specific Imports
 import dbActions from "$lib/server/database/actions/all.js"
+import { getFormData } from "$lib/client/utils/formActionUtils.js"
 // #endregion Specific Imports
-
-
-
-// #region Extras
-/**
- * Get an `Object` containing a key for each input 
-   in a form submission and their respective values.
- * @async
- *
- * 
- * @param {
-        import("@sveltejs/kit").RequestEvent["request"]
-    } request - The `.request` property of a `RequestEvent`.
- *
- * 
- * @returns {Promise<{
-        "": any[]
-    }>}
- */
-const getFormData = async (request) => {
-    return Object.fromEntries(await request.formData())
-}
-// #endregion Extras
-
 
 
 /*
