@@ -1,7 +1,9 @@
 {
   "version": "4",
   "specifiers": {
+    "jsr:@std/fs@1.0.5": "1.0.5",
     "jsr:@std/path@1.0.8": "1.0.8",
+    "jsr:@std/path@^1.0.7": "1.0.8",
     "npm:@sveltejs/adapter-node@5.2.9": "5.2.9_@sveltejs+kit@2.8.0__@sveltejs+vite-plugin-svelte@4.0.0___svelte@5.1.13____acorn@8.14.0___vite@5.4.10__svelte@5.1.13___acorn@8.14.0__vite@5.4.10_rollup@4.26.0_@sveltejs+vite-plugin-svelte@4.0.0__svelte@5.1.13___acorn@8.14.0__vite@5.4.10_svelte@5.1.13__acorn@8.14.0_vite@5.4.10",
     "npm:@sveltejs/kit@2.8.0": "2.8.0_@sveltejs+vite-plugin-svelte@4.0.0__svelte@5.1.13___acorn@8.14.0__vite@5.4.10_svelte@5.1.13__acorn@8.14.0_vite@5.4.10",
     "npm:@sveltejs/vite-plugin-svelte@4.0.0": "4.0.0_svelte@5.1.13__acorn@8.14.0_vite@5.4.10",
@@ -10,6 +12,12 @@
     "npm:vite@5.4.10": "5.4.10"
   },
   "jsr": {
+    "@std/fs@1.0.5": {
+      "integrity": "41806ad6823d0b5f275f9849a2640d87e4ef67c51ee1b8fb02426f55e02fd44e",
+      "dependencies": [
+        "jsr:@std/path@^1.0.7"
+      ]
+    },
     "@std/path@1.0.8": {
       "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
     }
