@@ -7,10 +7,10 @@
 import adapter from "@sveltejs/adapter-node"
 
 // Import to get file paths
-import { fileURLToPath, URL } from "node:url"
+import { fromFileUrl } from "@std/path"
 
 // Import package to get path aliases
-import packageJson from "../package.json" with { type: "json" }
+// import packageJson from "../package.json" with { type: "json" }
 
 // Import types
 import type { Config } from "@sveltejs/kit"
@@ -27,14 +27,14 @@ const config = {
 	kit: {
 		adapter: adapter({
 			// The directory to build the Node server
-			out: fileURLToPath(new URL("./build", import.meta.url)),
+			out: fromFileUrl(new URL("./build", import.meta.url)),
 
 			// Prefix for environment variables used by the Node server
 			envPrefix: "NODE_SERVER_",
 		}),
 
 		// The directory for SvelteKit to write temp files and cache
-		outDir: fileURLToPath(new URL("./.svelte-kit", import.meta.url)),
+		outDir: fromFileUrl(new URL("./.svelte-kit", import.meta.url)),
 		
 		env: {
 			/*
@@ -46,20 +46,20 @@ const config = {
 		},
 		
 		files: {
-			appTemplate: fileURLToPath(new URL("./src/app.html", import.meta.url)),
-			lib: fileURLToPath(new URL("./src/lib", import.meta.url)),
-			assets: fileURLToPath(new URL("./src/lib/static", import.meta.url)),
+			appTemplate: fromFileUrl(new URL("./src/app.html", import.meta.url)),
+			lib: fromFileUrl(new URL("./src/lib", import.meta.url)),
+			assets: fromFileUrl(new URL("./src/lib/static", import.meta.url)),
 			hooks: {
-				client: fileURLToPath(new URL("./src/hooks", import.meta.url)),
-				server: fileURLToPath(new URL("./src/hooks", import.meta.url)),
-				universal: fileURLToPath(new URL("./src/hooks", import.meta.url))
+				client: fromFileUrl(new URL("./src/hooks", import.meta.url)),
+				server: fromFileUrl(new URL("./src/hooks", import.meta.url)),
+				universal: fromFileUrl(new URL("./src/hooks", import.meta.url))
 			},
-			params: fileURLToPath(new URL("./src/params", import.meta.url)),
-			routes: fileURLToPath(new URL("./src/routes", import.meta.url)),
-			serviceWorker: fileURLToPath(new URL("./src/service-worker", import.meta.url)),
+			params: fromFileUrl(new URL("./src/params", import.meta.url)),
+			routes: fromFileUrl(new URL("./src/routes", import.meta.url)),
+			serviceWorker: fromFileUrl(new URL("./src/service-worker", import.meta.url)),
 		},
 
-		alias: packageJson.aliases,
+		// alias: packageJson.aliases,
 
 		typescript: {} // Edit to extend `tsconfig.json`
 	}

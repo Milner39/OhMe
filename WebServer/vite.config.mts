@@ -6,12 +6,11 @@
 */
 import { svelte } from "@sveltejs/vite-plugin-svelte"
 
-// Import `path` to get file paths
-import { fileURLToPath, URL } from "node:url"
+// Import to get file paths
+import { fromFileUrl } from "@std/path"
 
 // Import dependencies to get environment variables
 import dotenv from "dotenv"
-import process from "node:process"
 
 // Import types
 import type { UserConfig as Config } from "vite"
@@ -21,7 +20,7 @@ import type { UserConfig as Config } from "vite"
 
 
 // Load environment variables
-dotenv.config({ path: fileURLToPath(new URL("./.env", import.meta.url)) })
+dotenv.config({ path: fromFileUrl(new URL("./.env", import.meta.url)) })
 
 
 /*
@@ -29,11 +28,15 @@ dotenv.config({ path: fileURLToPath(new URL("./.env", import.meta.url)) })
 	Define Vite config
 */ 
 const config = {
+	// Plugin configuration
 	plugins: [
 		svelte({ 
-			configFile: fileURLToPath(new URL("./svelte.config.ts", import.meta.url))
+			configFile: fromFileUrl(new URL("./svelte.config.mts", import.meta.url))
 		})
 	],
+
+	// Cache directory
+	cacheDir: fromFileUrl(new URL("./.vite", import.meta.url)),
 
 	// Development settings
 	server: {
@@ -41,7 +44,7 @@ const config = {
 		host: true,
 
 		// Host on specified port during development
-		port: Number(process.env.DEV_PORT) || 3000,
+		port: Number(Deno.env.get("DEV_PORT")) || 3000,
 		strictPort: true
 	},
 
@@ -51,7 +54,7 @@ const config = {
 		host: true,
 
 		// Host on specified port during preview
-		port: Number(process.env.PREV_PORT) || 3000,
+		port: Number(Deno.env.get("PREV_PORT")) || 3000,
 		strictPort: true
 	}
 } satisfies Config

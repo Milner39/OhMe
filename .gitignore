@@ -9,8 +9,7 @@ node_modules
 # Web Server temp files
 build
 .svelte-kit
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+.vite
 
 
 # Enviromental variables but not the `env.example` file
