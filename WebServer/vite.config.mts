@@ -28,15 +28,13 @@ dotenv.config({ path: fromFileUrl(new URL("./.env", import.meta.url)) })
 	Define Vite config
 */ 
 const config = {
+
 	// Plugin configuration
 	plugins: [
 		svelte({ 
 			configFile: fromFileUrl(new URL("./svelte.config.mts", import.meta.url))
 		})
 	],
-
-	// Cache directory
-	cacheDir: fromFileUrl(new URL("./.vite", import.meta.url)),
 
 	// Development settings
 	server: {
@@ -56,7 +54,15 @@ const config = {
 		// Host on specified port during preview
 		port: Number(Deno.env.get("PREV_PORT")) || 3000,
 		strictPort: true
-	}
+	},
+
+	// Output settings
+	cacheDir: fromFileUrl(new URL("./.vite", import.meta.url)),
+	// Defined in Svelte config
+	// build: {
+	// 	outDir: fromFileUrl(new URL("./build", import.meta.url)),
+	// },
+
 } satisfies Config
 
 
