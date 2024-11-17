@@ -25,6 +25,8 @@ import type { Config } from "@sveltejs/kit"
 	Define Svelte config
 */
 const config = {
+
+	// SvelteKit settings
 	kit: {
 		adapter: adapter({
 			// The directory to build the Node server
