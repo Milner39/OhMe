@@ -24,7 +24,6 @@ import type { Config } from "@sveltejs/kit"
 	https://kit.svelte.dev/docs/configuration
 	Define Svelte config
 */
-console.log("HEY LISTEN!", fromFileUrl(new URL("/.svelte-kit", import.meta.url)))
 const config = {
 	kit: {
 		adapter: adapter({
@@ -52,8 +51,8 @@ const config = {
 			lib: fromFileUrl(new URL("./src/lib", import.meta.url)),
 			assets: fromFileUrl(new URL("./src/lib/static", import.meta.url)),
 			hooks: {
-				client: fromFileUrl(new URL("./src/hooks", import.meta.url)),
-				server: fromFileUrl(new URL("./src/hooks", import.meta.url)),
+				client: fromFileUrl(new URL("./src/hooks.client", import.meta.url)),
+				server: fromFileUrl(new URL("./src/hooks.server", import.meta.url)),
 				universal: fromFileUrl(new URL("./src/hooks", import.meta.url))
 			},
 			params: fromFileUrl(new URL("./src/params", import.meta.url)),

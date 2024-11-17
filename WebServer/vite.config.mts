@@ -32,6 +32,8 @@ const config = {
 
 	// Vite settings
 	cacheDir: fromFileUrl(new URL("./.vite", import.meta.url)),
+	// root: fromFileUrl(new URL("../", import.meta.url)),
+	// optimizeDeps: { force: true},
 
 	// Plugin configuration
 	plugins: [
@@ -47,7 +49,11 @@ const config = {
 		port: Number(Deno.env.get("DEV_PORT")) || 3000,
 		strictPort: true,
 		
+		// https://github.com/sveltejs/kit/issues/2973
 		fs: {
+			allow: [
+				fromFileUrl(new URL("../", import.meta.url))
+			],
 			strict: false
 		}
 	},
