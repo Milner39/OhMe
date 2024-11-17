@@ -45,7 +45,11 @@ const config = {
 
 		// Host on specified port during development
 		port: Number(Deno.env.get("DEV_PORT")) || 3000,
-		strictPort: true
+		strictPort: true,
+		
+		fs: {
+			strict: false
+		}
 	},
 
 	// Preview settings
