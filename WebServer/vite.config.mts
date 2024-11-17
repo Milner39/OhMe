@@ -4,13 +4,14 @@
 	https://vitejs.dev/guide/using-plugins
 	Import SvelteKit plugin for Vite
 */
-import { svelte } from "@sveltejs/vite-plugin-svelte"
+import { sveltekit } from "@sveltejs/kit/vite"
 
 // Import to get file paths
 import { fromFileUrl } from "@std/path"
 
 // Import dependencies to get environment variables
 import dotenv from "dotenv"
+
 
 // Import types
 import type { UserConfig as Config } from "vite"
@@ -29,11 +30,12 @@ dotenv.config({ path: fromFileUrl(new URL("./.env", import.meta.url)) })
 */ 
 const config = {
 
+	// Vite settings
+	cacheDir: fromFileUrl(new URL("./.vite", import.meta.url)),
+
 	// Plugin configuration
 	plugins: [
-		svelte({ 
-			configFile: fromFileUrl(new URL("./svelte.config.mts", import.meta.url))
-		})
+		sveltekit() // Currently no way to specify where the config file is
 	],
 
 	// Development settings
@@ -54,14 +56,7 @@ const config = {
 		// Host on specified port during preview
 		port: Number(Deno.env.get("PREV_PORT")) || 3000,
 		strictPort: true
-	},
-
-	// Output settings
-	cacheDir: fromFileUrl(new URL("./.vite", import.meta.url)),
-	// Defined in Svelte config
-	// build: {
-	// 	outDir: fromFileUrl(new URL("./build", import.meta.url)),
-	// },
+	}
 
 } satisfies Config
 

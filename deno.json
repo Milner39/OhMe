@@ -10,10 +10,11 @@
         "@std/path": "jsr:@std/path@1.0.8",
 
         "@sveltejs/adapter-node": "npm:@sveltejs/adapter-node@5.2.9",
-		"@sveltejs/kit": "npm:@sveltejs/kit@2.8.0",
-		"@sveltejs/vite-plugin-svelte": "npm:@sveltejs/vite-plugin-svelte@4.0.0",
-		"svelte": "npm:svelte@5.1.13",
-		"vite": "npm:vite@5.4.10",
+		"@sveltejs/kit": "npm:@sveltejs/kit@2.8.1",
+		"@sveltejs/vite-plugin-svelte": "npm:@sveltejs/vite-plugin-svelte@4.0.1",
+		"svelte": "npm:svelte@5.2.2",
+        "svelte-check": "npm:svelte-check@4.0.9",
+		"vite": "npm:vite@5.4.11",
         "dotenv": "npm:dotenv@16.4.5"
     },
     "nodeModulesDir": "auto"

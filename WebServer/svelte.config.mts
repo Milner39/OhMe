@@ -12,6 +12,7 @@ import { fromFileUrl } from "@std/path"
 // Import package to get path aliases
 // import packageJson from "../package.json" with { type: "json" }
 
+
 // Import types
 import type { Config } from "@sveltejs/kit"
 
@@ -23,6 +24,7 @@ import type { Config } from "@sveltejs/kit"
 	https://kit.svelte.dev/docs/configuration
 	Define Svelte config
 */
+console.log("HEY LISTEN!", fromFileUrl(new URL("/.svelte-kit", import.meta.url)))
 const config = {
 	kit: {
 		adapter: adapter({
@@ -63,6 +65,7 @@ const config = {
 
 		typescript: {} // Edit to extend `tsconfig.json`
 	}
+
 } satisfies Config
 
 // Export Svelte config
