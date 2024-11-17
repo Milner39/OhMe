@@ -10,8 +10,7 @@ node_modules
 build
 .svelte-kit
 .vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+vite.config.*.timestamp-*
 
 
 # Enviromental variables but not the `env.example` file
