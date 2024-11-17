@@ -6,6 +6,12 @@
 		"web:serve": "cd WebServer && deno task serve"
     },
 
+    "imports": {
+        "@std/fs": "jsr:@std/fs@1.0.5",
+        "@std/path": "jsr:@std/path@1.0.8",
+        "dotenv": "npm:dotenv@16.4.5"
+    },
+
     "nodeModulesDir": "auto",
     "workspace": {
         "members": [

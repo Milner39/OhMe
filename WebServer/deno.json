@@ -7,10 +7,6 @@
     },
 
     "imports": {
-        "@std/fs": "jsr:@std/fs@1.0.5",
-        "@std/path": "jsr:@std/path@1.0.8",
-        "dotenv": "npm:dotenv@16.4.5",
-
         "@sveltejs/adapter-node": "npm:@sveltejs/adapter-node@5.2.9",
 		"@sveltejs/kit": "npm:@sveltejs/kit@2.8.1",
 		"@sveltejs/vite-plugin-svelte": "npm:@sveltejs/vite-plugin-svelte@4.0.1",
