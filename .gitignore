@@ -1,6 +1,6 @@
 # Misc
 /.vscode
-
+/ignore
 
 # Installed dependencies
 node_modules
