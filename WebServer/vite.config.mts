@@ -4,7 +4,13 @@
 	https://vitejs.dev/guide/using-plugins
 	Import SvelteKit plugin for Vite
 */
-import { sveltekit } from "@sveltejs/kit/vite"
+import { sveltekit as SvelteKit } from "@sveltejs/kit/vite"
+
+/*
+	https://github.com/antfu/vite-plugin-restart?tab=readme-ov-file
+	Import Vite plugin to restart the server when specified files change
+*/
+import ViteRestart from "vite-plugin-restart"
 
 // Import to get file paths
 import { fromFileUrl } from "@std/path"
@@ -37,7 +43,12 @@ const config = {
 
 	// Plugin configuration
 	plugins: [
-		sveltekit() // Currently no way to specify where the config file is
+		SvelteKit(), // Currently no way to specify where the config file is
+		ViteRestart({ 
+			restart: [
+				"./svelte.config.mts"
+			]
+		}) // Slow but works
 	],
 
 	// Development settings
