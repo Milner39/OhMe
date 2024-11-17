@@ -46,9 +46,9 @@ const config = {
 		SvelteKit(), // Currently no way to specify where the config file is
 		ViteRestart({ 
 			restart: [
-				"./svelte.config.mts"
+				"svelte.config.mts"
 			]
-		}) // Slow but works
+		}) // Slow but works... sometimes
 	],
 
 	// Development settings

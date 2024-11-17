@@ -71,24 +71,3 @@ const config = {
 
 // Export Svelte config
 export default config
-
-
-/* ISSUE: 
-	This config file is not being recognized by Vite.
-	There was an attempt to make vite recognize the config file
-	by importing this file to a `svelte.config` file at the root
-	of the project, but is not working.
-	Honestly, really stuck.
-
-
-	I know it is not being recognized because when running:
-	`deno task web:build`
-
-	Vite logs the following:
-	```
-	No adapter specified
-	See https://svelte.dev/docs/kit/adapters to learn how to configure your app to run on the platform of your choosing
-	```
-
-	But the adapter is specified in this file.
-*/
