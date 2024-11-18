@@ -1,4 +1,4 @@
-Special consideration have to be taken into account when using Deno for a SvelteKit project.
+Special consideration has to be taken into account when using Deno for a SvelteKit project.
 
 - Firstly, the SvelteKit plugin for Vite only looks for Svelte config files at `./svelte.config.js`.
   Not `.ts`, not `.mjs`, only `.js` so using type script for the config file is out of the question.
