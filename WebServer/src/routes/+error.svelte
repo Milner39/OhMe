@@ -3,8 +3,8 @@
 // #region Imports
 
 /*
-    https://kit.svelte.dev/docs/modules#$app-stores-page
-    Store containing page information
+	https://kit.svelte.dev/docs/modules#$app-stores-page
+	Store containing page information
 */
 import { page } from "$app/stores"
 
@@ -14,5 +14,5 @@ import { page } from "$app/stores"
 
 
 <div>
-    <h1>{$page.status}: {$page.error.message}</h1>
+	<h1>{$page.status}: {$page.error.message}</h1>
 </div>

@@ -1,21 +1,21 @@
 {
-    "tasks": {
-        "web:dev": "cd WebServer && deno task dev",
+	"tasks": {
+		"web:dev": "cd WebServer && deno task dev",
 		"web:build": "cd WebServer && deno task build",
 		"web:preview": "cd WebServer && deno task preview",
 		"web:serve": "cd WebServer && deno task serve"
-    },
+	},
 
-    "imports": {
-        "@std/fs": "jsr:@std/fs@1.0.5",
-        "@std/path": "jsr:@std/path@1.0.8",
-        "dotenv": "npm:dotenv@16.4.5"
-    },
+	"imports": {
+		"@std/fs": "jsr:@std/fs@1.0.5",
+		"@std/path": "jsr:@std/path@1.0.8",
+		"dotenv": "npm:dotenv@16.4.5"
+	},
 
-    "nodeModulesDir": "auto",
-    "workspace": {
-        "members": [
-            "WebServer/"
-        ]
-    }
+	"nodeModulesDir": "auto",
+	"workspace": {
+		"members": [
+			"WebServer/"
+		]
+	}
 }
