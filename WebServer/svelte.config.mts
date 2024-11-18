@@ -9,9 +9,6 @@ import adapter from "@sveltejs/adapter-node"
 // Import to get file paths
 import { fromFileUrl } from "@std/path"
 
-// Import package to get path aliases
-// import packageJson from "../package.json" with { type: "json" }
-
 
 // Import types
 import type { Config } from "@sveltejs/kit"
@@ -64,7 +61,9 @@ const config = {
 
 		// alias: packageJson.aliases,
 
-		typescript: {} // Edit to extend `tsconfig.json`
+		typescript: {
+			config: (tsconfig) => { return tsconfig }
+		} // Edit to extend `tsconfig.json`
 	}
 
 } satisfies Config
