@@ -64,8 +64,7 @@ const config = {
 		fs: {
 			allow: [
 				fromFileUrl(new URL("../", import.meta.url))
-			],
-			strict: false
+			]
 		}
 	},
 
