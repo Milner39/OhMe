@@ -7,7 +7,7 @@
 import { sveltekit as SvelteKit } from "@sveltejs/kit/vite"
 
 // Import to get file paths
-import { fromFileUrl } from "@std/path"
+import { fileURLToPath } from "node:url"
 
 // Import dependencies to get environment variables
 import dotenv from "dotenv"
@@ -21,7 +21,7 @@ import type { UserConfig as Config } from "vite"
 
 
 // Load environment variables
-dotenv.config({ path: fromFileUrl(new URL("./.env", import.meta.url)) })
+dotenv.config({ path: fileURLToPath(new URL("./.env", import.meta.url)) })
 
 
 /*
@@ -31,9 +31,7 @@ dotenv.config({ path: fromFileUrl(new URL("./.env", import.meta.url)) })
 const config = {
 
 	// Vite settings
-	cacheDir: fromFileUrl(new URL("./.vite", import.meta.url)),
-	// root: fromFileUrl(new URL("../", import.meta.url)),
-	// optimizeDeps: { force: true},
+	cacheDir: fileURLToPath(new URL("./.vite", import.meta.url)),
 
 	// Plugin configuration
 	plugins: [
@@ -52,7 +50,7 @@ const config = {
 		// https://github.com/sveltejs/kit/issues/2973
 		fs: {
 			allow: [
-				fromFileUrl(new URL("../", import.meta.url))
+				fileURLToPath(new URL("../", import.meta.url))
 			]
 		}
 	},

@@ -1,7 +1,6 @@
 {
   "version": "4",
   "specifiers": {
-    "jsr:@std/path@1.0.8": "1.0.8",
     "npm:@sveltejs/adapter-node@5.2.9": "5.2.9_@sveltejs+kit@2.8.1__@sveltejs+vite-plugin-svelte@4.0.1___svelte@5.2.2____acorn@8.14.0___vite@5.4.11__svelte@5.2.2___acorn@8.14.0__vite@5.4.11_rollup@4.27.2_@sveltejs+vite-plugin-svelte@4.0.1__svelte@5.2.2___acorn@8.14.0__vite@5.4.11_svelte@5.2.2__acorn@8.14.0_vite@5.4.11",
     "npm:@sveltejs/kit@2.8.1": "2.8.1_@sveltejs+vite-plugin-svelte@4.0.1__svelte@5.2.2___acorn@8.14.0__vite@5.4.11_svelte@5.2.2__acorn@8.14.0_vite@5.4.11",
     "npm:@sveltejs/vite-plugin-svelte@4.0.1": "4.0.1_svelte@5.2.2__acorn@8.14.0_vite@5.4.11",
@@ -11,11 +10,6 @@
     "npm:svelte-check@4.0.9": "4.0.9_svelte@5.2.2__acorn@8.14.0_typescript@5.6.3",
     "npm:svelte@5.2.2": "5.2.2_acorn@8.14.0",
     "npm:vite@5.4.11": "5.4.11"
-  },
-  "jsr": {
-    "@std/path@1.0.8": {
-      "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
-    }
   },
   "npm": {
     "@ampproject/remapping@2.3.0": {
@@ -586,7 +580,6 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/path@1.0.8",
       "npm:@types/node@22.9.0",
       "npm:dotenv@16.4.5"
     ],
