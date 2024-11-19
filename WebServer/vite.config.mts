@@ -6,12 +6,6 @@
 */
 import { sveltekit as SvelteKit } from "@sveltejs/kit/vite"
 
-/*
-	https://github.com/antfu/vite-plugin-restart?tab=readme-ov-file
-	Import Vite plugin to restart the server when specified files change
-*/
-import ViteRestart from "vite-plugin-restart"
-
 // Import to get file paths
 import { fromFileUrl } from "@std/path"
 
@@ -44,11 +38,6 @@ const config = {
 	// Plugin configuration
 	plugins: [
 		SvelteKit(), // Currently no way to specify where the config file is
-		ViteRestart({ 
-			restart: [
-				"svelte.config.mts"
-			]
-		}) // Slow but works... sometimes
 	],
 
 	// Development settings
