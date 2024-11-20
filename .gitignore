@@ -13,7 +13,7 @@ WebServer/**/.vite
 WebServer/**/vite.config.*.timestamp-*
 
 
-# Enviromental variables but not the `env.example` file
+# Environment variables but not the `env.example` file
 .env
 .env.*
 !.env.example
