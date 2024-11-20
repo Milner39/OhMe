@@ -1,7 +1,7 @@
 // #region Imports
 
 /*
-	https://kit.svelte.dev/docs/adapters
+	https://svelte.dev/docs/kit/adapters
 	Import the correct adapter for Node servers
 */
 import adapter from "@sveltejs/adapter-node"
@@ -14,7 +14,7 @@ import { fileURLToPath } from "node:url"
 
 
 /*
-	https://kit.svelte.dev/docs/configuration
+	https://svelte.dev/docs/kit/configuration
 	Define Svelte config
 */
 /** @type {import("@sveltejs/kit").Config} */
