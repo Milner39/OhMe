@@ -40,6 +40,13 @@ img, picture, video, canvas, svg {
 	display: block; // Remove default inline display
 	max-width: 100%; // Make responsive, use `max-width: revert` if needed
 }
+svg {
+	max-width: revert; 
+	min-width: 1rem; // Ensure SVGs are visible
+	path.fill {
+		fill: currentColor; // Make SVGs inherit text color
+	}
+}
 
 
 input, button, textarea, select {
@@ -64,8 +71,22 @@ h1, h2, h3, h4, h5, h6 {
 
 
 
-// #region Specific element resets
+// #region Finn's element resets
+:where(*) {
+	color: inherit; // Inherit text color
+	text-decoration: none; // Remove default underline
+}
 
+:where(ul) {
+	list-style: none; // Remove default list styles
+	padding: 0; // Remove default padding
+}
+
+:where(button) {
+	background: none; // Remove default background
+	border: none; // Remove default border
+	padding: 0; // Remove default padding
+}
 
 
 // #endregion Specific element resets
