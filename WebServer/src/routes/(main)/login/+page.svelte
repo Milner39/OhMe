@@ -4,7 +4,7 @@
 <style lang="scss">
 
 h1 {
-    color: rebeccapurple;
+	color: rebeccapurple;
 }
 
 </style>

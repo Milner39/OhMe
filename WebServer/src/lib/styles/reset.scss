@@ -1,66 +1,66 @@
-// #region General CSS reset 
+// #region General CSS reset
 
 /* Resources I used to create this reset:
-    - Comeau, J. https://www.joshwcomeau.com/css/custom-css-reset/ 
-      (Comeau credited Bell for inspiration)
+	- Comeau, J. https://www.joshwcomeau.com/css/custom-css-reset/
+	  (Comeau credited Bell for inspiration)
 
-    - Bell, A. https://piccalil.li/blog/a-more-modern-css-reset/
+	- Bell, A. https://piccalil.li/blog/a-more-modern-css-reset/
 */
 
 
 *, *::before, *::after {
-    box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 * {
-    margin: 0; // Remove default margin
+	margin: 0; // Remove default margin
 
-    line-height: calc(1em + 1rem); // Use accessible line-height
-    -webkit-font-smoothing: antialiased; // Improve text rendering
+	line-height: calc(1em + 1rem); // Use accessible line-height
+	-webkit-font-smoothing: antialiased; // Improve text rendering
 }
 
 
 // Prevent font size inflation
 html {
-    -moz-text-size-adjust: none;
-    -webkit-text-size-adjust: none;
-    text-size-adjust: none;
+	-moz-text-size-adjust: none;
+	-webkit-text-size-adjust: none;
+	text-size-adjust: none;
 }
 
 
 body {
-    // Ensure body fills the viewport
-    width: 100%;
-    min-height: 100dvh;
+	// Ensure body fills the viewport
+	width: 100%;
+	min-height: 100dvh;
 }
 
 
 // Improve media defaults
 img, picture, video, canvas, svg {
-    display: block; // Remove default inline display
-    max-width: 100%; // Make responsive, use `max-width: revert` if needed
+	display: block; // Remove default inline display
+	max-width: 100%; // Make responsive, use `max-width: revert` if needed
 }
 
 
 input, button, textarea, select {
-    font: inherit; // Inherit fonts for form controls
+	font: inherit; // Inherit fonts for form controls
 }
 
 
 h1, h2, h3, h4, h5, h6, p {
-    overflow-wrap: break-word; // Avoid overflow
+	overflow-wrap: break-word; // Avoid overflow
 }
 
 
 // Improve wrapping
 p {
-    text-wrap: pretty; 
+	text-wrap: pretty;
 }
 h1, h2, h3, h4, h5, h6 {
-    text-wrap: balance; 
+	text-wrap: balance;
 }
 
-// #endregion General CSS reset 
+// #endregion General CSS reset
 
 
 

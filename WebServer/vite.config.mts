@@ -27,7 +27,7 @@ dotenv.config({ path: fileURLToPath(new URL("./.env", import.meta.url)) })
 /*
 	https://vitejs.dev/config/
 	Define Vite config
-*/ 
+*/
 const config = {
 
 	// Vite settings
