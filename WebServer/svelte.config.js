@@ -1,6 +1,12 @@
 // #region Imports
 
 /*
+	https://svelte.dev/docs/kit/integrations#preprocessors
+	Import the preprocessor to allow the use of SCSS
+*/
+import SveltePreprocess from "svelte-preprocess"
+
+/*
 	https://svelte.dev/docs/kit/adapters
 	Import the correct adapter for Node servers
 */
@@ -19,6 +25,11 @@ import { fileURLToPath } from "node:url"
 */
 /** @type {import("@sveltejs/kit").Config} */
 const config = {
+
+	// Preprocessor settings
+	preprocess: [
+		SveltePreprocess()
+	],
 
 	// SvelteKit settings
 	kit: {
