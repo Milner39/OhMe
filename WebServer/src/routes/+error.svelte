@@ -14,5 +14,6 @@ import { page } from "$app/stores"
 
 
 <div>
+	<!-- Display the error status code and message -->
 	<h1>{$page.status}: {$page.error.message}</h1>
 </div>
