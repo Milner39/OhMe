@@ -74,6 +74,11 @@ const onResize = () => {
 	// Get element containing collapsible content
 	const collapseEl = nav.getElementsByClassName("nav__collapsible")[0]
 
+	// Get all elements with the `.collapsible-target` class in collapsable div
+	const collapsibleItemsEl = [
+		...collapseEl.getElementsByClassName("collapsible-target")
+	]
+
 	// Get element containing the nav links
 	const navLinksEl = collapseEl.getElementsByClassName("nav__link__list")[0]
 
@@ -84,53 +89,51 @@ const onResize = () => {
 	const staticEl = nav.getElementsByClassName("nav__static")[0]
 
 
-	// Get width of `collapseEl`
+
+	// Get width of collapsable div
 	const containerWidth = collapseEl.clientWidth
 
-	// Get all elements with the `.collapsible-target` class in `collapseEl`
-	const collapsibleItemsEl = [
-		...collapseEl.getElementsByClassName("collapsible-target")
-	]
-	
-	// Calculate total width of all items in `collapsibleItemsEl`
+	// Calculate total width of the collapsible items
 	const totalCollapsibleItemWidth = collapsibleItemsEl.reduce(
 		(total, item) => total + item.clientWidth, 0
 	)
 
-	// Get gap between `navLinksEl` and `staticEl`
+
+
+	// Get gap between nav links and static div
 	const collapsibleGap = Number(window.getComputedStyle(collapseEl)
 		.columnGap
 		.slice(0,-2)
 	)
 
-	// Get gap between items in `navLinks`
+	// Get gap between items in nav links
 	const navLinksGap = Number(window.getComputedStyle(navLinksEl)
 		.columnGap
 		.slice(0,-2)
 	)
 
-	// Get gap between items in `extraEl`
+	// Get gap between items in extra div
 	const extraGap = Number(window.getComputedStyle(extraEl)
 		.columnGap
 		.slice(0,-2)
 	)
 
-	// Calculate the extra spacing required to fit all items in `collapsibleItemsEl`
-	const spacingWidth =
-		collapsibleGap +
-		(navLinksGap * (navLinksEl.childElementCount -1)) +
-		(extraGap * (extraEl.childElementCount -1))
-
-	// Get gap between items in `staticEl`
+	// Get gap between items in static div
 	const staticGap = Number(window.getComputedStyle(staticEl)
 		.columnGap
 		.slice(0,-2)
 	)
 
+	// Calculate the total width taken up by spacing between items
+	const spacingWidth =
+		collapsibleGap +
+		(navLinksGap * (navLinksEl.childElementCount -1)) +
+		(extraGap * (extraEl.childElementCount -1))
+
+
+
 	// Get width of `dropdownButton`
 	const dropdownButtonWidth = dropdownButton.clientWidth
-
-
 
 	/*
 		Calculate the extra width taken up by elements that only appear when
