@@ -16,7 +16,7 @@ import Nav from "./Nav.svelte"
 </header>
 
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 header {
 
