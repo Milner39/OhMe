@@ -1,18 +1,30 @@
-<script>
+<script lang="ts">
 
 // #region Imports
 
 // Import components used in this component
 import Nav from "./Nav.svelte"
 
+// Import types
+import type { Snippet } from "svelte"
+
 // #endregion Imports
+
+
+
+// Get props
+interface Props {
+	children: Snippet<[{ Nav: typeof Nav }]>
+}
+let {
+	children
+}: Props = $props()
 
 </script>
 
 
 <header>
-	<!-- Children go here -->
-	<slot {Nav}/>
+	{@render children?.({ Nav })}
 </header>
 
 
