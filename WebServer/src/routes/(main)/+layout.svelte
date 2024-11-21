@@ -15,7 +15,7 @@ import Header from "$lib/components/Header/Header.svelte"
 		{ text: "About", href: "/about" },
 	]}>
 		{#snippet brandContent()}
-			<p>OhMe</p>
+			<h1>OhMe</h1>
 		{/snippet}
 
 		{#snippet extraContent()}
