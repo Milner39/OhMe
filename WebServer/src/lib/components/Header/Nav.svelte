@@ -345,7 +345,7 @@ onNavigate(() => {
 			& :global(h5),
 			& :global(h6),
 			& :global(p) {
-				font-size: 1.5rem;
+				font-size: 1.75rem;
 				font-weight: var(--font-weight-light);
 			}
 		}
