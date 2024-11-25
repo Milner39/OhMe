@@ -234,9 +234,7 @@ onNavigate(() => {
 
 		<div class="nav__static">
 
-			{#if staticContent}
-				{@render staticContent()}
-			{/if}
+			{@render staticContent?.()}
 
 			<!-- Bind button to `dropdown` so it can be accessed by the script -->
 			<button class="static__dropdown-toggle button" type="button" 
