@@ -41,9 +41,9 @@ header {
 	z-index: 10;
 
 	// Border
-	border-style: solid;
-	border-color: var(--color-bg-4);
-	border-width: 0 0 1px 0;
+	border: var(--border-1);
+	border-top-width: 0;
+	border-inline-width: 0;
 
 	// Box shadow
 	box-shadow: var(--box-shadow-1);

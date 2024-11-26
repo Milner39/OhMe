@@ -313,11 +313,11 @@ onNavigate(() => {
 
 
 	& > nav {
-		--group-gap: 2rem;
-		--item-gap: 1rem;
+		--group-gap: var(--size-8);
+		--item-gap: var(--size-4);
 
 		position: relative;
-		padding: 1rem;
+		padding: var(--size-4);
 
 		display: flex;
 		align-self: stretch;
@@ -343,7 +343,7 @@ onNavigate(() => {
 			& :global(h5),
 			& :global(h6),
 			& :global(p) {
-				font-size: 1.75rem;
+				font-size: ver(--size-7);
 				font-weight: var(--font-weight-light);
 			}
 		}
@@ -394,7 +394,7 @@ onNavigate(() => {
 						--size: 1px;
 						width: var(--size);
 						height: 100%;
-						left: calc(-1 * (var(--item-gap) /2 + var(--size) / 2));
+						left: calc(-1 * (var(--item-gap) / 2 + var(--size) / 2));
 
 						background-color: var(--color-bg-4);
 					}
@@ -439,7 +439,7 @@ onNavigate(() => {
 			}
 
 			& > .static__dropdown-toggle {
-				height: 1.5rem;
+				height: var(--size-6);
 
 
 				&.hide {
@@ -462,7 +462,6 @@ onNavigate(() => {
 		top: 0;
 		left: 0;
 
-		height: 100vh;
 		height: 100dvh;
 		width: 100%;
 
@@ -498,16 +497,16 @@ onNavigate(() => {
 
 				& > a {
 					display: block;
-					padding: 1rem;
+					padding: var(--size-4);
 				}
 			}
 		}
 
 		& >.dropdown__extra {
-			padding: 1rem;
+			padding: var(--size-4);
 
 			display: grid;
-			gap: 1rem;
+			gap: var(--size-4);
 
 
 			& > :global(.dropdown__button) {
@@ -518,7 +517,7 @@ onNavigate(() => {
 				color: var(--color-brand-p4);
 				background-color: var(--color-brand-deSat-p1);
 
-				border-radius: 1000rem; // Make pill shape
+				border-radius: calc(var(--size-scale) * 1000rem); // Make pill shaped
 				padding: 0.125em 0.75em; // Add padding
 
 

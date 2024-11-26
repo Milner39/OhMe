@@ -72,9 +72,34 @@ $color-brand-p4: #1F71FF;
 
 	// Box shadows
 	--box-shadow-1: 0 0.25rem 2rem #000000;
+
+	// Borders
+	--border-1: 1px solid var(--color-bg-4);
+
+	// Sizes
+	--size-scale: 1;
+	--size-1: calc(var(--size-scale) * 0.25rem);
+	--size-2: calc(var(--size-scale) * 0.5rem);
+	--size-3: calc(var(--size-scale) * 0.75rem);
+	--size-4: calc(var(--size-scale) * 1rem);
+	--size-5: calc(var(--size-scale) * 1.25rem);
+	--size-6: calc(var(--size-scale) * 1.5rem);
+	--size-7: calc(var(--size-scale) * 1.75rem);
+	--size-8: calc(var(--size-scale) * 2rem);
+	--size-9: calc(var(--size-scale) * 2.25rem);
+	--size-10: calc(var(--size-scale) * 2.5rem);
+	--size-11: calc(var(--size-scale) * 2.75rem);
+	--size-12: calc(var(--size-scale) * 3rem);
+	--size-13: calc(var(--size-scale) * 3.25rem);
+	--size-14: calc(var(--size-scale) * 3.5rem);
+	--size-15: calc(var(--size-scale) * 3.75rem);
+	--size-16: calc(var(--size-scale) * 4rem);
+	font-size: var(--size-4);
 }
 
 body {
+	display: flex;
+	flex-direction: column;
 	background-color: var(--color-bg-2);
 }
 
@@ -105,7 +130,7 @@ body {
 }
 .button--pill {
 	background-color: var(--color-brand-p3); // Set background color
-	border-radius: 1000rem; // Make pill shaped
+	border-radius: calc(var(--size-scale) * 1000rem); // Make pill shaped
 	padding: 0.125em 0.75em; // Add padding
 }
 
