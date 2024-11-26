@@ -89,5 +89,10 @@ h1, h2, h3, h4, h5, h6 {
 	text-align: unset; // Remove default text alignment
 }
 
-
-// #endregion Specific element resets
+:where(input[type=text]) {
+	background: none;
+	border: none;
+	padding: 0;
+	outline: none;
+}
+// #endregion Finn's element resets
