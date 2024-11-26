@@ -29,7 +29,7 @@ let {
 </header>
 
 
-<style lang="scss" scoped>
+<style lang="scss">
 
 header {
 

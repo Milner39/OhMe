@@ -305,7 +305,7 @@ onNavigate(() => {
 </div>
 
 
-<style lang="scss" scoped>
+<style lang="scss">
 
 .nav__wrapper {
 	position: relative;
