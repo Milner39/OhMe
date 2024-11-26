@@ -518,7 +518,7 @@ onNavigate(() => {
 				background-color: var(--color-brand-deSat-p1);
 
 				border-radius: calc(var(--size-scale) * 1000rem); // Make pill shaped
-				padding: 0.125em 0.75em; // Add padding
+				padding: 0.25em 0.75em; // Add padding
 
 
 				transition: background-color 200ms ease-in-out;
