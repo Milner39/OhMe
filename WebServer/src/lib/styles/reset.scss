@@ -89,7 +89,8 @@ h1, h2, h3, h4, h5, h6 {
 	text-align: unset; // Remove default text alignment
 }
 
-:where(input[type=text]) {
+:where(input[type=text]),
+:where(input[type=password]) {
 	background: none;
 	border: none;
 	padding: 0;

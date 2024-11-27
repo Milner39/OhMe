@@ -28,6 +28,7 @@ import Form from "$lib/components/Inputs/Form/Form.svelte"
 						name="username"
 						placeholder="John Doe"
 						required={true}
+						autocomplete="username"
 					>
 						{#snippet labelContent()}
 							<p>Username *</p>
@@ -37,6 +38,7 @@ import Form from "$lib/components/Inputs/Form/Form.svelte"
 						name="email"
 						placeholder="John.Doe@email.com"
 						required={true}
+						autocomplete="email"
 					>
 						{#snippet labelContent()}
 							<p>Email *</p>
@@ -46,6 +48,8 @@ import Form from "$lib/components/Inputs/Form/Form.svelte"
 						name="password"
 						placeholder="Password123"
 						required={true}
+						autocomplete="new-password"
+						secure={true}
 					>
 						{#snippet labelContent()}
 							<p>Password *</p>

@@ -4,6 +4,7 @@
 
 // Import types
 import type { Snippet } from "svelte"
+import type { FullAutoFill } from "svelte/elements"
 
 // #endregion Imports
 
@@ -14,6 +15,8 @@ interface Props {
 	name: string,
 	placeholder?: string,
 	required?: boolean,
+	autocomplete?: FullAutoFill,
+	secure?: boolean,
 	labelContent?: Snippet,
 	inputBoxContent?: Snippet,
 	helperContent?: Snippet
@@ -23,6 +26,8 @@ let {
 	name,
 	placeholder,
 	required = false,
+	autocomplete = "off",
+	secure = false,
 	labelContent,
 	inputBoxContent,
 	helperContent,
@@ -34,8 +39,8 @@ let {
 <label class={"form__text-input__label " + (classes ?? "")}>
 	{@render labelContent?.()}
 	<div class="form__text-input__wrapper">
-		<input type="text"
-			{name} {placeholder} {required}
+		<input type={!secure ? "text" : "password"}
+			{name} {placeholder} {required} {autocomplete}
 		>
 		{@render inputBoxContent?.()}
 	</div>
