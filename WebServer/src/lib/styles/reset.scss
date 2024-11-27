@@ -94,5 +94,21 @@ h1, h2, h3, h4, h5, h6 {
 	border: none;
 	padding: 0;
 	outline: none;
+
+
+	// Fix autofill colors
+	&:autofill,
+    &:autofill:hover, 
+    &:autofill:focus, 
+    &:autofill:active {
+		font: inherit;
+
+		background-clip: text;
+		-webkit-text-fill-color: var(--color-txt-1);
+	}
+	caret-color: var(--color-txt-1);
+
+	// Fix jumping text inputs on safari
+	float: left;
 }
 // #endregion Finn's element resets
