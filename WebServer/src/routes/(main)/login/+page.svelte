@@ -33,6 +33,8 @@ let { data }: { data: PageData } = $props();
 <style lang="scss">
 
 .page-wrapper {
+	padding: var(--size-6);
+
 	flex-grow: 1;
 
 	display: flex;
