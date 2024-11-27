@@ -24,7 +24,7 @@ let { data }: { data: PageData } = $props()
 		<LoginForm/>
 	{:else if data.mode === "register"}
 		<RegisterForm/>
-	{:else}
+	{:else if data.mode === "reset-password"}
 		<h1>TODO</h1>
 	{/if}
 </div>
