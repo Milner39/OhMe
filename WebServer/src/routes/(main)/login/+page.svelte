@@ -13,7 +13,7 @@ import type { PageData } from "./$types"
 // #endregion Imports
 
 
-let { data }: { data: PageData } = $props();
+let { data }: { data: PageData } = $props()
 
 
 </script>
