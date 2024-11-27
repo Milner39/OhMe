@@ -16,7 +16,7 @@ export const load: PageLoad = ({ url }) => {
 
 	// If not running in browser
 	if (!browser) {
-		return { mode: "login" }
+		return { mode: "login" } // Return default mode
 	}
 	
 
@@ -26,7 +26,7 @@ export const load: PageLoad = ({ url }) => {
 	// Define valid modes
 	const validModes = new Set(["login", "register", "reset-password"])
 
-	// Set `mode` to default value if not one of the valid options
+	// Set `mode` to default mode if is not one of the valid options
 	mode = validModes.has(mode) ? mode : "login"
 
 	// Return the form mode
