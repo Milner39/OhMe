@@ -20,6 +20,7 @@ let { data }: { data: PageData } = $props()
 
 
 <div class="page-wrapper">
+	<!-- Display the correct form based on the mode -->
 	{#if data.mode === "login"}
 		<LoginForm/>
 	{:else if data.mode === "register"}
