@@ -4,7 +4,7 @@
 	https://svelte.dev/docs/kit/integrations#preprocessors
 	Import the preprocessor to allow the use of SCSS
 */
-import SveltePreprocess from "svelte-preprocess"
+import { sveltePreprocess as SveltePreprocess } from "svelte-preprocess"
 
 /*
 	https://svelte.dev/docs/kit/adapters
