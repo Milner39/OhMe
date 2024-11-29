@@ -12,6 +12,9 @@ WebServer/**/.svelte-kit
 WebServer/**/.vite
 WebServer/**/vite.config.*.timestamp-*
 
+# Database temp files
+Database/drizzle/out
+
 
 # Environment variables but not the `env.example` file
 .env

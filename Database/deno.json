@@ -1,0 +1,13 @@
+{
+	"tasks": {
+		"generate": "drizzle-kit generate --config=./drizzle/drizzle.config.ts",
+		"migrate": "drizzle-kit migrate --config=./drizzle/drizzle.config.ts"
+	},
+
+	"imports": {
+		"drizzle-orm": "npm:drizzle-orm@0.36.4",
+		"drizzle-kit": "npm:drizzle-kit@0.28.1",
+		"pg": "npm:pg@8.13.1",
+		"@types/pg": "npm:@types/pg@8.11.10"
+	}
+}

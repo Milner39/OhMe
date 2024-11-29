@@ -3,7 +3,10 @@
 		"web:dev": "cd WebServer && deno task dev",
 		"web:build": "cd WebServer && deno task build",
 		"web:preview": "cd WebServer && deno task preview",
-		"web:serve": "cd WebServer && deno task serve"
+		"web:serve": "cd WebServer && deno task serve",
+
+		"db:generate": "cd Database && deno task generate",
+		"db:migrate": "cd Database && deno task migrate"
 	},
 
 	"imports": {
@@ -14,7 +17,8 @@
 	"nodeModulesDir": "auto",
 	"workspace": {
 		"members": [
-			"WebServer/"
+			"WebServer/",
+			"Database/"
 		]
 	}
 }
