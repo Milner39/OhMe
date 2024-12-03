@@ -16,4 +16,6 @@ await db.insert(tables.user).values({
 	email: `test${count}@email.com`
 })
 
-console.log(await db.query.user.findMany())
+const result = await db.query.user.findMany()
+
+console.log(result)
