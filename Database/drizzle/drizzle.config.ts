@@ -28,4 +28,4 @@ const config = {
 export default config
 
 
-// INFO: Paths are relative to the directory of the process
+// INFO: Paths are relative to the directory of the process, not this file
