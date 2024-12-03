@@ -14,7 +14,9 @@ import { Config } from "drizzle-kit"
 // Define Drizzle config
 const config = {
 	dialect: "postgresql",
-	dbCredentials: getDbCredentials(),
+	dbCredentials: {
+		...getDbCredentials()
+	},
 	schema: "drizzle/src/**/schema.ts", // The files containing the schemas for each table
 	out: "drizzle/out", // The directory to store migration files
 	migrations: {
