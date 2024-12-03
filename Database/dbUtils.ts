@@ -36,11 +36,11 @@ const getDbCredentials = () => {
 
 	// Return the database credentials
 	return {
-		user: dbURL.username,
-		password: dbURL.password,
-		host: dbURL.hostname,
-		port: parseInt(dbURL.port),
-		database: dbURL.pathname.slice(1),
+		user: dbURL.username,					// <username>
+		password: dbURL.password,				// <password>
+		host: dbURL.hostname,					// <host>
+		port: parseInt(dbURL.port),				// <port>
+		database: dbURL.pathname.slice(1),		// <databaseName>
 		ssl: false // To fix "The server does not support SSL connections"
 	}
 }
