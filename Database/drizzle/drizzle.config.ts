@@ -20,7 +20,7 @@ const config = {
 	schema: "drizzle/src/**/schema.ts", // The files containing the schemas for each table
 	out: "drizzle/out", // The directory to store migration files
 	migrations: {
-		prefix: "timestamp", 
+		prefix: "timestamp", // Prefix migration files with a timestamp
 	}
 } satisfies Config
 
