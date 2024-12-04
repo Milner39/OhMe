@@ -1,7 +1,11 @@
 // Import table schemas
-import { user } from "./user/schema.ts"
+import { user, userRelations } from "./user/schema.ts"
+import { email, emailRelations } from "./email/schema.ts"
 
 // Export table schemas
 export default {
-	user
+	user,
+	userRelations,
+	email,
+	emailRelations
 }

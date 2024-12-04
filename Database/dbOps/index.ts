@@ -9,13 +9,40 @@ import { tables } from "../dbUtils.ts"
 // #endregion Imports
 
 
-const count = await db.$count(tables.user)
 
-await db.insert(tables.user).values({
-	username: `test${count}`,
-	email: `test${count}@email.com`
-})
+const createUser = async () => {
 
-const result = await db.query.user.findMany()
+	const count = await db.$count(tables.user)
 
-console.log(result)
+	await db.transaction(async (tx) => {
+		// Create user
+		const user = (await tx.insert(tables.user)
+			.values({
+				username: `user${count + 1}`
+			})
+			.returning()
+		)[0]
+
+		// Create email
+		await tx.insert(tables.email)
+			.values({
+				userId: user.id,
+				address: `user${count + 1}@example.com`
+			})
+	})
+}
+
+
+const readUser = async () => {
+	const user = await db.query.user.findMany({
+		with: {
+			email: true
+		},
+		where: (user, { eq }) => eq(user.username, "user1")
+	})
+	
+
+	return user
+}
+
+console.log(await readUser())
