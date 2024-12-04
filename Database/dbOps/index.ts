@@ -60,5 +60,5 @@ const readUser = async (username: string) => {
 }
 
 
-console.log(await createUser("Finn"))
+await createUser("Finn")
 console.log(await readUser("Finn"))
