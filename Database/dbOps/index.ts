@@ -31,12 +31,11 @@ const createUser = async (username: string) => {
 			})
 
 		/*
-			A transaction is used here in case there is an error 
-			creating the email record. A user record should not 
-			exist without a related email record and vice versa.
+			A transaction is used here in case there is an error creating the
+			email record. A user record should not exist without a related email
+			record and vice versa.
 
-			Transactions save after all of the code inside of them
-			has executed.
+			Transactions save after all of the code inside of them has executed.
 		*/
 	})
 }
