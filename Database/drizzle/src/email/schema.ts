@@ -30,11 +30,11 @@ export const email = pgTable("email", {
 		)
 		.notNull(),
 
-	// #endregion Primary & Secondary keys
+	// #endregion Primary & Foreign keys
 
 
 
-	// #region Columns
+	// #region Secondary keys
 
 	// Address, max length 320 chars
 	address: varchar("address", { length: 320 })
@@ -52,7 +52,7 @@ export const email = pgTable("email", {
 	// Code sent at, timestamp, precise to seconds
 	codeSentAt: timestamp("codeSentAt", { mode: "date", precision: 0 })
 
-	// #endregion Columns
+	// #endregion Secondary keys
 })
 
 // Define table relations

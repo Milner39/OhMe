@@ -20,11 +20,11 @@ export const user = pgTable("user", {
 		.primaryKey()
 		.defaultRandom(),
 
-	// #endregion Primary & Secondary keys
+	// #endregion Primary & Foreign keys
 
 
 
-	// #region Columns
+	// #region Secondary keys
 
 	// Username, max length 64 chars
 	username: varchar("username", { length: 64 })
@@ -34,7 +34,7 @@ export const user = pgTable("user", {
 	// Web3 address, fixed length 42 chars
 	web3Address: char("web3Address", { length: 42 })
 
-	// #endregion Columns
+	// #endregion Secondary keys
 })
 
 // Define table relations
