@@ -63,11 +63,11 @@ export const gRead = async (
 	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
 ) => {
 	try {
-		// Read record
-		const record = await callback((tx || db).query)
+		// Read result
+		const result = await callback((tx || db).query)
 
 		return {
-			result: record,
+			result: result,
 			error: null
 		}
 	}

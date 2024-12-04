@@ -91,9 +91,9 @@ export const read = async (
 	}>
 ) => {
 	try {
-		// Read user
+		// Read users
 		const {
-			result: user,
+			result: users,
 			error: rUserError
 		} = await gRead((query) => query.user.findMany({
 			where: (user, { and, eq }) => and(
@@ -113,9 +113,9 @@ export const read = async (
 			throw new Error("Failed to read user")
 		}
 
-		
+
 		return {
-			result: user,
+			result: users,
 			error: null
 		}
 	}
