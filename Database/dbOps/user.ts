@@ -95,26 +95,25 @@ export const read = async (
 		const {
 			result: user,
 			error: rUserError
-		} = await gRead((query) => {
-			query.user.findMany({
-				where: (user, { and, eq }) => and(
-					...Object.entries(values.user).map(([key, value]) => {
-						return eq(
-							user[key as keyof typeof values.user],
-							value
-						)
-					})
-				),
-				with: {
-					email: true
-				}
-			})
-		})
+		} = await gRead((query) => query.user.findMany({
+			where: (user, { and, eq }) => and(
+				...Object.entries(values.user || {}).map(([key, value]) => {
+					return eq(
+						user[key as keyof typeof values.user],
+						value
+					)
+				})
+			),
+			with: {
+				email: true
+			}
+		}))
 		
 		if (rUserError) {
 			throw new Error("Failed to read user")
 		}
 
+		
 		return {
 			result: user,
 			error: null
@@ -136,6 +135,9 @@ console.log(await read(
 	{
 		user: {
 			username: "Molly"
+		},
+		email: {
+			address: "Molly@example.com"
 		}
 	}
 ))
