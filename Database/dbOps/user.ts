@@ -86,7 +86,7 @@ export const create = async (
 export const read = async (
 	// Infer the types of the tables
 	values: {
-		user: InferSelectModel<typeof tables.user>
+		user: InferSelectModel<typeof tables.user>,
 		email: InferSelectModel<typeof tables.email>
 	}
 ) => {
@@ -99,7 +99,10 @@ export const read = async (
 			query.user.findMany({
 				where: (user, { and, eq }) => and(
 					...Object.entries(values.user).map(([key, value]) => {
-						return eq(user[key as keyof typeof user], value)
+						return eq(
+							user[key as keyof typeof user],
+							value
+						)
 					})
 				),
 				with: {
