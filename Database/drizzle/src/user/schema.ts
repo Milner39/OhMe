@@ -15,7 +15,7 @@ import { email } from "../email/schema.ts"
 export const user = pgTable("user", {
 	// #region Primary & Foreign keys
 
-	// Primary key
+	// Primary key, UUID, default to random
 	id: uuid("id")
 		.primaryKey()
 		.defaultRandom(),
