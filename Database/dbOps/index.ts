@@ -10,15 +10,15 @@ import { tables } from "../dbUtils.ts"
 
 
 
-const createUser = async () => {
+const createUser = async (username: string) => {
 
-	const count = await db.$count(tables.user)
-
+	// Create transaction that rolls back if there is an error
 	await db.transaction(async (tx) => {
+
 		// Create user
 		const user = (await tx.insert(tables.user)
 			.values({
-				username: `user${count + 1}`
+				username: username
 			})
 			.returning()
 		)[0]
@@ -27,22 +27,38 @@ const createUser = async () => {
 		await tx.insert(tables.email)
 			.values({
 				userId: user.id,
-				address: `user${count + 1}@example.com`
+				address: `${username}@example.com`
 			})
+
+		/*
+			A transaction is used here in case there is an error 
+			creating the email record. A user record should not 
+			exist without a related email record and vice versa.
+
+			Transactions save after all of the code inside of them
+			has executed.
+		*/
 	})
 }
 
 
-const readUser = async () => {
-	const user = await db.query.user.findMany({
+const readUser = async (username: string) => {
+
+	// Read user
+	const user = (await db.query.user.findFirst({
+
+		// Include relations
 		with: {
 			email: true
 		},
-		where: (user, { eq }) => eq(user.username, "user1")
-	})
-	
 
+		// Filter
+		where: (user, { eq }) => eq(user.username, username)
+	}))
+	
 	return user
 }
 
-console.log(await readUser())
+
+console.log(await createUser("Finn"))
+console.log(await readUser("Finn"))
