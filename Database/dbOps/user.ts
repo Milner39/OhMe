@@ -85,10 +85,10 @@ export const create = async (
 
 export const read = async (
 	// Infer the types of the tables
-	values: {
-		user: InferSelectModel<typeof tables.user>,
-		email: InferSelectModel<typeof tables.email>
-	}
+	values: Partial<{
+		user: Partial<InferSelectModel<typeof tables.user>>,
+		email: Partial<InferSelectModel<typeof tables.email>>
+	}>
 ) => {
 	try {
 		// Read user
@@ -100,7 +100,7 @@ export const read = async (
 				where: (user, { and, eq }) => and(
 					...Object.entries(values.user).map(([key, value]) => {
 						return eq(
-							user[key as keyof typeof user],
+							user[key as keyof typeof values.user],
 							value
 						)
 					})
@@ -132,11 +132,10 @@ export const read = async (
 // #endregion READ
 
 
-console.log(await create({
-	user: {
-		username: "Molly"
-	},
-	email: {
-		address: "Molly@example.com"
+console.log(await read(
+	{
+		user: {
+			username: "Molly"
+		}
 	}
-}))
+))
