@@ -1,7 +1,7 @@
 // #region Imports
 
 /*
-	https://vitejs.dev/guide/using-plugins
+	https://vite.dev/guide/using-plugins
 	Import SvelteKit plugin for Vite
 */
 import { sveltekit as SvelteKit } from "@sveltejs/kit/vite"
@@ -25,7 +25,7 @@ dotenv.config({ path: fileURLToPath(new URL("./.env", import.meta.url)) })
 
 
 /*
-	https://vitejs.dev/config/
+	https://vite.dev/config/
 	Define Vite config
 */
 const config = {
