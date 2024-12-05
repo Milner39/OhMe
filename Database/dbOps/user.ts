@@ -111,7 +111,7 @@ export const read = async (
 			})).map(row => row.userId) : []
 
 			// Read users
-			return await query.user.findMany({
+			const users = await query.user.findMany({
 				where: (user) => cOps.and(
 
 					// user filters
@@ -129,7 +129,10 @@ export const read = async (
 				with: {
 					email: true
 				}
-		})})
+			})
+
+			return users
+		})
 
 		if (rUserError) {
 			throw new Error("Failed to read users")

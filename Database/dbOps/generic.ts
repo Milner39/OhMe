@@ -82,9 +82,10 @@ export const gRead = async (
 
 	/*
 		A generic, type-safe subroutine to:
-			- find records from a given table.
-			- filter records by given values.
-			- return the inserted record if successful.
+			- takes in a callback subroutine.
+			- provides the db or tx query object to the callback.
+			- runs the callback.
+			- return the found records if successful.
 			- return an error if unsuccessful.
 	*/
 }
