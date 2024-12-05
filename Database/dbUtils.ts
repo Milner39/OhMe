@@ -9,6 +9,14 @@ import { fileURLToPath } from "node:url"
 // Import dependencies to get environment variables
 import dotenv from "dotenv"
 
+// Import all of conditional operators to make type checking easier
+import { 
+	eq, ne, gt, gte, lt, lte, exists, notExists, isNull, isNotNull, 
+	inArray, notInArray, between, notBetween, like, notLike, ilike, notIlike, 
+	not, and, or, arrayContains, arrayContained, arrayOverlaps
+} from "drizzle-orm"
+// It is very frustrating that I cannot import all of these as one object
+
 // #endregion Imports
 
 
@@ -45,6 +53,14 @@ const getDbCredentials = () => {
 	}
 }
 
+
+// Conditional operators
+const conditionalOperators = {
+	eq, ne, gt, gte, lt, lte, exists, notExists, isNull, isNotNull,
+	inArray, notInArray, between, notBetween, like, notLike, ilike, notIlike,
+	not, and, or, arrayContains, arrayContained, arrayOverlaps
+}
+
 // #endregion Utils
 
 
@@ -53,6 +69,7 @@ const getDbCredentials = () => {
 
 export {
 	getDbCredentials,
+	conditionalOperators,
 	tables
 }
 

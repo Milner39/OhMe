@@ -3,15 +3,15 @@
 // Import db connection
 import db from "../dbConnection.ts"
 
-// Import tables
-import { tables } from "../dbUtils.ts"
+// Import utils
+import { conditionalOperators as cOps, tables } from "../dbUtils.ts"
 
 // Import generic CRUD operations
 import { gCreate, gRead } from "./generic.ts"
 
 
 // Import types
-import { InferSelectModel, InferInsertModel } from "drizzle-orm"
+import { InferSelectModel, InferInsertModel, SQLWrapper } from "drizzle-orm"
 
 // #endregion Imports
 
@@ -84,33 +84,55 @@ export const create = async (
 // #region READ
 
 export const read = async (
-	// Infer the types of the tables
-	values: Partial<{
-		user: Partial<InferSelectModel<typeof tables.user>>,
-		email: Partial<InferSelectModel<typeof tables.email>>
-	}>
+	filters: {
+		user?: (
+			user: typeof tables.user._.columns,
+			operators: typeof cOps
+		) => SQLWrapper,
+		email?: (
+			email: typeof tables.email._.columns,
+			operators: typeof cOps
+		) => SQLWrapper
+	}
 ) => {
 	try {
 		// Read users
 		const {
 			result: users,
 			error: rUserError
-		} = await gRead((query) => query.user.findMany({
-			where: (user, { and, eq }) => and(
-				...Object.entries(values.user || {}).map(([key, value]) => {
-					return eq(
-						user[key as keyof typeof values.user],
-						value
-					)
-				})
-			),
-			with: {
-				email: true
-			}
-		}))
-		
+		} = await gRead(async (query) => {
+
+			// Read emails
+			const emailIds = (filters.email) ? (await query.email.findMany({
+				columns: { userId: true },
+				where: (email) => cOps.and(
+					(filters.email) ? filters.email(email, cOps) : undefined
+				)
+			})).map(row => row.userId) : []
+
+			// Read users
+			return await query.user.findMany({
+				where: (user) => cOps.and(
+
+					// user filters
+					(filters.user) ? filters.user(user, cOps) : undefined,
+					
+
+					// Relational filters
+					// email
+					(filters.email) ? cOps.inArray(
+						user.id,
+						emailIds
+					) : undefined
+				),
+
+				with: {
+					email: true
+				}
+		})})
+
 		if (rUserError) {
-			throw new Error("Failed to read user")
+			throw new Error("Failed to read users")
 		}
 
 
@@ -130,14 +152,9 @@ export const read = async (
 
 // #endregion READ
 
-
-console.log(await read(
-	{
-		user: {
-			username: "Molly"
-		},
-		email: {
-			address: "Molly@example.com"
-		}
-	}
-))
+console.log(
+	await read({
+		// user: (user, { eq }) => eq(user.username, "Molly"),
+		email: (email, { eq }) => eq(email.address, "Molly@example.com")
+	})
+)

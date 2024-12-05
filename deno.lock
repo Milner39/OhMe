@@ -8,8 +8,8 @@
     "npm:@types/node@22.9.0": "22.9.0",
     "npm:@types/pg@8.11.10": "8.11.10",
     "npm:dotenv@16.4.5": "16.4.5",
-    "npm:drizzle-kit@0.28.1": "0.28.1_esbuild@0.19.12",
-    "npm:drizzle-orm@0.36.4": "0.36.4_@types+pg@8.11.10_pg@8.13.1",
+    "npm:drizzle-kit@0.29.1": "0.29.1_esbuild@0.19.12",
+    "npm:drizzle-orm@0.37.0": "0.37.0_@types+pg@8.11.10_pg@8.13.1",
     "npm:pg@8.13.1": "8.13.1",
     "npm:sass@1.81.0": "1.81.0",
     "npm:svelte-check@4.0.9": "4.0.9_svelte@5.2.2__acorn@8.14.0_typescript@5.6.3",
@@ -563,8 +563,8 @@
     "dotenv@16.4.5": {
       "integrity": "sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg=="
     },
-    "drizzle-kit@0.28.1_esbuild@0.19.12": {
-      "integrity": "sha512-JimOV+ystXTWMgZkLHYHf2w3oS28hxiH1FR0dkmJLc7GHzdGJoJAQtQS5DRppnabsRZwE2U1F6CuezVBgmsBBQ==",
+    "drizzle-kit@0.29.1_esbuild@0.19.12": {
+      "integrity": "sha512-OvHL8RVyYiPR3LLRE3SHdcON8xGXl+qMfR9uTTnFWBPIqVk/3NWYZPb7nfpM1Bhix3H+BsxqPyyagG7YZ+Z63A==",
       "dependencies": [
         "@drizzle-team/brocli",
         "@esbuild-kit/esm-loader",
@@ -572,8 +572,8 @@
         "esbuild-register"
       ]
     },
-    "drizzle-orm@0.36.4_@types+pg@8.11.10_pg@8.13.1": {
-      "integrity": "sha512-1OZY3PXD7BR00Gl61UUOFihslDldfH4NFRH2MbP54Yxi0G/PKn4HfO65JYZ7c16DeP3SpM3Aw+VXVG9j6CRSXA==",
+    "drizzle-orm@0.37.0_@types+pg@8.11.10_pg@8.13.1": {
+      "integrity": "sha512-AsCNACQ/T2CyZUkrBRUqFT2ibHJ9ZHz3+lzYJFFn3hnj7ylIeItMz5kacRG89uSE74nXYShqehr6u+6ks4JR1A==",
       "dependencies": [
         "@types/pg",
         "pg"
@@ -1080,8 +1080,8 @@
       "Database": {
         "dependencies": [
           "npm:@types/pg@8.11.10",
-          "npm:drizzle-kit@0.28.1",
-          "npm:drizzle-orm@0.36.4",
+          "npm:drizzle-kit@0.29.1",
+          "npm:drizzle-orm@0.37.0",
           "npm:pg@8.13.1"
         ]
       },
