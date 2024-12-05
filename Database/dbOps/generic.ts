@@ -56,12 +56,12 @@ export const gCreate = async <T extends PgTable> (
 
 // #region READ
 
-export const gRead = async (
-	callback: (query: typeof db["query"]) => unknown,
+export const gRead = async <R>(
+	callback: (query: typeof db["query"]) => Promise<R>,
 
 	// A transaction can be optionally used, and still be type-safe
 	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
-) => {
+): Promise<{ result: R | null, error: null | unknown }> => {
 	try {
 		// Read result
 		const result = await callback((tx || db).query)
