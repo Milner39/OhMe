@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-explicit-any
+
 // #region Imports
 
 // Import database tables
@@ -17,9 +19,13 @@ import {
 } from "drizzle-orm"
 // It is very frustrating that I cannot import all of these as one object
 
+// Import utils
+import { keepKeys } from "../Utils/objectUtils.ts"
+
 
 // Import types
-import { Table, Column, InferSelectModel, InferInsertModel } from "drizzle-orm"
+import { InferSelectModel, InferInsertModel } from "drizzle-orm"
+import { PgTableWithColumns, PgColumn } from "drizzle-orm/pg-core"
 
 // #endregion Imports
 
@@ -59,40 +65,90 @@ const getDbCredentials = () => {
 
 
 // Get unique columns
-const getUniqueColumns = <T extends Table>(
+const getUniqueColumns = <T extends PgTableWithColumns<any>>(
 	table: T
 ) => {
-	type ColumnNames = keyof InferSelectModel<T> extends keyof T ?
-		keyof InferSelectModel<T> : never
+	type Columns = Pick<T, keyof InferSelectModel<T>>
 
 	type UniqueColumns = {
-		[Key in ColumnNames]: T[Key] extends Column ? 
-		(
-			T[Key]["isUnique"] extends true ? 
-			T[Key] : (
-				T[Key]["primary"] extends true ? 
-				T[Key] : never
-			)
-		) : never
+		[Key in keyof Columns]: Columns[Key]["isUnique"] extends true ? 
+		Columns[Key] 
+		: Columns[Key]["primary"] extends true ? 
+			Columns[Key] : 
+			never
 	}
 
 
 	const uniqueColumns = Object.fromEntries(
-			Object.entries(table).filter(([_, column]) => {
-				return (
-					column instanceof Column &&
-					(column.isUnique|| column.primary)
-				)
-			}) as [keyof UniqueColumns, Column][]
-		) as UniqueColumns
+		Object.entries(table).filter(([_, column]) => {
+			return (
+				column instanceof PgColumn &&
+				(column.isUnique|| column.primary)
+			)
+		}) as [keyof UniqueColumns, PgColumn][]
+	) as UniqueColumns
 	
 	return uniqueColumns
 
-	/* 
+	/* WARNING:
 		The types returned from this function are incorrect
-		- Read documentation
-		- Ask for help online
+		There is no way to get only the unique columns from a table type since
+		columns are typed like this:
+			{
+				primary: boolean
+				isUnique: boolean
+				...
+			}
+
+		Rather than like this:
+			{
+				primary: true
+				isUnique: true
+				...
+			}
 	*/
+}
+
+
+// Get keep unique columns rule
+const getKeepUniqueColumnsRule = <T extends PgTableWithColumns<any>>(
+	table: T
+) => {
+	const uniqueColumns = getUniqueColumns
+		<T>
+		(table)
+
+	const uniqueColumnNames = (
+		Object.keys(uniqueColumns) as 
+		(keyof typeof uniqueColumns)[]
+	)
+
+	const keepUniqueColumnsEntries = (
+		uniqueColumnNames.map(columnName => [columnName, true]) as
+		[(keyof typeof uniqueColumns), true][]
+	)
+
+	const keepUniqueColumnsRule = (
+		Object.fromEntries(keepUniqueColumnsEntries) as
+		{ [K in keyof typeof uniqueColumns]: true }
+	)
+
+	return keepUniqueColumnsRule
+}
+
+
+// Filter only unique columns
+const filterUniqueColumns = <T extends PgTableWithColumns<any>>(
+	row: Partial<InferSelectModel<T>>,
+	table: T
+) => {
+	const keepUniqueColumnsRule = getKeepUniqueColumnsRule
+		<T>
+		(table)
+
+	return keepKeys
+		<typeof row, typeof keepUniqueColumnsRule>
+		(row, keepUniqueColumnsRule)
 }
 
 
@@ -112,6 +168,8 @@ const conditionalOperators = {
 export {
 	getDbCredentials,
 	getUniqueColumns,
+	getKeepUniqueColumnsRule,
+	filterUniqueColumns,
 	conditionalOperators,
 	tables
 }

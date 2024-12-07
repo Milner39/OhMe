@@ -4,14 +4,18 @@
 import db from "../dbConnection.ts"
 
 // Import utils
-import { conditionalOperators as cOps, tables } from "../dbUtils.ts"
+import { 
+	filterUniqueColumns,
+	conditionalOperators as cOps,
+	tables 
+} from "../dbUtils.ts"
 
 // Import generic CRUD operations
 import { gCreate, gRead } from "./generic.ts"
 
 
 // Import types
-import { InferSelectModel, InferInsertModel, SQLWrapper } from "drizzle-orm"
+import type { InferSelectModel, InferInsertModel, SQLWrapper } from "drizzle-orm"
 
 // #endregion Imports
 
@@ -155,9 +159,18 @@ export const read = async (
 
 // #endregion READ
 
-console.log(
-	await read({
-		// user: (user, { eq }) => eq(user.username, "Molly"),
-		email: (email, { eq }) => eq(email.address, "Molly@example.com")
-	})
-)
+const rUser = await read({
+	// user: (user, { eq }) => eq(user.username, "Molly"),
+	email: (email, { eq }) => eq(email.address, "Molly@example.com")
+})
+
+if (!rUser.result) {
+	console.error(rUser.error)
+}
+else {
+	const uniqueColumnValues = filterUniqueColumns
+		<typeof tables.user>
+		(rUser.result[0], tables.user)
+		
+	console.log(uniqueColumnValues)
+}
