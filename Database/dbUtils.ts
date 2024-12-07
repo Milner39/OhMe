@@ -17,6 +17,10 @@ import {
 } from "drizzle-orm"
 // It is very frustrating that I cannot import all of these as one object
 
+
+// Import types
+import { Table, Column, InferSelectModel, InferInsertModel } from "drizzle-orm"
+
 // #endregion Imports
 
 
@@ -54,6 +58,30 @@ const getDbCredentials = () => {
 }
 
 
+// Get unique columns
+const getUniqueColumns = <T extends Table>(
+	table: T
+) => {
+	/* 
+		Keys will always be column names since there is a check in the filter
+		to only return values that are columns.
+	*/
+	// @ts-ignore: reason above 
+	const uniqueColumns: {
+		[K in keyof InferSelectModel<T>]?: Column
+	} = Object.fromEntries(
+			Object.entries(table).filter(([_, column]) => {
+				if (column instanceof Column) {
+					return column.isUnique || column.primary
+				}
+			}
+		)
+	)
+
+	return uniqueColumns
+}
+
+
 // Conditional operators
 const conditionalOperators = {
 	eq, ne, gt, gte, lt, lte, exists, notExists, isNull, isNotNull,
@@ -69,6 +97,7 @@ const conditionalOperators = {
 
 export {
 	getDbCredentials,
+	getUniqueColumns,
 	conditionalOperators,
 	tables
 }
