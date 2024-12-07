@@ -28,20 +28,32 @@ type KKs_Target =
 	}
 
 type KKs_Rule = 
-	true | 
+	boolean | 
 	{ 
 		[K: string | number]: KKs_Rule
 	}
 
-const keepKeys = <Target extends KKs_Target>(
+type KKs_Filtered<Target, Rule> = Rule extends true ? 
+	Target : 
+	Rule extends Record<string | number | symbol, unknown> ?
+		{ 
+			[Key in keyof Rule & keyof Target]: 
+			KKs_Filtered<Target[Key], Rule[Key]> 
+		} :
+		never
+
+const keepKeys = <Target extends KKs_Target, Rule extends KKs_Rule>(
 	target: Target,
-	rule: KKs_Rule
-): Partial<Target> => {
+	rule: Rule
+): KKs_Filtered<Target, Rule> => {
 
 	// Base case, keep whole record
 	if (rule === true) {
 		// Return value not reference
-		return structuredClone(target)
+		return structuredClone(target) as KKs_Filtered<Target, Rule>
+	} 
+	else if (rule === false) {
+		return {} as KKs_Filtered<Target, Rule>
 	}
 
 	// If target is not a record
@@ -53,7 +65,7 @@ const keepKeys = <Target extends KKs_Target>(
 
 
 	// Define result record
-	const result: Partial<Target> = {}
+	const result: Record<string | number | symbol, unknown> = {}
 
 	// Iterate over rule keys
 	for (const key of Object.keys(rule)) {
@@ -62,24 +74,25 @@ const keepKeys = <Target extends KKs_Target>(
 		if (!(key in target)) {
 			continue
 		}
-		const sharedKey = key as keyof Target // To reduce code repetition
 
 		// If key should be kept
 		if (rule[key] === true) {
 			// Return value not reference
-			result[sharedKey] = structuredClone(target[sharedKey])
+			result[key] = structuredClone(target[key])
 		}
 
+		// If key value is a record
 		else if (isRecord(rule[key])) {
-			result[sharedKey] = keepKeys(
-				target[sharedKey],
-				rule[sharedKey]
-			) as Target[keyof Target]
+			// Recurse
+			const subTarget = target[key]
+			const subRule = rule[key]
+
+			result[key] = keepKeys(subTarget, subRule)
 		}
 
 	}
 
-	return result
+	return result as KKs_Filtered<Target, Rule>
 }
 
 // #endregion Utils
