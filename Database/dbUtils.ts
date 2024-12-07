@@ -62,23 +62,37 @@ const getDbCredentials = () => {
 const getUniqueColumns = <T extends Table>(
 	table: T
 ) => {
-	/* 
-		Keys will always be column names since there is a check in the filter
-		to only return values that are columns.
-	*/
-	// @ts-ignore: reason above 
-	const uniqueColumns: {
-		[K in keyof InferSelectModel<T>]?: Column
-	} = Object.fromEntries(
-			Object.entries(table).filter(([_, column]) => {
-				if (column instanceof Column) {
-					return column.isUnique || column.primary
-				}
-			}
-		)
-	)
+	type ColumnNames = keyof InferSelectModel<T> extends keyof T ?
+		keyof InferSelectModel<T> : never
 
+	type UniqueColumns = {
+		[Key in ColumnNames]: T[Key] extends Column ? 
+		(
+			T[Key]["isUnique"] extends true ? 
+			T[Key] : (
+				T[Key]["primary"] extends true ? 
+				T[Key] : never
+			)
+		) : never
+	}
+
+
+	const uniqueColumns = Object.fromEntries(
+			Object.entries(table).filter(([_, column]) => {
+				return (
+					column instanceof Column &&
+					(column.isUnique|| column.primary)
+				)
+			}) as [keyof UniqueColumns, Column][]
+		) as UniqueColumns
+	
 	return uniqueColumns
+
+	/* 
+		The types returned from this function are incorrect
+		- Read documentation
+		- Ask for help online
+	*/
 }
 
 
