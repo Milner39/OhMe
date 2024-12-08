@@ -9,6 +9,7 @@ import {
 	conditionalOperators as cOps,
 	tables 
 } from "../dbUtils.ts"
+import { tsObjectEntries, tsObjectKeys } from "../../Utils/objectUtils.ts"
 
 // Import generic CRUD operations
 import { gCreate, gRead } from "./generic.ts"
@@ -92,11 +93,11 @@ export const read = async (
 		user?: (
 			user: typeof tables.user._.columns,
 			operators: typeof cOps
-		) => SQLWrapper,
+		) => SQLWrapper | undefined,
 		email?: (
 			email: typeof tables.email._.columns,
 			operators: typeof cOps
-		) => SQLWrapper
+		) => SQLWrapper | undefined
 	}
 ) => {
 	try {
@@ -159,17 +160,89 @@ export const read = async (
 
 // #endregion READ
 
-const rUser = await read({
-	// user: (user, { eq }) => eq(user.username, "Molly"),
-	email: (email, { eq }) => eq(email.address, "Molly@example.com")
-})
 
-if (!rUser.result) {
-	console.error(rUser.error)
+
+// #region Read per unique column
+
+export const readPerUniqueColumn = async (
+	filters: Partial<{
+		user: Partial<InferSelectModel<typeof tables.user>>,
+		email: Partial<InferSelectModel<typeof tables.email>>
+	}>
+) => {
+	
+	// Reduce filter to unique columns
+	const userUniqueColumnValues = filters.user ? 
+		filterUniqueColumns(filters.user, tables.user) : 
+		{} as Partial<InferSelectModel<typeof tables.user>>
+
+	const emailUniqueColumnValues = filters.email ?
+		filterUniqueColumns(filters.email, tables.email) :
+		{} as Partial<InferSelectModel<typeof tables.email>>
+
+	
+	// Remove columns with null values since they are not unique
+	for (const column of tsObjectKeys(userUniqueColumnValues)) {
+		if (!column) continue
+
+		if (userUniqueColumnValues[column] === null) {
+			delete userUniqueColumnValues[column]
+		}
+	}
+
+	for (const column of tsObjectKeys(emailUniqueColumnValues)) {
+		if (!column) continue
+
+		if (emailUniqueColumnValues[column] === null) {
+			delete emailUniqueColumnValues[column]
+		}
+	}
+
+
+	// Read users
+	const rUser = await read({
+		user: (user, { or, eq }) => or(
+			...(tsObjectEntries(userUniqueColumnValues)
+				.map((column) => {
+					if (!column) {
+						return undefined
+					}
+
+					// @ts-ignore:
+					return eq(
+						user[column[0]], 
+						column[1]
+					)
+				}
+			)
+		)),
+		email: (email, { or, eq }) => or(
+			...(tsObjectEntries(emailUniqueColumnValues)
+				.map((column) => {
+					if (!column) {
+						return undefined
+					}
+
+					// @ts-ignore:
+					return eq(
+						email[column[0]], 
+						column[1]
+					)
+				}
+			)
+		))
+	})
+
+	return rUser
 }
-else {
-	const uniqueColumnValues = filterUniqueColumns(rUser.result[0], tables.user)
-		
-	console.log(rUser.result[0])
-	console.log(uniqueColumnValues)
-}
+
+// #endregion Read per unique column
+
+console.log(await readPerUniqueColumn({
+	user: {
+		username: "Molly",
+	},
+	email: {
+		address: "Finn@example.com"
+	}
+}))

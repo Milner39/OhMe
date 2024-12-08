@@ -20,6 +20,31 @@ const isRecord = (
 }
 
 
+// Type safe Object.entries
+const tsObjectEntries = <T extends object>(
+	object: T
+): 
+	{
+		[K in keyof T]: [K, Exclude<T[K], undefined>]
+	}[keyof T][] => 
+{
+	// @ts-ignore:
+	return Object.entries(object)
+}
+
+// Type safe Object.keys
+const tsObjectKeys = <T extends object>(
+	object: T
+): 
+	{
+		[K in keyof T]: K
+	}[keyof T][] => 
+{
+	// @ts-ignore:
+	return Object.keys(object)
+}
+
+
 // Keep keys
 type KKs_Target = 
 	unknown | 
@@ -103,6 +128,8 @@ const keepKeys = <Target extends KKs_Target, Rule extends KKs_Rule>(
 
 export {
 	isRecord,
+	tsObjectEntries,
+	tsObjectKeys,
 	keepKeys
 }
 
