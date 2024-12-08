@@ -114,9 +114,7 @@ const getUniqueColumns = <T extends PgTableWithColumns<any>>(
 const getKeepUniqueColumnsRule = <T extends PgTableWithColumns<any>>(
 	table: T
 ) => {
-	const uniqueColumns = getUniqueColumns
-		<T>
-		(table)
+	const uniqueColumns = getUniqueColumns(table)
 
 	const uniqueColumnNames = (
 		Object.keys(uniqueColumns) as 

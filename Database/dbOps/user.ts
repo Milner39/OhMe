@@ -168,9 +168,8 @@ if (!rUser.result) {
 	console.error(rUser.error)
 }
 else {
-	const uniqueColumnValues = filterUniqueColumns
-		<typeof tables.user>
-		(rUser.result[0], tables.user)
+	const uniqueColumnValues = filterUniqueColumns(rUser.result[0], tables.user)
 		
+	console.log(rUser.result[0])
 	console.log(uniqueColumnValues)
 }
