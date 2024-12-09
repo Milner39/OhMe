@@ -161,8 +161,8 @@ export const read = async (
 
 // #region MISC
 
-// Find unique column collisons
-const findUniqueCollisons = async (
+// Find unique column collisions
+const findUniqueCollisions = async (
 	values: Partial<{
 		user: Partial<InferSelectModel<typeof tables.user>>,
 		email: Partial<InferSelectModel<typeof tables.email>>
@@ -180,7 +180,7 @@ const findUniqueCollisons = async (
 	}
 > => {
 	try {
-		// Get collisons from user values
+		// Get collisions from user values
 		const {
 			result: takenUserColumns,
 			error: rUserError
@@ -234,7 +234,7 @@ const findUniqueCollisons = async (
 // #endregion MISC
 
 
-console.log(await findUniqueCollisons(
+console.log(await findUniqueCollisions(
 	{
 		user: {
 			username: "Molly"

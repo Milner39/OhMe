@@ -171,7 +171,7 @@ export const gFindUniqueCollisions = async <
 			return rows
 		}, tx)
 
-		if (rError) throw new Error("Failed while finding unique collisons")
+		if (rError) throw new Error("Failed while finding unique collisions")
 
 		
 		// Find unique columns that have been taken
