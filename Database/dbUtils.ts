@@ -24,7 +24,7 @@ import { keepKeys } from "../Utils/objectUtils.ts"
 
 
 // Import types
-import { InferSelectModel, InferInsertModel } from "drizzle-orm"
+import { InferSelectModel } from "drizzle-orm"
 import { PgTableWithColumns, PgColumn } from "drizzle-orm/pg-core"
 
 // #endregion Imports
