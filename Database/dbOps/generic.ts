@@ -7,7 +7,10 @@ import db from "../dbConnection.ts"
 
 // Import utils
 import { getTableName } from "drizzle-orm"
-import { filterUniqueColumns } from "../dbUtils.ts"
+import {
+	conditionalOperators as cOps,
+	filterUniqueColumns
+} from "../dbUtils.ts"
 import { tsObjectEntries, tsObjectKeys } from "../../Utils/objectUtils.ts"
 
 
@@ -43,7 +46,6 @@ export const gCreate = async <T extends PgTableWithColumns<any>> (
 	}
 
 	catch (error) {
-		console.error(error)
 		return {
 			result: null,
 			error: error
@@ -88,7 +90,6 @@ export const gRead = async <R>(
 	}
 
 	catch (error) {
-		console.error(error)
 		return {
 			result: null,
 			error: error
@@ -159,9 +160,9 @@ export const gFindUniqueCollisions = async <
 				getTableName(table)
 			].findMany({
 				// @ts-ignore:
-				where: (row, { or, eq }) => or(
+				where: (row) => cOps.or(
 					...(tsObjectEntries(uniqueColumnValues)
-						.map((column) => eq(
+						.map((column) => cOps.eq(
 							row[column[0]],
 							column[1]
 						))
