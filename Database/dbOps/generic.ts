@@ -17,6 +17,7 @@ import { tsObjectEntries, tsObjectKeys } from "../../Utils/objectUtils.ts"
 // Import types
 import type { PgTableWithColumns } from "drizzle-orm/pg-core"
 import { InferSelectModel, InferInsertModel } from "drizzle-orm"
+import type { MatchListLength } from "../../Utils/typeUtils.ts"
 
 // #endregion Imports
 
@@ -24,20 +25,30 @@ import { InferSelectModel, InferInsertModel } from "drizzle-orm"
 
 // #region CREATE
 
-export const gCreate = async <T extends PgTableWithColumns<any>> (
-	// The type of `values` is dependent on the table passed in
+export const gCreate = async <
+	T extends PgTableWithColumns<any>,
+	V extends InferInsertModel<T>[],
+> (
 	table: T,
-	values: InferInsertModel<T>,
+	values: V,
 
 	// A transaction can be optionally used, and still be type-safe
 	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
-) => {
+): Promise<
+	{
+		result: MatchListLength<V, InferSelectModel<T>>,
+		error: null
+	} | {
+		result: null,
+		error: unknown
+	}
+> => {
 	try {
 		// Create record
-		const record = (await (tx || db).insert(table) // In transaction or db
+		const record = (await (tx || db).insert(table)
 			.values(values)
 			.returning()
-		)[0] as InferSelectModel<T> // Infer the type of the record
+		) as MatchListLength<V, InferSelectModel<T>>
 
 		return {
 			result: record,
@@ -116,6 +127,53 @@ export const gRead = async <R>(
 
 // #region DELETE
 
+export const gDelete = async <T extends PgTableWithColumns<any>> (
+	table: T,
+	where: Partial<InferSelectModel<T>>,
+
+	// A transaction can be optionally used, and still be type-safe
+	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+): Promise<
+	{
+		result: InferSelectModel<T>[],
+		error: null
+	} | {
+		result: null,
+		error: unknown
+	}
+> => {
+	try {
+		// Delete record
+		const record = (await (tx || db).delete(table)
+			.where(cOps.and(
+				...(tsObjectEntries(where)
+					.map((column) => {
+						if (!column) return
+
+						return cOps.eq(
+							table[column[0]],
+							column[1]
+						)
+					})
+				)
+			))
+			.returning()
+		) as InferSelectModel<T>[]
+
+		return {
+			result: record,
+			error: null
+		}
+	}
+
+	catch (error) {
+		return {
+			result: null,
+			error: error
+		}
+	}
+}
+
 // #endregion DELETE
 
 
@@ -123,11 +181,11 @@ export const gRead = async <R>(
 
 // Find unique collisions
 export const gFindUniqueCollisions = async <
+	T extends PgTableWithColumns<any>,
 	V extends Partial<InferSelectModel<T>>,
-	T extends PgTableWithColumns<any>
 > (
-	values: V,
 	table: T,
+	values: V,
 
 	// A transaction can be optionally used, and still be type-safe
 	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
@@ -166,7 +224,8 @@ export const gFindUniqueCollisions = async <
 							record[column[0]],
 							column[1]
 						))
-				))
+					)
+				)
 			}) as InferSelectModel<T>[]
 
 			return records
@@ -197,7 +256,8 @@ export const gFindUniqueCollisions = async <
 			result: takenUniqueColumns,
 			error: null
 		}
-	} 
+	}
+
 	catch (error) {
 		return {
 			result: null,

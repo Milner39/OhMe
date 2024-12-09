@@ -8,6 +8,7 @@ import {
 	conditionalOperators as cOps,
 	tables 
 } from "../dbUtils.ts"
+import { asLiteralTuple } from "../../Utils/typeUtils.ts"
 
 // Import generic CRUD operations
 import { gCreate, gRead, gFindUniqueCollisions } from "./generic.ts"
@@ -37,25 +38,28 @@ export const create = async (
 	
 			// Create user
 			const { 
-				result: user,
+				result: users,
 				error: cUserError 
-			} = await gCreate(tables.user, values.user, tx)
+			} = await gCreate(tables.user, asLiteralTuple([values.user]), tx)
 	
-			if (cUserError || !user) {
+			if (cUserError || !users) {
 				throw new Error("Failed to create user")
 			}
 
+			const user = users[0]
+
 	
+
 			// Create email
 			const {
-				result: email,
+				result: emails,
 				error: cEmailError
-			} = await gCreate(tables.email, {
+			} = await gCreate(tables.email, asLiteralTuple([{
+				userId: user.id,
 				...values.email,
-				userId: user.id
-			}, tx)
+			}]), tx)
 	
-			if (cEmailError || !email) {
+			if (cEmailError || !emails) {
 				throw new Error("Failed to create email for user")
 			}
 
@@ -64,7 +68,7 @@ export const create = async (
 			return {
 				result: {
 					...user,
-					email: email
+					email: emails[0]
 				},
 				error: null
 			}
@@ -162,7 +166,7 @@ export const read = async (
 // #region MISC
 
 // Find unique column collisions
-const findUniqueCollisions = async (
+export const findUniqueCollisions = async (
 	values: Partial<{
 		user: Partial<InferSelectModel<typeof tables.user>>,
 		email: Partial<InferSelectModel<typeof tables.email>>
@@ -185,8 +189,8 @@ const findUniqueCollisions = async (
 			result: takenUserColumns,
 			error: rUserError
 		} = values.user ? await gFindUniqueCollisions(
-			values.user,
-			tables.user
+			tables.user,
+			values.user
 		) : {
 			result: [],
 			error: null
@@ -201,8 +205,8 @@ const findUniqueCollisions = async (
 			result: takenEmailColumns,
 			error: rEmailError
 		} = values.email ? await gFindUniqueCollisions(
-			values.email,
-			tables.email
+			tables.email,
+			values.email
 		) : {
 			result: [],
 			error: null
@@ -232,15 +236,3 @@ const findUniqueCollisions = async (
 }
 
 // #endregion MISC
-
-
-console.log(await findUniqueCollisions(
-	{
-		user: {
-			username: "Molly"
-		},
-		email: {
-			address: "Finn@example.com"
-		}
-	}
-))
