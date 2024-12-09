@@ -137,12 +137,12 @@ const getKeepUniqueColumnsRule = <T extends PgTableWithColumns<any>>(
 
 // Filter only unique columns
 const filterUniqueColumns = <T extends PgTableWithColumns<any>>(
-	row: Partial<InferSelectModel<T>>,
+	record: Partial<InferSelectModel<T>>,
 	table: T
 ) => {
 	const keepUniqueColumnsRule = getKeepUniqueColumnsRule(table)
 
-	return keepKeys(row, keepUniqueColumnsRule)
+	return keepKeys(record, keepUniqueColumnsRule)
 }
 
 

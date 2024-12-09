@@ -151,25 +151,25 @@ export const gFindUniqueCollisions = async <
 			}
 		}
 
-		// Find rows with given unique columns
+		// Find records with given unique columns
 		const {
-			result: rows,
+			result: records,
 			error: rError
 		} = await gRead(async (query) => {
-			const rows = await query[
+			const records = await query[
 				getTableName(table)
 			].findMany({
 				// @ts-ignore:
-				where: (row) => cOps.or(
+				where: (record) => cOps.or(
 					...(tsObjectEntries(uniqueColumnValues)
 						.map((column) => cOps.eq(
-							row[column[0]],
+							record[column[0]],
 							column[1]
 						))
 				))
 			}) as InferSelectModel<T>[]
 
-			return rows
+			return records
 		}, tx)
 
 		if (rError) throw new Error("Failed while finding unique collisions")
@@ -181,11 +181,11 @@ export const gFindUniqueCollisions = async <
 			(keyof typeof uniqueColumnValues | undefined)[] =
 			[]
 		
-		if (rows && rows.length > 0) {
+		if (records && records.length > 0) {
 			for (const column of tsObjectKeys(uniqueColumnValues)) {
-				for (const row of rows) {
+				for (const record of records) {
 					// @ts-ignore:
-					if (row[column] === uniqueColumnValues[column]) {
+					if (record[column] === uniqueColumnValues[column]) {
 						takenUniqueColumns.push(column)
 					}
 				}
@@ -207,10 +207,10 @@ export const gFindUniqueCollisions = async <
 
 	/*
 		A generic, type-safe subroutine to:
-			- take in values from a row of a table.
+			- take in values from a record of a table.
 			- filter the values down to just contain those of unique columns.
-			- finds rows from the db with ANY of those column values.
-			- iterate through rows to find which column values are already taken.
+			- finds records from the db with ANY of those column values.
+			- iterate through records to find which column values are already taken.
 			- return the taken column names if successful.
 			- return an error if unsuccessful.
 	*/

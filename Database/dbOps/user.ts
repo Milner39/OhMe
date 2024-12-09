@@ -111,7 +111,7 @@ export const read = async (
 				where: (email) => cOps.and(
 					(filters.email) ? filters.email(email, cOps) : undefined
 				)
-			})).map(row => row.userId) : []
+			})).map(record => record.userId) : []
 
 			// Read users
 			const users = await query.user.findMany({
