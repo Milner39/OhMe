@@ -78,13 +78,13 @@ class DynamicQuery<
 
 
 	filter = (
-		filter?: (
+		filter: (
 			columns: typeof this["columns"],
 			conditionalOperators: typeof cOps,
 		) => SQL | undefined
 	) => {
 		this.query = this.query
-			.where(filter?.(this.columns, cOps))
+			.where(filter(this.columns, cOps))
 
 		return this
 	}
