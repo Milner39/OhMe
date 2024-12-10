@@ -3,19 +3,28 @@
 // Import db connection
 import db from "../dbConnection.ts"
 
-// Import utils
-import { 
-	conditionalOperators as cOps,
-	tables 
-} from "../dbUtils.ts"
-import { asLiteralTuple } from "../../Utils/typeUtils.ts"
-
 // Import generic CRUD operations
 import { gCreate, gRead, gFindUniqueCollisions } from "./generic.ts"
 
 
+// Import utils
+import { 
+	tables,
+	conditionalOperators as cOps,
+} from "../dbUtils.ts"
+
+
+
 // Import types
-import type { InferSelectModel, InferInsertModel, SQLWrapper } from "drizzle-orm"
+import type { 
+	InferInsertModel,
+	InferSelectModel,
+	SQLWrapper
+} from "drizzle-orm"
+
+import {
+	asLiteralTuple
+} from "../../Utils/typeUtils.ts"
 
 // #endregion Imports
 
