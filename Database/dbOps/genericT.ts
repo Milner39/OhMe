@@ -87,11 +87,11 @@ class DynamicQuery<
 		return this
 	}
 
-	execute = () => {
+	execute = async () => {
 		const query = this.query
 		this.query = this.#createBaseQuery()
 
-		return query
+		return await query
 	}
 }
 
