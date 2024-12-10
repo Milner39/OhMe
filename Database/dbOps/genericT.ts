@@ -58,7 +58,7 @@ class DynamicQuery<
 	}
 
 
-	findMany = (
+	filter = (
 		filter?: (
 			columns: typeof this["columns"],
 			conditionalOperators: typeof cOps,
@@ -103,11 +103,10 @@ const { user, email } = tables
 const query = new DynamicQuery(user)
 
 query
-.findMany()
 .innerJoin(email, (user, cOps) => cOps.and(
 	cOps.eq(user.id, email.userId),
 	cOps.eq(email.address, "Molly@example.com")
 ))
 
 console.log(await query.execute())
-console.log(await query.execute())
+//console.log(await query.execute())
