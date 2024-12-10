@@ -35,6 +35,8 @@ import type {
 
 
 
+
+
 // #region Dynamic Query Class
 
 // Class to make searching the database easier
@@ -123,6 +125,8 @@ class DynamicQuery<
 
 
 
+
+
 // #region Generic Operations
 
 // #region READ
@@ -161,6 +165,9 @@ export const gFindMany = async <
 		}
 	}
 }
+
+
+
 
 
 export const gFindOne = async <
@@ -206,6 +213,9 @@ export const gFindOne = async <
 // #endregion READ
 
 
+
+
+
 // #region CREATE
 
 export const gCreate = async <
@@ -247,6 +257,9 @@ export const gCreate = async <
 }
 
 // #endregion CREATE
+
+
+
 
 
 // #region UPDATE
@@ -292,6 +305,9 @@ export const gUpdateMany = async <
 		}
 	}
 }
+
+
+
 
 
 export const gUpdateOne = async <
@@ -348,6 +364,9 @@ export const gUpdateOne = async <
 // #endregion UPDATE
 
 
+
+
+
 // #region DELETE
 
 export const gDeleteMany = async <
@@ -389,6 +408,9 @@ export const gDeleteMany = async <
 		}
 	}
 }
+
+
+
 
 
 export const gDeleteOne = async <
