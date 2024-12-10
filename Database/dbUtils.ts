@@ -20,7 +20,7 @@ import {
 // It is very frustrating that I cannot import all of these as one object
 
 // Import utils
-import { keepKeys } from "../Utils/objectUtils.ts"
+import { keepKeys, tsObjectEntries, tsObjectKeys } from "../Utils/objectUtils.ts"
 
 
 // Import types
@@ -80,10 +80,13 @@ const getUniqueColumns = <T extends PgTableWithColumns<any>>(
 
 
 	const uniqueColumns = Object.fromEntries(
-		Object.entries(table).filter(([_, column]) => {
+		tsObjectEntries(table).filter(([_, column]) => {
 			return (
-				column instanceof PgColumn &&
-				(column.isUnique|| column.primary)
+				column as any instanceof PgColumn && 
+				(
+					column.isUnique || 
+					column.primary
+				)
 			)
 		}) as [keyof UniqueColumns, PgColumn][]
 	) as UniqueColumns
@@ -116,15 +119,10 @@ const getKeepUniqueColumnsRule = <T extends PgTableWithColumns<any>>(
 ) => {
 	const uniqueColumns = getUniqueColumns(table)
 
-	const uniqueColumnNames = (
-		Object.keys(uniqueColumns) as 
-		(keyof typeof uniqueColumns)[]
-	)
+	const uniqueColumnNames = tsObjectKeys(uniqueColumns)
 
-	const keepUniqueColumnsEntries = (
-		uniqueColumnNames.map(columnName => [columnName, true]) as
-		[(keyof typeof uniqueColumns), true][]
-	)
+	const keepUniqueColumnsEntries = uniqueColumnNames
+		.map(columnName => [columnName, true])
 
 	const keepUniqueColumnsRule = (
 		Object.fromEntries(keepUniqueColumnsEntries) as
