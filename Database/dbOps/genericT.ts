@@ -441,7 +441,7 @@ export const gDeleteOne = async <
 				InferSelectModel<Table>[]
 
 			if (rows.length !== 1) {
-				throw new Error("Failed to update one record")
+				throw new Error("Failed to delete one record")
 			}
 
 			return rows[0]
