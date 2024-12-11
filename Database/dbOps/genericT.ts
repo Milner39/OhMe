@@ -96,12 +96,17 @@ class DynamicQuery<
 		foreignTable: ForeignTable,
 		on: (
 			columns: typeof this["columns"],
+			foreignColumns: ReturnType<typeof getTableColumns<ForeignTable>>,
 			conditionalOperators: typeof cOps,
 		) => SQL | undefined
 	) => {
 		// @ts-ignore:
 		this.query = this.query
-			.innerJoin(foreignTable, on(this.columns, cOps))
+			.innerJoin(foreignTable, on(
+				this.columns, 
+				getTableColumns(foreignTable),
+				cOps
+			))
 
 		return this
 	}
@@ -131,7 +136,7 @@ class DynamicQuery<
 
 // #region READ
 
-export const gFindMany = async <
+export const gReadMany = async <
 	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
 > (
@@ -170,7 +175,7 @@ export const gFindMany = async <
 
 
 
-export const gFindOne = async <
+export const gReadOne = async <
 	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
 > (
@@ -193,7 +198,7 @@ export const gFindOne = async <
 			.execute()
 
 		if (rows.length !== 1) {
-			throw new Error("Failed to find one record")
+			throw new Error("Failed to read one record")
 		}
 
 		return {

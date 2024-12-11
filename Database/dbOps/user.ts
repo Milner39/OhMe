@@ -4,10 +4,22 @@
 import db from "../dbConnection.ts"
 
 // Import generic CRUD operations
-import { gCreate, gRead, gFindUniqueCollisions } from "./generic.ts"
+import { 
+	gCreate,
+	gReadMany,
+	gReadOne,
+	gUpdateMany,
+	gUpdateOne,
+	gDeleteMany,
+	gDeleteOne
+} from "./genericT.ts"
 
 
 // Import utils
+import {
+	getTableColumns,
+} from "drizzle-orm"
+
 import { 
 	tables,
 	conditionalOperators as cOps,
@@ -19,10 +31,11 @@ import {
 import type { 
 	InferInsertModel,
 	InferSelectModel,
-	SQLWrapper
+	SQL
 } from "drizzle-orm"
 
 import {
+	NotNull,
 	asLiteralTuple
 } from "../../Utils/typeUtils.ts"
 
@@ -30,28 +43,45 @@ import {
 
 
 
+// Get tables used in this file
+const { 
+	user: userT, 
+	email: emailT 
+} = tables
+
 // #region CREATE
 
 export const create = async (
 	// Infer the types of the tables
 	values: {
-		user: InferInsertModel<typeof tables.user>
+		user: InferInsertModel<typeof userT>
 
 		// Omit `userId` since it will be found in the user record
-		email: Omit<InferInsertModel<typeof tables.email>, "userId">
+		email: Omit<InferInsertModel<typeof emailT>, "userId">
 	}
-) => {
+): Promise<
+	{
+		result: {
+			user: InferSelectModel<typeof userT>,
+			email: InferSelectModel<typeof emailT>
+		},
+		error: null
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
 	try {
 		// Create a transaction
 		const txResult = await db.transaction(async (tx) => {
 	
 			// Create user
-			const { 
+			const {
 				result: users,
-				error: cUserError 
+				error: cUserError
 			} = await gCreate(tables.user, asLiteralTuple([values.user]), tx)
 	
-			if (cUserError || !users) {
+			if (cUserError !== null) {
 				throw new Error("Failed to create user")
 			}
 
@@ -68,16 +98,18 @@ export const create = async (
 				...values.email,
 			}]), tx)
 	
-			if (cEmailError || !emails) {
+			if (cEmailError !== null) {
 				throw new Error("Failed to create email for user")
 			}
+
+			const email = emails[0]
 
 
 			// Return combined records
 			return {
 				result: {
-					...user,
-					email: emails[0]
+					user: user,
+					email: email
 				},
 				error: null
 			}
@@ -89,7 +121,7 @@ export const create = async (
 	catch (error) {
 		return {
 			result: null,
-			error: error
+			error: error as NotNull
 		}
 	}
 }
@@ -99,58 +131,46 @@ export const create = async (
 
 // #region READ
 
-export const read = async (
+export const readMany = async (
 	filters: {
 		user?: (
-			user: typeof tables.user._.columns,
+			user: ReturnType<typeof getTableColumns<typeof userT>>,
 			operators: typeof cOps
-		) => SQLWrapper | undefined,
+		) => SQL | undefined,
 		email?: (
-			email: typeof tables.email._.columns,
+			user: ReturnType<typeof getTableColumns<typeof userT>>,
+			email: ReturnType<typeof getTableColumns<typeof emailT>>,
 			operators: typeof cOps
-		) => SQLWrapper | undefined
+		) => SQL | undefined
 	}
-) => {
+): Promise<
+	{
+		result: unknown[],
+		error: null
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
 	try {
 		// Read users
 		const {
 			result: users,
 			error: rUserError
-		} = await gRead(async (query) => {
+		} = await gReadMany(userT, (query) => {
 
-			// Read emails
-			const emailIds = (filters.email) ? (await query.email.findMany({
-				columns: { userId: true },
-				where: (email) => cOps.and(
-					(filters.email) ? filters.email(email, cOps) : undefined
-				)
-			})).map(record => record.userId) : []
+			return query
+				// Filter user columns
+				.filter((user, cOps) => filters.user?.(user, cOps))
 
-			// Read users
-			const users = await query.user.findMany({
-				where: (user) => cOps.and(
-
-					// user filters
-					(filters.user) ? filters.user(user, cOps) : undefined,
-					
-
-					// Relational filters
-					// email
-					(filters.email) ? cOps.inArray(
-						user.id,
-						emailIds
-					) : undefined
-				),
-
-				with: {
-					email: true
-				}
-			})
-
-			return users
+				// Filter relation columns
+				.innerJoin(emailT, (user, email, cOps) => cOps.and(
+					cOps.eq(user.id, email.userId),
+					filters.email?.(userT, email, cOps)
+				))
 		})
 
-		if (rUserError) {
+		if (rUserError !== null) {
 			throw new Error("Failed to read users")
 		}
 
@@ -164,10 +184,14 @@ export const read = async (
 	catch (error) {
 		return {
 			result: null,
-			error: error
+			error: error as NotNull
 		}
 	}
 }
+
+console.log(await readMany({
+	user: (user, { eq }) => eq(user.username, "Finn")
+}))
 
 // #endregion READ
 
