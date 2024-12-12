@@ -6,7 +6,10 @@
 
 // #region Utils
 
-// Is record
+/** isRecord
+ * 
+ * Check if `target` is a record
+ */
 const isRecord = (
 	target: unknown
 ): target is Record<
@@ -20,32 +23,50 @@ const isRecord = (
 }
 
 
-// Type safe Object.entries
-const tsObjectEntries = <T extends object>(
-	object: T
+/** tsObjectEntries
+ * 
+ * Type safe Object.entries
+ * 
+ * Returns an array of key-value pairs from an object whilst retaining the type 
+ * of the keys and values in the object.
+ */
+const tsObjectEntries = <
+	Target extends object
+> (
+	target: Target
 ): 
 	{
-		[K in keyof T]: [K, Exclude<T[K], undefined>]
-	}[keyof T][] => 
+		[Key in keyof Target]: [Key, Exclude<Target[Key], undefined>]
+	}[keyof Target][] =>
 {
 	// @ts-ignore:
-	return Object.entries(object)
+	return Object.entries(target)
 }
 
-// Type safe Object.keys
-const tsObjectKeys = <T extends object>(
-	object: T
+/** tsObjectKeys
+ * 
+ * Type safe Object.keys
+ * 
+ * Returns an array of keys from an object whilst retaining the type of the 
+ * keys in the object.
+ */
+const tsObjectKeys = <
+	Target extends object
+> (
+	target: Target
 ): 
 	{
-		[K in keyof T]: K
-	}[keyof T][] => 
+		[Key in keyof Target]: Key
+	}[keyof Target][] => 
 {
 	// @ts-ignore:
-	return Object.keys(object)
+	return Object.keys(target)
 }
 
 
-// Keep keys
+
+// #region Keep keys
+
 type KKs_Target = 
 	unknown | 
 	{
@@ -54,7 +75,7 @@ type KKs_Target =
 
 type KKs_Rule = 
 	boolean | 
-	{ 
+	{
 		[K: string | number]: KKs_Rule
 	}
 
@@ -67,7 +88,17 @@ type KKs_Filtered<Target, Rule> = Rule extends true ?
 		} :
 		never
 
-const keepKeys = <Target extends KKs_Target, Rule extends KKs_Rule>(
+
+/** keepKeys
+ * 
+ * Returns an record based on the key-value pairs in the `target` record.
+ * 
+ * Key-value pairs are omitted if the key is not in the `rule` record.
+ */
+const keepKeys = <
+	Target extends KKs_Target,
+	Rule extends KKs_Rule
+> (
 	target: Target,
 	rule: Rule
 ): KKs_Filtered<Target, Rule> => {
@@ -81,7 +112,7 @@ const keepKeys = <Target extends KKs_Target, Rule extends KKs_Rule>(
 		return {} as KKs_Filtered<Target, Rule>
 	}
 
-	// If target is not a record
+	// If `target` is not a record
 	if (!isRecord(target)) {
 		throw new Error(
 			`Cannot filter keys of target that is not a record: ${target}`
@@ -119,6 +150,8 @@ const keepKeys = <Target extends KKs_Target, Rule extends KKs_Rule>(
 
 	return result as KKs_Filtered<Target, Rule>
 }
+
+// #endregion Keep keys
 
 // #endregion Utils
 
