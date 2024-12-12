@@ -20,12 +20,16 @@ import {
 // It is very frustrating that I cannot import all of these as one object
 
 // Import utils
+import {
+	getTableColumns,
+} from "drizzle-orm"
+
 import { keepKeys, tsObjectEntries, tsObjectKeys } from "../Utils/objectUtils.ts"
 
 
 // Import types
 import { InferSelectModel } from "drizzle-orm"
-import { PgTableWithColumns, PgColumn } from "drizzle-orm/pg-core"
+import { PgTableWithColumns } from "drizzle-orm/pg-core"
 
 // #endregion Imports
 
@@ -65,10 +69,10 @@ const getDbCredentials = () => {
 
 
 // Get unique columns
-const getUniqueColumns = <T extends PgTableWithColumns<any>>(
-	table: T
+const getUniqueColumns = <Table extends PgTableWithColumns<any>>(
+	table: Table
 ) => {
-	type Columns = Pick<T, keyof InferSelectModel<T>>
+	type Columns = ReturnType<typeof getTableColumns<Table>>
 
 	type UniqueColumns = {
 		[Key in keyof Columns]: Columns[Key]["isUnique"] extends true ? 
@@ -78,17 +82,16 @@ const getUniqueColumns = <T extends PgTableWithColumns<any>>(
 			never
 	}
 
+	
+	const columns: Columns = getTableColumns(table)
 
 	const uniqueColumns = Object.fromEntries(
-		tsObjectEntries(table).filter(([_, column]) => {
+		tsObjectEntries(columns).filter(([_, column]) => {
 			return (
-				column as any instanceof PgColumn && 
-				(
-					column.isUnique || 
-					column.primary
-				)
+				column.isUnique || 
+				column.primary
 			)
-		}) as [keyof UniqueColumns, PgColumn][]
+		})
 	) as UniqueColumns
 	
 	return uniqueColumns
