@@ -69,7 +69,9 @@ const getDbCredentials = () => {
 
 
 // Get unique columns
-const getUniqueColumns = <Table extends PgTableWithColumns<any>>(
+const getUniqueColumns = <
+	Table extends PgTableWithColumns<any>
+> (
 	table: Table
 ) => {
 	type Columns = ReturnType<typeof getTableColumns<Table>>
@@ -117,7 +119,9 @@ const getUniqueColumns = <Table extends PgTableWithColumns<any>>(
 
 
 // Get keep unique columns rule
-const getKeepUniqueColumnsRule = <Table extends PgTableWithColumns<any>>(
+const getKeepUniqueColumnsRule = <
+	Table extends PgTableWithColumns<any>
+> (
 	table: Table
 ) => {
 	const uniqueColumns = getUniqueColumns(table)
@@ -137,13 +141,23 @@ const getKeepUniqueColumnsRule = <Table extends PgTableWithColumns<any>>(
 
 
 // Filter only unique columns
-const filterUniqueColumns = <Table extends PgTableWithColumns<any>>(
-	record: Partial<InferSelectModel<Table>>,
+const filterUniqueColumns = <
+	Table extends PgTableWithColumns<any>
+> (
+	values: Partial<InferSelectModel<Table>>,
 	table: Table
 ) => {
 	const keepUniqueColumnsRule = getKeepUniqueColumnsRule(table)
 
-	return keepKeys(record, keepUniqueColumnsRule)
+	// Remove columns with null values since they are not unique
+	const recordWithoutNull = Object.fromEntries(
+		// @ts-ignore:
+		tsObjectEntries(values).filter(([_, value]) => {
+			return value !== null
+		})
+	)
+
+	return keepKeys(recordWithoutNull, keepUniqueColumnsRule)
 }
 
 

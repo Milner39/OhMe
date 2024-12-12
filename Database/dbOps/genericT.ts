@@ -11,8 +11,13 @@ import {
 
 import {
 	conditionalOperators as cOps,
+	filterUniqueColumns
 } from "../dbUtils.ts"
 
+import {
+	tsObjectEntries,
+	tsObjectKeys
+} from "../../Utils/objectUtils.ts";
 
 
 // Import types
@@ -468,5 +473,108 @@ export const gDeleteOne = async <
 }
 
 // #endregion DELETE
+
+
+
+
+
+// #endregion MISC
+
+export const gFindUniqueCollisions = async <
+	// deno-lint-ignore no-explicit-any
+	Table extends PgTableWithColumns<any>,
+	Values extends Partial<InferSelectModel<Table>>
+> (
+	table: Table,
+	values: Values,
+
+	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+): Promise<
+	{
+		result: (keyof Values | undefined)[],
+		error: null
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
+	try {
+		// Reduce values to just ones in unique columns
+		const uniqueColumnValues = filterUniqueColumns(values, table)
+
+		// Return early if no unique columns
+		if (tsObjectEntries(uniqueColumnValues).length === 0) return {
+			result: [],
+			error: null
+		}
+
+
+		// Find records with any of the unique column values
+		const {
+			result: records,
+			error: rError
+		} = await gReadMany(table, (query) => {
+			query.filter((columns, { or, eq}) => or(
+
+				// Add an equality check for each unique column
+				...(tsObjectKeys(uniqueColumnValues)
+					.map((columnName) => eq(
+						columns[columnName],
+						uniqueColumnValues[columnName]
+					))
+				)
+
+				/* 
+					The record will be returned if any of the unique
+					columns match
+				*/
+			))
+
+			return query
+		}, tx)
+
+		if (rError !== null) {
+			throw new Error("Failed to find unique collisions")
+		}
+
+
+		// Explicitly type records for intellisense
+		const typedRecords = records as
+			InferSelectModel<Table>[]
+
+
+		// Find which unique columns have been matched
+		const takenUniqueColumns: 
+			(keyof Partial<Values> | undefined)[] & 
+			(keyof typeof uniqueColumnValues | undefined)[] 
+			= []
+		
+		if (typedRecords.length > 0) {
+			for (const columnName of tsObjectKeys(uniqueColumnValues)) {
+				for (const record of typedRecords) {
+					// @ts-ignore:
+					if (record[columnName] === uniqueColumnValues[columnName]) {
+						takenUniqueColumns.push(columnName)
+					}
+				}
+			}
+		}
+		
+
+		return {
+			result: takenUniqueColumns,
+			error: null
+		}
+	}
+
+	catch (error) {
+		return {
+			result: null,
+			error: error as NotNull
+		}
+	}
+}
+
+// #endregion MISC
 
 // #endregion Generic Operations

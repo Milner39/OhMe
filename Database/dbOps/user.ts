@@ -11,7 +11,8 @@ import {
 	gUpdateMany,
 	gUpdateOne,
 	gDeleteMany,
-	gDeleteOne
+	gDeleteOne,
+	gFindUniqueCollisions
 } from "./genericT.ts"
 
 
@@ -190,7 +191,8 @@ export const readMany = async (
 }
 
 console.log(await readMany({
-	user: (user, { eq }) => eq(user.username, "Finn")
+	user: (user, { eq }) => eq(user.username, "Finn"),
+	email: (_, email, { eq }) => eq(email.address, "Finn@example.com")
 }))
 
 // #endregion READ
@@ -201,14 +203,14 @@ console.log(await readMany({
 // Find unique column collisions
 export const findUniqueCollisions = async (
 	values: Partial<{
-		user: Partial<InferSelectModel<typeof tables.user>>,
-		email: Partial<InferSelectModel<typeof tables.email>>
+		user: Partial<InferSelectModel<typeof userT>>,
+		email: Partial<InferSelectModel<typeof emailT>>
 	}>
 ): Promise<
 	{
 		result: {
-			users: (keyof InferSelectModel<typeof tables.user> | undefined)[],
-			emails: (keyof InferSelectModel<typeof tables.email> | undefined)[]
+			users: (keyof InferSelectModel<typeof userT> | undefined)[],
+			emails: (keyof InferSelectModel<typeof emailT> | undefined)[]
 		},
 		error: null
 	} | {
@@ -221,31 +223,26 @@ export const findUniqueCollisions = async (
 		const {
 			result: takenUserColumns,
 			error: rUserError
-		} = values.user ? await gFindUniqueCollisions(
-			tables.user,
-			values.user
-		) : {
-			result: [],
-			error: null
-		}
+		} = await gFindUniqueCollisions(
+			userT,
+			values.user ?? {}
+		)
 
-		if (rUserError || takenUserColumns === null) {
+		if (rUserError !== null) {
 			throw new Error("Failed with finding unique collisions for user")
 		}
 
 
+		// Get collisions from email values
 		const {
 			result: takenEmailColumns,
 			error: rEmailError
-		} = values.email ? await gFindUniqueCollisions(
-			tables.email,
-			values.email
-		) : {
-			result: [],
-			error: null
-		}
+		} = await gFindUniqueCollisions(
+			emailT,
+			values.email ?? {}
+		)
 
-		if (rEmailError || takenEmailColumns === null) {
+		if (rEmailError !== null) {
 			throw new Error("Failed with finding unique collisions for email")
 		}
 
@@ -269,3 +266,9 @@ export const findUniqueCollisions = async (
 }
 
 // #endregion MISC
+
+
+console.log(await findUniqueCollisions({
+	user: { username: "Finn" },
+	email: { address: "Molly@example.com" }
+}))
