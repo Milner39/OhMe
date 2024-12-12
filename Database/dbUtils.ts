@@ -78,8 +78,8 @@ const getUniqueColumns = <
 
 	type UniqueColumns = {
 		[Key in keyof Columns]: Columns[Key]["isUnique"] extends true ? 
-		Columns[Key] 
-		: Columns[Key]["primary"] extends true ? 
+		Columns[Key] : 
+		Columns[Key]["primary"] extends true ? 
 			Columns[Key] : 
 			never
 	}
