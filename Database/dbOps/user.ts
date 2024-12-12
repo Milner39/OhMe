@@ -13,7 +13,7 @@ import {
 	gDeleteMany,
 	gDeleteOne,
 	gFindUniqueCollisions
-} from "./genericT.ts"
+} from "./generic.ts"
 
 
 // Import utils

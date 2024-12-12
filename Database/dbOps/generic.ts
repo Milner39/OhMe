@@ -1,57 +1,259 @@
-// deno-lint-ignore-file no-explicit-any
-
 // #region Imports
 
-// Import db connection
+// Import database connection
 import db from "../dbConnection.ts"
 
+
 // Import utils
-import { getTableName } from "drizzle-orm"
+import {
+	getTableColumns,
+} from "drizzle-orm"
+
 import {
 	conditionalOperators as cOps,
 	filterUniqueColumns
 } from "../dbUtils.ts"
-import { tsObjectEntries, tsObjectKeys } from "../../Utils/objectUtils.ts"
+
+import {
+	tsObjectEntries,
+	tsObjectKeys
+} from "../../Utils/objectUtils.ts";
 
 
 // Import types
-import type { PgTableWithColumns } from "drizzle-orm/pg-core"
-import { InferSelectModel, InferInsertModel } from "drizzle-orm"
-import type { MatchListLength } from "../../Utils/typeUtils.ts"
+import type { 
+	PgTableWithColumns,
+} from "drizzle-orm/pg-core"
+
+import type {
+	InferInsertModel,
+	InferSelectModel,
+	SQL,
+} from "drizzle-orm"
+
+import type {
+	NotNull,
+	MatchListLength,
+} from "../../Utils/typeUtils.ts"
 
 // #endregion Imports
+
+
+
+
+
+// #region Dynamic Query Class
+
+// Class to make searching the database easier
+class DynamicQuery<
+	// deno-lint-ignore no-explicit-any
+	Table extends PgTableWithColumns<any>
+> {
+	// Attributes
+	table
+	columns
+	connection
+	query
+
+
+	// Constructor
+	constructor(
+		table: Table,
+
+		tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+	) {
+		// Store table information
+		this.table = table
+		this.columns = getTableColumns(this.table)
+
+		// Store query information
+		this.connection = tx || db
+		this.query = this.#createBaseQuery()
+	}
+
+
+	// Methods
+	#createBaseQuery = () => {
+		// Create base query to reset to after execution
+		return this.connection
+			.select()
+			.from(this.table)
+			.$dynamic()
+	}
+
+
+	filter = (
+		filter: (
+			columns: typeof this["columns"],
+			conditionalOperators: typeof cOps,
+		) => SQL | undefined
+	) => {
+		this.query = this.query
+			.where(filter(this.columns, cOps))
+
+		return this
+	}
+
+	innerJoin = <
+		// deno-lint-ignore no-explicit-any
+		ForeignTable extends PgTableWithColumns<any>
+	> (
+		foreignTable: ForeignTable,
+		on: (
+			columns: typeof this["columns"],
+			foreignColumns: ReturnType<typeof getTableColumns<ForeignTable>>,
+			conditionalOperators: typeof cOps,
+		) => SQL | undefined
+	) => {
+		// @ts-ignore:
+		this.query = this.query
+			.innerJoin(foreignTable, on(
+				this.columns, 
+				getTableColumns(foreignTable),
+				cOps
+			))
+
+		return this
+	}
+
+	limit = (amount: number) => {
+		this.query = this.query
+			.limit(amount)
+
+		return this
+	}
+
+	execute = async () => {
+		const query = this.query
+		this.query = this.#createBaseQuery()
+
+		return await query
+	}
+}
+
+// #endregion Dynamic Query Class
+
+
+
+
+
+// #region Generic Operations
+
+// #region READ
+
+export const gReadMany = async <
+	// deno-lint-ignore no-explicit-any
+	Table extends PgTableWithColumns<any>
+> (
+	table: Table,
+	query: (dynamicQuery: DynamicQuery<Table>) => DynamicQuery<Table>,
+
+	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+): Promise<
+	{
+		result: unknown[],
+		error: null
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
+	try {
+		const rows = await query(new DynamicQuery(table, tx))
+			.execute()
+
+		return {
+			result: rows,
+			error: null
+		}
+	}
+
+	catch (error) {
+		return {
+			result: null,
+			error: error as NotNull
+		}
+	}
+}
+
+
+
+
+
+export const gReadOne = async <
+	// deno-lint-ignore no-explicit-any
+	Table extends PgTableWithColumns<any>
+> (
+	table: Table,
+	query: (dynamicQuery: DynamicQuery<Table>) => DynamicQuery<Table>,
+
+	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+): Promise<
+	{
+		result: unknown,
+		error: null
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
+	try {
+		const rows = await query(new DynamicQuery(table, tx))
+			.limit(2)
+			.execute()
+
+		if (rows.length !== 1) {
+			throw new Error("Failed to read one record")
+		}
+
+		return {
+			result: rows[0],
+			error: null
+		}
+	}
+
+	catch (error) {
+		return {
+			result: null,
+			error: error as NotNull
+		}
+	}
+}
+
+// #endregion READ
+
+
 
 
 
 // #region CREATE
 
 export const gCreate = async <
-	T extends PgTableWithColumns<any>,
-	V extends InferInsertModel<T>[],
+	// deno-lint-ignore no-explicit-any
+	Table extends PgTableWithColumns<any>,
+	Values extends InferInsertModel<Table>[],
 > (
-	table: T,
-	values: V,
+	table: Table,
+	values: Values,
 
-	// A transaction can be optionally used, and still be type-safe
 	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
 ): Promise<
 	{
-		result: MatchListLength<V, InferSelectModel<T>>,
+		result: MatchListLength<Values, InferSelectModel<Table>>,
 		error: null
 	} | {
 		result: null,
-		error: unknown
+		error: NotNull
 	}
 > => {
 	try {
-		// Create record
-		const record = (await (tx || db).insert(table)
+		const rows = (await (tx || db).insert(table)
 			.values(values)
 			.returning()
-		) as MatchListLength<V, InferSelectModel<T>>
+		) as MatchListLength<Values, InferSelectModel<Table>>
 
 		return {
-			result: record,
+			result: rows,
 			error: null
 		}
 	}
@@ -59,109 +261,49 @@ export const gCreate = async <
 	catch (error) {
 		return {
 			result: null,
-			error: error
+			error: error as NotNull
 		}
 	}
-
-	/*
-		A generic, type-safe subroutine to:
-			- insert given values into a given table.
-			- return the inserted record if successful.
-			- return an error if unsuccessful.
-	*/
 }
 
 // #endregion CREATE
 
 
-// #region READ
 
-export const gRead = async <R>(
-	callback: (query: typeof db["query"]) => Promise<R>,
-
-	// A transaction can be optionally used, and still be type-safe
-	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
-): Promise<
-	{ 
-		result: R,
-		error: null
-	} | {
-		result: null,
-		error: unknown
-	}
-> => {
-	try {
-		// Read result
-		const result = await callback((tx || db).query)
-
-		return {
-			result: result,
-			error: null
-		}
-	}
-
-	catch (error) {
-		return {
-			result: null,
-			error: error
-		}
-	}
-
-	/*
-		A generic, type-safe subroutine to:
-			- takes in a callback subroutine.
-			- provides the db or tx query object to the callback.
-			- runs the callback.
-			- return the found records if successful.
-			- return an error if unsuccessful.
-	*/
-}
-
-// #endregion READ
 
 
 // #region UPDATE
 
-// #endregion UPDATE
+export const gUpdateMany = async <
+	// deno-lint-ignore no-explicit-any
+	Table extends PgTableWithColumns<any>
+> (
+	table: Table,
+	values: Partial<InferInsertModel<Table>>,
+	filter?: (
+		columns: ReturnType<typeof getTableColumns<Table>>,
+		conditionalOperators: typeof cOps
+	) => SQL | undefined,
 
-
-// #region DELETE
-
-export const gDelete = async <T extends PgTableWithColumns<any>> (
-	table: T,
-	where: Partial<InferSelectModel<T>>,
-
-	// A transaction can be optionally used, and still be type-safe
 	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
 ): Promise<
 	{
-		result: InferSelectModel<T>[],
+		result: InferSelectModel<Table>[],
 		error: null
 	} | {
 		result: null,
-		error: unknown
+		error: NotNull
 	}
 > => {
 	try {
-		// Delete record
-		const record = (await (tx || db).delete(table)
-			.where(cOps.and(
-				...(tsObjectEntries(where)
-					.map((column) => {
-						if (!column) return
-
-						return cOps.eq(
-							table[column[0]],
-							column[1]
-						)
-					})
-				)
-			))
-			.returning()
-		) as InferSelectModel<T>[]
-
+		const rows = await (tx || db).update(table)
+			.set(values)
+			.where(filter?.(getTableColumns(table), cOps))
+			.returning() as 
+			InferSelectModel<Table>[]
+		
 		return {
-			result: record,
+			result: rows,
 			error: null
 		}
 	}
@@ -169,7 +311,163 @@ export const gDelete = async <T extends PgTableWithColumns<any>> (
 	catch (error) {
 		return {
 			result: null,
-			error: error
+			error: error as NotNull
+		}
+	}
+}
+
+
+
+
+
+export const gUpdateOne = async <
+	// deno-lint-ignore no-explicit-any
+	Table extends PgTableWithColumns<any>
+> (
+	table: Table,
+	values: Partial<InferInsertModel<Table>>,
+	filter: (
+		columns: ReturnType<typeof getTableColumns<Table>>,
+		conditionalOperators: typeof cOps
+	) => SQL | undefined,
+
+	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+): Promise<
+	{
+		result: InferSelectModel<Table>,
+		error: null
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
+	try {
+		const txResult = await (tx || db).transaction(async (checkTx) => {
+			const rows = await checkTx.update(table)
+				.set(values)
+				.where(filter(getTableColumns(table), cOps))
+				.returning() as 
+				InferSelectModel<Table>[]
+
+			if (rows.length !== 1) {
+				throw new Error("Failed to update one record")
+			}
+
+			return rows[0]
+		})
+
+		
+		return {
+			result: txResult[0],
+			error: null
+		}
+	}
+
+	catch (error) {
+		return {
+			result: null,
+			error: error as NotNull
+		}
+	}
+}
+
+// #endregion UPDATE
+
+
+
+
+
+// #region DELETE
+
+export const gDeleteMany = async <
+	// deno-lint-ignore no-explicit-any
+	Table extends PgTableWithColumns<any>
+> (
+	table: Table,
+	filter?: (
+		columns: ReturnType<typeof getTableColumns<Table>>,
+		conditionalOperators: typeof cOps
+	) => SQL | undefined,
+
+	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+): Promise<
+	{
+		result: InferSelectModel<Table>[],
+		error: null
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
+	try {
+		const rows = await (tx || db).delete(table)
+			.where(filter?.(getTableColumns(table), cOps))
+			.returning() as 
+			InferSelectModel<Table>[]
+		
+		return {
+			result: rows,
+			error: null
+		}
+	}
+
+	catch (error) {
+		return {
+			result: null,
+			error: error as NotNull
+		}
+	}
+}
+
+
+
+
+
+export const gDeleteOne = async <
+	// deno-lint-ignore no-explicit-any
+	Table extends PgTableWithColumns<any>
+> (
+	table: Table,
+	filter: (
+		columns: ReturnType<typeof getTableColumns<Table>>,
+		conditionalOperators: typeof cOps
+	) => SQL | undefined,
+
+	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+): Promise<
+	{
+		result: InferSelectModel<Table>,
+		error: null
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
+	try {
+		const txResult = await (tx || db).transaction(async (checkTx) => {
+			const rows = await checkTx.delete(table)
+				.where(filter(getTableColumns(table), cOps))
+				.returning() as 
+				InferSelectModel<Table>[]
+
+			if (rows.length !== 1) {
+				throw new Error("Failed to delete one record")
+			}
+
+			return rows[0]
+		})
+
+		
+		return {
+			result: txResult[0],
+			error: null
+		}
+	}
+
+	catch (error) {
+		return {
+			result: null,
+			error: error as NotNull
 		}
 	}
 }
@@ -177,81 +475,92 @@ export const gDelete = async <T extends PgTableWithColumns<any>> (
 // #endregion DELETE
 
 
-// #region MISC
 
-// Find unique collisions
+
+
+// #endregion MISC
+
 export const gFindUniqueCollisions = async <
-	T extends PgTableWithColumns<any>,
-	V extends Partial<InferSelectModel<T>>,
+	// deno-lint-ignore no-explicit-any
+	Table extends PgTableWithColumns<any>,
+	Values extends Partial<InferSelectModel<Table>>
 > (
-	table: T,
-	values: V,
+	table: Table,
+	values: Values,
 
-	// A transaction can be optionally used, and still be type-safe
 	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
 ): Promise<
 	{
-		result: (keyof V | undefined)[],
+		result: (keyof Values | undefined)[],
 		error: null
 	} | {
 		result: null,
-		error: unknown
+		error: NotNull
 	}
 > => {
 	try {
 		// Reduce values to just ones in unique columns
 		const uniqueColumnValues = filterUniqueColumns(values, table)
 
-		// Remove columns with null values since they are not unique
-		for (const column of tsObjectKeys(uniqueColumnValues)) {
-			if (uniqueColumnValues[column] === null) {
-				delete uniqueColumnValues[column]
-			}
+		// Return early if no unique columns
+		if (tsObjectEntries(uniqueColumnValues).length === 0) return {
+			result: [],
+			error: null
 		}
 
-		// Find records with given unique columns
+
+		// Find records with any of the unique column values
 		const {
 			result: records,
 			error: rError
-		} = await gRead(async (query) => {
-			const records = await query[
-				getTableName(table)
-			].findMany({
-				// @ts-ignore:
-				where: (record) => cOps.or(
-					...(tsObjectEntries(uniqueColumnValues)
-						.map((column) => cOps.eq(
-							record[column[0]],
-							column[1]
-						))
-					)
-				)
-			}) as InferSelectModel<T>[]
+		} = await gReadMany(table, (query) => {
+			query.filter((columns, { or, eq}) => or(
 
-			return records
+				// Add an equality check for each unique column
+				...(tsObjectKeys(uniqueColumnValues)
+					.map((columnName) => eq(
+						columns[columnName],
+						uniqueColumnValues[columnName]
+					))
+				)
+
+				/* 
+					The record will be returned if any of the unique
+					columns match
+				*/
+			))
+
+			return query
 		}, tx)
 
-		if (rError) throw new Error("Failed while finding unique collisions")
+		if (rError !== null) {
+			throw new Error("Failed to find unique collisions")
+		}
 
+
+		// Explicitly type records for intellisense
+		const typedRecords = records as
+			InferSelectModel<Table>[]
+
+
+		// Find which unique columns have been matched
+		const takenUniqueColumns: 
+			(keyof Partial<Values> | undefined)[] & 
+			(keyof typeof uniqueColumnValues | undefined)[] 
+			= []
 		
-		// Find unique columns that have been taken
-		const takenUniqueColumns:
-			(keyof Partial<InferSelectModel<T>> | undefined)[] & 
-			(keyof typeof uniqueColumnValues | undefined)[] =
-			[]
-		
-		if (records && records.length > 0) {
-			for (const column of tsObjectKeys(uniqueColumnValues)) {
-				for (const record of records) {
+		if (typedRecords.length > 0) {
+			for (const columnName of tsObjectKeys(uniqueColumnValues)) {
+				for (const record of typedRecords) {
 					// @ts-ignore:
-					if (record[column] === uniqueColumnValues[column]) {
-						takenUniqueColumns.push(column)
+					if (record[columnName] === uniqueColumnValues[columnName]) {
+						takenUniqueColumns.push(columnName)
 					}
 				}
 			}
 		}
+		
 
-		// Return taken unique columns
 		return {
 			result: takenUniqueColumns,
 			error: null
@@ -261,19 +570,11 @@ export const gFindUniqueCollisions = async <
 	catch (error) {
 		return {
 			result: null,
-			error: error
+			error: error as NotNull
 		}
 	}
-
-	/*
-		A generic, type-safe subroutine to:
-			- take in values from a record of a table.
-			- filter the values down to just contain those of unique columns.
-			- finds records from the db with ANY of those column values.
-			- iterate through records to find which column values are already taken.
-			- return the taken column names if successful.
-			- return an error if unsuccessful.
-	*/
 }
 
 // #endregion MISC
+
+// #endregion Generic Operations
