@@ -1,19 +1,50 @@
 // deno-lint-ignore-file no-explicit-any
 
-export const asLiteral = <T>(value: T): T => {
-	return value
+// #region Utils
+
+/** asLiteralArray
+ * 
+ * Convert a list of values to a literal array retaining the types of the 
+ * individual values
+ */
+const asLiteralArray = <
+	Targets extends any[]
+> (
+	...targets: Targets
+): Targets => {
+	return targets
 }
 
-export const asLiteralTuple = <T extends [any]>(value: T): T => {
-	return value
-}
-
-
-export type NotNull = 
+/** NotNull
+ * 
+ * Any type other than `null`
+ */
+type NotNull = 
 	unknown &
 	{ [key: string | number | symbol]: unknown } |
 	undefined
 
-export type MatchListLength<List extends any[], Type extends any> = {
+/** MatchListLength
+ * 
+ * An array of `Type`s with the same length as `List`
+ */
+type MatchListLength<List extends any[], Type extends any> = {
 	[Key in keyof List]: List[Key] extends any ? Type : never
 }
+
+// #endregion Utils
+
+
+
+// #region Exports
+
+export {
+	asLiteralArray
+}
+
+export type {
+	NotNull,
+	MatchListLength
+}
+
+// #endregion Exports

@@ -37,7 +37,7 @@ import type {
 
 import {
 	NotNull,
-	asLiteralTuple
+	asLiteralArray
 } from "../../Utils/typeUtils.ts"
 
 // #endregion Imports
@@ -80,7 +80,7 @@ export const create = async (
 			const {
 				result: users,
 				error: cUserError
-			} = await gCreate(tables.user, asLiteralTuple([values.user]), tx)
+			} = await gCreate(tables.user, asLiteralArray(values.user), tx)
 	
 			if (cUserError !== null) {
 				throw new Error("Failed to create user")
@@ -94,10 +94,10 @@ export const create = async (
 			const {
 				result: emails,
 				error: cEmailError
-			} = await gCreate(tables.email, asLiteralTuple([{
+			} = await gCreate(tables.email, asLiteralArray({
 				userId: user.id,
 				...values.email,
-			}]), tx)
+			}), tx)
 	
 			if (cEmailError !== null) {
 				throw new Error("Failed to create email for user")
