@@ -190,11 +190,6 @@ export const readMany = async (
 	}
 }
 
-console.log(await readMany({
-	user: (user, { eq }) => eq(user.username, "Finn"),
-	email: (_, email, { eq }) => eq(email.address, "Finn@example.com")
-}))
-
 // #endregion READ
 
 
@@ -266,9 +261,3 @@ export const findUniqueCollisions = async (
 }
 
 // #endregion MISC
-
-
-console.log(await findUniqueCollisions({
-	user: { username: "Finn" },
-	email: { address: "Molly@example.com" }
-}))
