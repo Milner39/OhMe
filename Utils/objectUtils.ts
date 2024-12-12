@@ -8,7 +8,7 @@
 
 /** isRecord
  * 
- * Check if `target` is a record
+ * Check if `target` is a record.
  */
 const isRecord = (
 	target: unknown
@@ -25,7 +25,7 @@ const isRecord = (
 
 /** tsObjectEntries
  * 
- * Type safe Object.entries
+ * Type safe Object.entries.
  * 
  * Returns an array of key-value pairs from an object whilst retaining the type 
  * of the keys and values in the object.
@@ -45,7 +45,7 @@ const tsObjectEntries = <
 
 /** tsObjectKeys
  * 
- * Type safe Object.keys
+ * Type safe Object.keys.
  * 
  * Returns an array of keys from an object whilst retaining the type of the 
  * keys in the object.
