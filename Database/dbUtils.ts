@@ -19,12 +19,17 @@ import {
 } from "drizzle-orm"
 // It is very frustrating that I cannot import all of these as one object
 
+
 // Import utils
 import {
 	getTableColumns,
 } from "drizzle-orm"
 
-import { keepKeys, tsObjectEntries, tsObjectKeys } from "../Utils/objectUtils.ts"
+import { 
+	keepKeys,
+	tsObjectEntries,
+	tsObjectKeys
+} from "../Utils/objectUtils.ts"
 
 
 // Import types
@@ -42,7 +47,10 @@ dotenv.config({ path: fileURLToPath(new URL("./.env", import.meta.url)) })
 
 // #region Utils
 
-// Get db credentials
+/** getDbCredentials
+ * 
+ * Get database credentials from an environment variable.
+ */
 const getDbCredentials = () => {
 	// Get database URL from environment variables
 	const dbURLString = Deno.env.get("DATABASE_URL")
@@ -68,7 +76,13 @@ const getDbCredentials = () => {
 }
 
 
-// Get unique columns
+/** getUniqueColumns
+ * 
+ * Get the unique columns of `table`.
+ * 
+ * Unique columns are columns that are either primary keys or have a unique 
+ * constraint.
+ */
 const getUniqueColumns = <
 	Table extends PgTableWithColumns<any>
 > (
@@ -88,6 +102,7 @@ const getUniqueColumns = <
 	const columns: Columns = getTableColumns(table)
 
 	const uniqueColumns = Object.fromEntries(
+		// Filter columns by unique constraint or primary key
 		tsObjectEntries(columns).filter(([_, column]) => {
 			return (
 				column.isUnique || 
@@ -99,9 +114,9 @@ const getUniqueColumns = <
 	return uniqueColumns
 
 	/* WARNING:
-		The types returned from this function are incorrect
-		There is no way to get only the unique columns from a table type since
-		columns are typed like this:
+		The types returned from this function are incorrect.
+		There is no way to infer the type of only the unique columns from a 
+		table type since columns are typed like this:
 			{
 				primary: boolean
 				isUnique: boolean
@@ -114,11 +129,19 @@ const getUniqueColumns = <
 				isUnique: true
 				...
 			}
+
+		The subroutine works as expected, but the types are not accurate.
 	*/
 }
 
 
-// Get keep unique columns rule
+/** getKeepUniqueColumnsRule
+ * 
+ * Get a rule to keep only the unique columns of `table`.
+ * 
+ * This rule should be used with `keepKeys` to filter out non-unique columns 
+ * from of `table`.
+ */
 const getKeepUniqueColumnsRule = <
 	Table extends PgTableWithColumns<any>
 > (
@@ -131,6 +154,7 @@ const getKeepUniqueColumnsRule = <
 	const keepUniqueColumnsEntries = uniqueColumnNames
 		.map(columnName => [columnName, true])
 
+	// Create an object with columns names as the keys and `true` as the values
 	const keepUniqueColumnsRule = (
 		Object.fromEntries(keepUniqueColumnsEntries) as
 		{ [Key in keyof typeof uniqueColumns]: true }
@@ -140,11 +164,15 @@ const getKeepUniqueColumnsRule = <
 }
 
 
-// Filter only unique columns
+/** filterUniqueColumns
+ * 
+ * Filter out non-unique columns from `partialRow` based on the unique columns 
+ * of `table`.
+ */
 const filterUniqueColumns = <
 	Table extends PgTableWithColumns<any>
 > (
-	values: Partial<InferSelectModel<Table>>,
+	partialRow: Partial<InferSelectModel<Table>>,
 	table: Table
 ) => {
 	const keepUniqueColumnsRule = getKeepUniqueColumnsRule(table)
@@ -152,16 +180,27 @@ const filterUniqueColumns = <
 	// Remove columns with null values since they are not unique
 	const recordWithoutNull = Object.fromEntries(
 		// @ts-ignore:
-		tsObjectEntries(values).filter(([_, value]) => {
+		tsObjectEntries(partialRow).filter(([_, value]) => {
 			return value !== null
 		})
 	)
 
+	// Return only the unique columns of `partialRow`
 	return keepKeys(recordWithoutNull, keepUniqueColumnsRule)
 }
 
 
-// Conditional operators
+/** conditionalOperators
+ * 
+ * Functions that can be used to make checks between row values and target 
+ * values when querying the database.
+ * 
+ * @example
+ * // Returns true for all rows in the user table where the age column is >=18
+ * gte(user.age, 18)
+ * 
+ * See Drizzle documentation for more information on individual operations.
+ */
 const conditionalOperators = {
 	eq, ne, gt, gte, lt, lte, exists, notExists, isNull, isNotNull,
 	inArray, notInArray, between, notBetween, like, notLike, ilike, notIlike,
