@@ -5,7 +5,7 @@
 /** asLiteralArray
  * 
  * Convert a list of values to a literal array retaining the types of the 
- * individual values
+ * individual values.
  */
 const asLiteralArray = <
 	Targets extends any[]
@@ -17,7 +17,7 @@ const asLiteralArray = <
 
 /** NotNull
  * 
- * Any type other than `null`
+ * Any type other than `null`.
  */
 type NotNull = 
 	unknown &
@@ -26,7 +26,7 @@ type NotNull =
 
 /** MatchListLength
  * 
- * An array of `Type`s with the same length as `List`
+ * An array of `Type`s with the same length as `List`.
  */
 type MatchListLength<List extends any[], Type extends any> = {
 	[Key in keyof List]: List[Key] extends any ? Type : never
