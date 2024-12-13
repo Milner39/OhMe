@@ -140,6 +140,11 @@ export const create = async (
 
 // #region READ
 
+type FullUserRow = {
+	user: InferSelectModel<typeof userT>,
+	email: InferSelectModel<typeof emailT>
+}
+
 /** readMany
  * 
  * Use a dynamic query to:
@@ -160,7 +165,7 @@ export const readMany = async (
 	}
 ): Promise<
 	{
-		result: unknown[],
+		result: FullUserRow[],
 		error: null
 	} | {
 		result: null,
@@ -170,7 +175,7 @@ export const readMany = async (
 	try {
 		// Read users
 		const {
-			result: users,
+			result: rows,
 			error: rUserError
 		} = await gReadMany(userT, (query) => {
 
@@ -178,7 +183,7 @@ export const readMany = async (
 				// Filter user columns
 				.filter((user, cOps) => filters.user?.(user, cOps))
 
-				// Filter relation columns
+				// Join and filter relation columns
 				.innerJoin(emailT, (user, email, cOps) => cOps.and(
 					cOps.eq(user.id, email.userId),
 					filters.email?.(userT, email, cOps)
@@ -186,12 +191,78 @@ export const readMany = async (
 		})
 
 		if (rUserError !== null) {
-			throw new Error("Failed to read users")
+			throw new Error("Failed to read many users")
+		}
+
+		
+		return {
+			result: rows as FullUserRow[],
+			error: null
+		}
+	}
+
+	catch (error) {
+		return {
+			result: null,
+			error: error as NotNull
+		}
+	}
+}
+
+/** readOne
+ * 
+ * Use a dynamic query to:
+ * 	- Find a row of `userT` filtered by `filters.user`.
+ * 	- Join a row of `emailT` filtered by `filters.email`.
+ * 
+ * If more than one row found, return an error.
+ */
+export const readOne = async (
+	filters: {
+		user?: (
+			user: ReturnType<typeof getTableColumns<typeof userT>>,
+			operators: typeof cOps
+		) => SQL | undefined,
+		email?: (
+			user: ReturnType<typeof getTableColumns<typeof userT>>,
+			email: ReturnType<typeof getTableColumns<typeof emailT>>,
+			operators: typeof cOps
+		) => SQL | undefined
+	}
+): Promise<
+	{
+		result: FullUserRow,
+		error: null
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
+	try {
+		// Read users
+		const {
+			result: user,
+			error: rUserError
+		} = await gReadOne(userT, (query) => {
+
+			return query
+				// Filter user columns
+				.filter((user, cOps) => filters.user?.(user, cOps))
+
+				// Join and filter relation columns
+				.innerJoin(emailT, (user, email, cOps) => cOps.and(
+					cOps.eq(user.id, email.userId),
+					filters.email?.(userT, email, cOps)
+				))
+		})
+
+		if (rUserError !== null) {
+			throw new Error("Failed to read one user")
 		}
 
 
 		return {
-			result: users,
+			result: user as FullUserRow,
 			error: null
 		}
 	}
