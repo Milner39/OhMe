@@ -44,7 +44,27 @@ import type {
 
 // #region Dynamic Query Class
 
-// Class to make searching the database easier
+/** DynamicQuery
+ * 
+ * Class to make searching the database easier
+ * 
+ * filter:
+ * 	- Filter the query based on the columns of the table.
+ * 
+ * 
+ * innerJoin:
+ * 	- Join the table with another table.
+ * 	- Filter the query based on the columns of the joined table.
+ * 
+ * 
+ * limit:
+ * 	- Limit the number of results returned.
+ * 
+ * 
+ * execute:
+ * 	- Execute the query and return the results.
+ * 	- Reset the query to its base state.
+ */
 class DynamicQuery<
 	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
@@ -141,6 +161,12 @@ class DynamicQuery<
 
 // #region READ
 
+/** gReadMany
+ * 
+ * Expose a callback with a `DynamicQuery` to the caller and execute the query.
+ * 
+ * Read many rows in the `table` based on the query.
+ */
 export const gReadMany = async <
 	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
@@ -180,6 +206,15 @@ export const gReadMany = async <
 
 
 
+/** gReadOne
+ * 
+ * Expose a callback with a `DynamicQuery` to the caller and execute the query.
+ * 
+ * Add a limit of 2 to end the query early if more than one record is found.
+ * 
+ * Read one row in the `table` based on the query, or return an error if the 
+ * query was not specific enough and found multiple rows.
+ */
 export const gReadOne = async <
 	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
@@ -228,6 +263,10 @@ export const gReadOne = async <
 
 // #region CREATE
 
+/** gCreate
+ * 
+ * Create many rows in the `table` based on the `values`.
+ */
 export const gCreate = async <
 	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>,
@@ -274,6 +313,11 @@ export const gCreate = async <
 
 // #region UPDATE
 
+/** gUpadateMany
+ * 
+ * Update many rows in `table` that match `filter` with `values` as the 
+ * new values.
+ */
 export const gUpdateMany = async <
 	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
@@ -320,6 +364,14 @@ export const gUpdateMany = async <
 
 
 
+/** gUpadateOne
+ * 
+ * Update one row in `table` that matches `filter` with `values` as the 
+ * new values.
+ * 
+ * A transaction is used so that if more than one row gets updated, the
+ * transaction is reverted and an error is returned.
+ */
 export const gUpdateOne = async <
 	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
@@ -379,6 +431,10 @@ export const gUpdateOne = async <
 
 // #region DELETE
 
+/** gDeleteMany
+ * 
+ * Delete many rows in `table` that match `filter`.
+ */
 export const gDeleteMany = async <
 	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
@@ -423,6 +479,13 @@ export const gDeleteMany = async <
 
 
 
+/** gDeleteOne
+ * 
+ * Delete one row in `table` that matches `filter`.
+ * 
+ * A transaction is used so that if more than one row gets deleted, the
+ * transaction is reverted and an error is returned.
+ */
 export const gDeleteOne = async <
 	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
@@ -480,6 +543,22 @@ export const gDeleteOne = async <
 
 // #endregion MISC
 
+/** gFindUniqueCollisions
+ * 
+ * 	- Take in a record containing column names as the key and a value that 
+ * 	  is the same type of that column.
+ * 
+ * 	- Filter the record to only the columns that are unique or are the 
+ * 	  primary key.
+ * 
+ * 	- Query the database for any rows that match one or more of the column 
+ * 	  values.
+ * 
+ * 	- Iterate through the record to check if a column with that value 
+ * 	  already exists in the datbase.
+ * 
+ * 	- Return an array of the collumn names that have been taken.
+ */
 export const gFindUniqueCollisions = async <
 	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>,
