@@ -313,7 +313,7 @@ export const gCreate = async <
 
 // #region UPDATE
 
-/** gUpadateMany
+/** gUpdateMany
  * 
  * Update many rows in `table` that match `filter` with `values` as the 
  * new values.
@@ -364,7 +364,7 @@ export const gUpdateMany = async <
 
 
 
-/** gUpadateOne
+/** gUpdateOne
  * 
  * Update one row in `table` that matches `filter` with `values` as the 
  * new values.
@@ -555,9 +555,9 @@ export const gDeleteOne = async <
  * 	  values.
  * 
  * 	- Iterate through the record to check if a column with that value 
- * 	  already exists in the datbase.
+ * 	  already exists in the database.
  * 
- * 	- Return an array of the collumn names that have been taken.
+ * 	- Return an array of the column names that have been taken.
  */
 export const gFindUniqueCollisions = async <
 	// deno-lint-ignore no-explicit-any
