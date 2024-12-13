@@ -210,7 +210,7 @@ export const gReadMany = async <
  * 
  * Expose a callback with a `DynamicQuery` to the caller and execute the query.
  * 
- * Add a limit of 2 to end the query early if more than one record is found.
+ * Add a limit of 2 to end the query early if more than one row is found.
  * 
  * Read one row in the `table` based on the query, or return an error if the 
  * query was not specific enough and found multiple rows.
@@ -238,7 +238,7 @@ export const gReadOne = async <
 			.execute()
 
 		if (rows.length !== 1) {
-			throw new Error("Failed to read one record")
+			throw new Error("Failed to read one row")
 		}
 
 		return {
@@ -402,7 +402,7 @@ export const gUpdateOne = async <
 				InferSelectModel<Table>[]
 
 			if (rows.length !== 1) {
-				throw new Error("Failed to update one record")
+				throw new Error("Failed to update one row")
 			}
 
 			return rows[0]
@@ -514,7 +514,7 @@ export const gDeleteOne = async <
 				InferSelectModel<Table>[]
 
 			if (rows.length !== 1) {
-				throw new Error("Failed to delete one record")
+				throw new Error("Failed to delete one row")
 			}
 
 			return rows[0]
@@ -588,9 +588,9 @@ export const gFindUniqueCollisions = async <
 		}
 
 
-		// Find records with any of the unique column values
+		// Find rows with any of the unique column values
 		const {
-			result: records,
+			result: rows,
 			error: rError
 		} = await gReadMany(table, (query) => {
 			query.filter((columns, { or, eq}) => or(
@@ -604,7 +604,7 @@ export const gFindUniqueCollisions = async <
 				)
 
 				/* 
-					The record will be returned if any of the unique
+					The row will be returned if any of the unique
 					columns match
 				*/
 			))
@@ -617,8 +617,8 @@ export const gFindUniqueCollisions = async <
 		}
 
 
-		// Explicitly type records for intellisense
-		const typedRecords = records as
+		// Explicitly type rows for intellisense
+		const typedRows = rows as
 			InferSelectModel<Table>[]
 
 
@@ -628,11 +628,11 @@ export const gFindUniqueCollisions = async <
 			(keyof typeof uniqueColumnValues | undefined)[] 
 			= []
 		
-		if (typedRecords.length > 0) {
+		if (typedRows.length > 0) {
 			for (const columnName of tsObjectKeys(uniqueColumnValues)) {
-				for (const record of typedRecords) {
+				for (const row of typedRows) {
 					// @ts-ignore:
-					if (record[columnName] === uniqueColumnValues[columnName]) {
+					if (row[columnName] === uniqueColumnValues[columnName]) {
 						takenUniqueColumns.push(columnName)
 					}
 				}
