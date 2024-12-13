@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url"
 // Import dependencies to get environment variables
 import dotenv from "dotenv"
 
-// Import all of conditional operators to make querying
+// Import all of conditional operators to make querying easier
 import { 
 	eq, ne, gt, gte, lt, lte, exists, notExists, isNull, isNotNull, 
 	inArray, notInArray, between, notBetween, like, notLike, ilike, notIlike, 
