@@ -50,14 +50,22 @@ const {
 	email: emailT 
 } = tables
 
+
+
 // #region CREATE
 
+/** create
+ * 
+ * Use a transaction to:
+ * 	- Create a single row in `userT`.
+ * 	- Create a single row in `emailT` joined to the new `userT` row.
+ */
 export const create = async (
 	// Infer the types of the tables
 	values: {
 		user: InferInsertModel<typeof userT>
 
-		// Omit `userId` since it will be found in the user record
+		// Omit `userId` since it will be found in the user row
 		email: Omit<InferInsertModel<typeof emailT>, "userId">
 	}
 ): Promise<
@@ -106,7 +114,7 @@ export const create = async (
 			const email = emails[0]
 
 
-			// Return combined records
+			// Return created rows
 			return {
 				result: {
 					user: user,
@@ -132,6 +140,12 @@ export const create = async (
 
 // #region READ
 
+/** readMany
+ * 
+ * Use a dynamic query to:
+ * 	- Find rows of `userT` filtered by `filters.user`.
+ * 	- Join rows of `emailT` filtered by `filters.email`.
+ */
 export const readMany = async (
 	filters: {
 		user?: (
@@ -195,7 +209,13 @@ export const readMany = async (
 
 // #region MISC
 
-// Find unique column collisions
+/** findUniqueCollisions
+ * 
+ * Return an array of column names for each table.
+ * 
+ * Each array contains only the column names that already have a value in 
+ * the database matching the value provided in `values`.
+ */
 export const findUniqueCollisions = async (
 	values: Partial<{
 		user: Partial<InferSelectModel<typeof userT>>,
