@@ -5,9 +5,13 @@
 		"web:preview": "cd WebServer && deno task preview",
 		"web:serve": "cd WebServer && deno task serve",
 
+
+		
 		"db:generate": "cd Database && deno task generate",
 		"db:migrate": "cd Database && deno task migrate",
-		"db:test": "cd Database && deno task test"
+
+		"db:test": "cd Database && deno task test",
+		"db:test:push": "cd Database && deno task test:push"
 	},
 
 	"imports": {

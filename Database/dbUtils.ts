@@ -43,6 +43,8 @@ import { PgTableWithColumns } from "drizzle-orm/pg-core"
 // Load environment variables
 dotenv.config({ path: fileURLToPath(new URL("./.env", import.meta.url)) })
 
+const testing = Deno.env.get("TESTING") === "true"
+
 
 
 // #region Utils
@@ -52,12 +54,15 @@ dotenv.config({ path: fileURLToPath(new URL("./.env", import.meta.url)) })
  * Get database credentials from an environment variable.
  */
 const getDbCredentials = () => {
+	// Set the environment variable name based on testing
+	const envVarName = (!testing) ? "DATABASE_URL" : "TEST_DATABASE_URL"
+
 	// Get database URL from environment variables
-	const dbURLString = Deno.env.get("DATABASE_URL")
+	const dbURLString = Deno.env.get(envVarName)
 		
 	// Throw an error if the database URL is not found
 	if (!dbURLString) throw new Error(
-		"DATABASE_URL environment variable not found"
+		`${envVarName} environment variable not found`
 	)
 
 	// Parse the database URL

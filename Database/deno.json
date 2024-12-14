@@ -2,7 +2,10 @@
 	"tasks": {
 		"generate": "drizzle-kit generate --config=./drizzle/drizzle.config.ts",
 		"migrate": "drizzle-kit migrate --config=./drizzle/drizzle.config.ts",
-		"test": "vitest --config=./tests/vitest.config.ts"
+		"push": "deno task generate && deno task migrate",
+
+		"test": "vitest --config=./tests/vitest.config.ts",
+		"test:push": "TESTING=true deno task push"
 	},
 
 	"imports": {

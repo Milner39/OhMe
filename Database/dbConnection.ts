@@ -10,17 +10,12 @@ import { getDbCredentials, tables } from "./dbUtils.ts"
 
 
 // Create a connection to the database
-const testing = Deno.env.get("TESTING") === "true"
-
-const db = (!testing) ?
-	drizzle({
-		connection: {
-			...getDbCredentials()
-		},
-		schema: tables
-	}) :
-	drizzle.mock({ schema: tables })
-
+const db = drizzle({
+	connection: {
+		...getDbCredentials()
+	},
+	schema: tables
+})
 
 
 // Export the database connection
