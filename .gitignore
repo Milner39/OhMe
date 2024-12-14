@@ -9,11 +9,13 @@ node_modules
 # Web Server temp files
 WebServer/**/build
 WebServer/**/.svelte-kit
-WebServer/**/.vite
 WebServer/**/vite.config.*.timestamp-*
 
 # Database temp files
 Database/drizzle/out
+
+# Common temp files
+.vite
 
 
 # Environment variables but not the `env.example` file

@@ -1,7 +1,8 @@
 {
 	"tasks": {
 		"generate": "drizzle-kit generate --config=./drizzle/drizzle.config.ts",
-		"migrate": "drizzle-kit migrate --config=./drizzle/drizzle.config.ts"
+		"migrate": "drizzle-kit migrate --config=./drizzle/drizzle.config.ts",
+		"test": "vitest --config=./tests/vitest.config.ts"
 	},
 
 	"imports": {

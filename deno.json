@@ -6,12 +6,14 @@
 		"web:serve": "cd WebServer && deno task serve",
 
 		"db:generate": "cd Database && deno task generate",
-		"db:migrate": "cd Database && deno task migrate"
+		"db:migrate": "cd Database && deno task migrate",
+		"db:test": "cd Database && deno task test"
 	},
 
 	"imports": {
 		"@types/node": "npm:@types/node@22.9.0",
-		"dotenv": "npm:dotenv@16.4.5"
+		"dotenv": "npm:dotenv@16.4.5",
+		"vitest": "npm:vitest@2.1.8"
 	},
 
 	"nodeModulesDir": "auto",
