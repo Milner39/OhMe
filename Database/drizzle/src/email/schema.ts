@@ -28,7 +28,8 @@ export const email = pgTable("email", {
 				onDelete: "cascade"
 			}
 		)
-		.notNull(),
+		.notNull()
+		.unique(),
 
 	// #endregion Primary & Foreign keys
 
@@ -47,7 +48,8 @@ export const email = pgTable("email", {
 		.default(false),
 	
 	// Verification code, UUID
-	verificationCode: uuid("verificationCode"),
+	verificationCode: uuid("verificationCode")
+		.unique(),
 
 	// Code sent at, timestamp, precise to seconds
 	codeSentAt: timestamp("codeSentAt", { mode: "date", precision: 0 })

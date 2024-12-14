@@ -13,8 +13,10 @@ import { tables, filterUniqueColumns } from "../dbUtils.ts"
 // #region filterUniqueColumns
 describe("filterUniqueColumns()", () => {
 	describe(
-		`Returns a record based on the values with only the unique columns of 
-		the table`,
+		`
+		Returns a record based on the values with only the unique columns of 
+		the table
+		`.replace(/\s+/g, " "),
 		() => {
 			// #region results
 			test("Only returns unique columns", () => {
