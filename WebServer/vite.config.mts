@@ -9,8 +9,8 @@ import { sveltekit as SvelteKit } from "@sveltejs/kit/vite"
 // Import to get file paths
 import { fileURLToPath } from "node:url"
 
-// Import dependencies to get environment variables
-import dotenv from "dotenv"
+// Import to get environment variables
+import { loadAllDotenvs } from "./allDotenvs.ts"
 
 
 // Import types
@@ -21,7 +21,7 @@ import type { UserConfig as Config } from "vite"
 
 
 // Load environment variables
-dotenv.config({ path: fileURLToPath(new URL("./.env", import.meta.url)) })
+loadAllDotenvs()
 
 
 /*

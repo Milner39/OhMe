@@ -3,7 +3,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"serve": "node -r dotenv/config build"
+		"serve": "deno run -E -R --allow-run ./serve.ts"
 	},
 
 	"imports": {
