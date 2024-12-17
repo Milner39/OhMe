@@ -7,11 +7,13 @@
 
 
 		
-		"db:generate": "cd DatabaseAPI && deno task generate",
-		"db:migrate": "cd DatabaseAPI && deno task migrate",
-
-		"db:test": "cd DatabaseAPI && deno task test",
-		"db:test:push": "cd DatabaseAPI && deno task test:push"
+		"db:orm:generate": "cd DatabaseAPI && deno task orm:generate",
+		"db:orm:migrate": "cd DatabaseAPI && deno task orm:migrate",
+		"db:orm:push": "cd DatabaseAPI && deno task orm:push",
+		"db:orm:test": "cd DatabaseAPI && deno task orm:test",
+		"db:orm:test:push": "cd DatabaseAPI && deno task orm:test:push",
+		
+		"db:server:serve": "cd DatabaseAPI && deno task server:serve"
 	},
 
 	"imports": {
