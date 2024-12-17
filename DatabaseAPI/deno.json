@@ -12,6 +12,8 @@
 		"drizzle-orm": "npm:drizzle-orm@0.37.0",
 		"drizzle-kit": "npm:drizzle-kit@0.29.1",
 		"pg": "npm:pg@8.13.1",
-		"@types/pg": "npm:@types/pg@8.11.10"
+		"@types/pg": "npm:@types/pg@8.11.10",
+
+		"hono": "jsr:@hono/hono"
 	}
 }

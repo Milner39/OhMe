@@ -11,8 +11,8 @@ WebServer/**/build
 WebServer/**/.svelte-kit
 WebServer/**/vite.config.*.timestamp-*
 
-# Database temp files
-Database/drizzle/out
+# Database API temp files
+DatabaseAPI/drizzle/out
 
 # Common temp files
 .vite
