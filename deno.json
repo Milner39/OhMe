@@ -7,11 +7,11 @@
 
 
 		
-		"db:generate": "cd Database && deno task generate",
-		"db:migrate": "cd Database && deno task migrate",
+		"db:generate": "cd DatabaseAPI && deno task generate",
+		"db:migrate": "cd DatabaseAPI && deno task migrate",
 
-		"db:test": "cd Database && deno task test",
-		"db:test:push": "cd Database && deno task test:push"
+		"db:test": "cd DatabaseAPI && deno task test",
+		"db:test:push": "cd DatabaseAPI && deno task test:push"
 	},
 
 	"imports": {
