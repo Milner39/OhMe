@@ -2,7 +2,7 @@
 
 import { describe, test, expect } from "vitest"
 
-import { tables, filterUniqueColumns } from "../dbUtils.ts"
+import { tables, filterUniqueColumns } from "../../drizzle/dbUtils.ts"
 
 // #endregion Imports
 

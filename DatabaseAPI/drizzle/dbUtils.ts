@@ -3,13 +3,10 @@
 // #region Imports
 
 // Import database tables
-import tables from "./drizzle/src/index.ts"
+import tables from "./src/index.ts"
 
-// Import to get file paths
-import { fileURLToPath } from "node:url"
-
-// Import dependencies to get environment variables
-import dotenv from "dotenv"
+// Import to get environment variables
+import { loadAllDotenvs } from "../allDotenvs.ts"
 
 // Import all of conditional operators to make querying easier
 import { 
@@ -29,7 +26,7 @@ import {
 	keepKeys,
 	tsObjectEntries,
 	tsObjectKeys
-} from "../Utils/objectUtils.ts"
+} from "../../Utils/objectUtils.ts"
 
 
 // Import types
@@ -41,7 +38,7 @@ import { PgTableWithColumns } from "drizzle-orm/pg-core"
 
 
 // Load environment variables
-dotenv.config({ path: fileURLToPath(new URL("./.env", import.meta.url)) })
+loadAllDotenvs()
 
 const testing = Deno.env.get("TESTING") === "true"
 

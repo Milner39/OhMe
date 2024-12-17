@@ -1,7 +1,7 @@
 // #region Imports
 
 // Import to get db credentials
-import { getDbCredentials } from "../dbUtils.ts"
+import { getDbCredentials } from "./dbUtils.ts"
 
 
 // Import types

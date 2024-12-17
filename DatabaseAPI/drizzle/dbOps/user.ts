@@ -38,7 +38,7 @@ import type {
 import {
 	NotNull,
 	asLiteralArray
-} from "../../Utils/typeUtils.ts"
+} from "../../../Utils/typeUtils.ts"
 
 // #endregion Imports
 
@@ -295,8 +295,8 @@ export const findUniqueCollisions = async (
 ): Promise<
 	{
 		result: {
-			users: (keyof InferSelectModel<typeof userT> | undefined)[],
-			emails: (keyof InferSelectModel<typeof emailT> | undefined)[]
+			user: (keyof InferSelectModel<typeof userT> | undefined)[],
+			email: (keyof InferSelectModel<typeof emailT> | undefined)[]
 		},
 		error: null
 	} | {
@@ -336,8 +336,8 @@ export const findUniqueCollisions = async (
 		// Return results from all queries
 		return {
 			result: {
-				users: takenUserColumns,
-				emails: takenEmailColumns
+				user: takenUserColumns,
+				email: takenEmailColumns
 			},
 			error: null
 		}

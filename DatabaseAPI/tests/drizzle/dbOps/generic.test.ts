@@ -11,17 +11,17 @@ import {
 	gDeleteMany,
 	gDeleteOne,
 	gFindUniqueCollisions
-} from "../../dbOps/generic.ts"
+} from "../../../drizzle/dbOps/generic.ts"
 
-import db from "../../dbConnection.ts"
-import { tables } from "../../dbUtils.ts"
+import db from "../../../drizzle/dbConnection.ts"
+import { tables } from "../../../drizzle/dbUtils.ts"
 import { PgTable } from "drizzle-orm/pg-core"
-import { tsObjectEntries } from "../../../Utils/objectUtils.ts";
+import { tsObjectEntries } from "../../../../Utils/objectUtils.ts";
 
 
 // Import types
 import { InferSelectModel } from "drizzle-orm"
-import { asLiteralArray, MatchListLength } from "../../../Utils/typeUtils.ts"
+import { asLiteralArray, MatchListLength } from "../../../../Utils/typeUtils.ts"
 
 // #endregion Imports
 
