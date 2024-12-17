@@ -15,7 +15,9 @@ loadAllDotenvs()
 
 
 // Create the Hono app
-const app = new Hono()
+const app = new Hono({
+	strict: false	// Ignore trailing slashes
+})
 
 app.get("/", (c) => {
 	return c.json({ message: "Hello, world!" })
