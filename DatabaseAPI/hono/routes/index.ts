@@ -10,7 +10,7 @@ import user from "./user/route.ts"
 
 
 // Create base router
-const router = createRouter().basePath("/")
+const router = createRouter()
 
 // Mount child routers onto base router
 router.route("/", user)

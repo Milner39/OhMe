@@ -7,11 +7,11 @@ import { createRouter } from "../../../../lib/createRouter.ts"
 
 
 // Create router
-const router = createRouter().basePath("/session")
+const router = createRouter().basePath("/user/:userId/session")
 
 // Define methods for this path
 router.get("/", (c) => {
-    // Incorrect type
+    // Correct type
     const { userId } = c.req.param()
 
     return c.json({

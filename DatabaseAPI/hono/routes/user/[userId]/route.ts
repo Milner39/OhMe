@@ -10,7 +10,7 @@ import session from "./session/route.ts"
 
 
 // Create router
-const router = createRouter().basePath("/:userId")
+const router = createRouter().basePath("/user/:userId")
 
 // Mount child routers onto router
 router.route("/", session)
