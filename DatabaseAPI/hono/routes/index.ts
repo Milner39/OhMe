@@ -3,7 +3,7 @@
 import { createRouter } from "../lib/createRouter.ts"
 
 // Import child routes
-import user from "./user/router.ts"
+import user from "./user/route.ts"
 
 // #endregion Imports
 
