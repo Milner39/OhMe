@@ -2,25 +2,12 @@
 
 import { createRouter } from "../../lib/createRouter.ts"
 
-// Import child routes
-import userId from "./[userId]/route.ts"
-
 // #endregion Imports
 
 
 
 // Create router
 const router = createRouter().basePath("/user")
-
-// Mount child routers onto router
-router.route("/", userId)
-
-// Define methods for this path
-router.get("/", (c) => {
-    return c.json({
-        message: "Hello user!"
-    })
-})
 
 
 
