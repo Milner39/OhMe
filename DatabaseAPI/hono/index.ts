@@ -1,9 +1,10 @@
 // #region Imports
 
-import { Hono } from "hono"
-
 // Import to get environment variables
 import { loadAllDotenvs } from "../allDotenvs.ts"
+
+// Import to create configured Hono app
+import { createApp } from "./lib/createApp.ts"
 
 // #endregion Imports
 
@@ -12,16 +13,8 @@ import { loadAllDotenvs } from "../allDotenvs.ts"
 // Load environment variables
 loadAllDotenvs()
 
-
-
-// Create the Hono app
-const app = new Hono({
-	strict: false	// Ignore trailing slashes
-})
-
-app.get("/", (c) => {
-	return c.json({ message: "Hello, world!" })
-})
+// Create the app
+const app = createApp()
 
 // Serve the app
 Deno.serve({
