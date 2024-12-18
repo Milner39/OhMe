@@ -1,20 +1,13 @@
 // #region Imports
 
-import { Hono } from "hono"
-
+import { createRouter } from "./createRouter.ts"
 import router from "../routes/index.ts"
 
 // #endregion Imports
 
 
 
-export const createRouter = () => {
-	return new Hono({
-		strict: false    // Ignore trailing slashes
-	})
-}
-
-
+// Subroutine to create main app
 export const createApp = () => {
 	const app = createRouter()
 

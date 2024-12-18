@@ -1,6 +1,6 @@
 // #region Imports
 
-import { createRouter } from "../../lib/createApp.ts"
+import { createRouter } from "../../lib/createRouter.ts"
 
 // #endregion Imports
 

@@ -1,6 +1,6 @@
 // #region Imports
 
-import { createRouter } from "../lib/createApp.ts"
+import { createRouter } from "../lib/createRouter.ts"
 
 // Import child routes
 import user from "./user/router.ts"
