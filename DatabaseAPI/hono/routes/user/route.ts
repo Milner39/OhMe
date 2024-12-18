@@ -13,7 +13,7 @@ const router = createRouter().basePath("/user")
 // Example: router.route("/", email)
 
 // Define methods for this path
-router.post("/", (c) => {
+router.get("/", (c) => {
     return c.json({
         message: "Hello user!"
     })
