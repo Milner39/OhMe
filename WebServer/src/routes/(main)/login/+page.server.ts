@@ -1,5 +1,11 @@
 // #region Imports
 
+import { hc } from "hono/client"
+import type { HonoAppType } from "../../../../../DatabaseAPI/hono/index.ts"
+
+// Import to get environment variables
+import env from "../../../../env.ts"
+
 // Import types
 import type { Actions } from "./$types"
 
@@ -7,8 +13,8 @@ import type { Actions } from "./$types"
 
 
 
-const dbAPI = "http://localhost:" + (Deno.env.get("DATABASE_API_PORT") || "3001")
-
+const dbAPI = "http://localhost:" + new String(env.DATABASE_API_PORT)
+const honoClient = hc<HonoAppType>(dbAPI)
 
 
 // #region Actions

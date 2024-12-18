@@ -1,7 +1,7 @@
 // #region Imports
 
 // Import to get environment variables
-import { loadAllDotenvs } from "../allDotenvs.ts"
+import env from "../env.ts"
 
 // Import to create configured Hono app
 import { createApp } from "./lib/createApp.ts"
@@ -10,15 +10,18 @@ import { createApp } from "./lib/createApp.ts"
 
 
 
-// Load environment variables
-loadAllDotenvs()
-
 // Create the app
 const app = createApp()
+	.get("/egg", (c) => {
+		return c.json({ egg: "🥚" })
+	})
 
 // Serve the app
 Deno.serve({
-		port: Number(Deno.env.get("DATABASE_API_PORT")) || 3001
+		port: env.DATABASE_API_PORT
 	},
 	app.fetch
 )
+
+
+export type HonoAppType = typeof app

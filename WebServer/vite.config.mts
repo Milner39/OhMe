@@ -10,7 +10,7 @@ import { sveltekit as SvelteKit } from "@sveltejs/kit/vite"
 import { fileURLToPath } from "node:url"
 
 // Import to get environment variables
-import { loadAllDotenvs } from "./allDotenvs.ts"
+import env from "./env.ts"
 
 
 // Import types
@@ -18,10 +18,6 @@ import type { UserConfig as Config } from "vite"
 
 // #endregion Imports
 
-
-
-// Load environment variables
-loadAllDotenvs()
 
 
 /*
@@ -44,7 +40,7 @@ const config = {
 		host: true,
 
 		// Host on specified port during development
-		port: Number(Deno.env.get("DEV_PORT")) || 3000,
+		port: env.DEV_PORT,
 		strictPort: true,
 		
 		// https://github.com/sveltejs/kit/issues/2973
@@ -61,7 +57,7 @@ const config = {
 		host: true,
 
 		// Host on specified port during preview
-		port: Number(Deno.env.get("PREV_PORT")) || 3000,
+		port: env.PREV_PORT,
 		strictPort: true
 	}
 

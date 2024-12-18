@@ -1,14 +1,10 @@
 // #region Imports
 
-// Import to get environment variables
-import { loadAllDotenvs } from "./allDotenvs.ts"
+// Import to load environment variables
+// - The values are not needed, but the environment variables must be loaded
+import "./env.ts"
 
 // #endregion Imports
-
-
-
-// Load environment variables
-loadAllDotenvs()
 
 
 

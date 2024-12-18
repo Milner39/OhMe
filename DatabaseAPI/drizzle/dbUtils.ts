@@ -6,7 +6,7 @@
 import tables from "./src/index.ts"
 
 // Import to get environment variables
-import { loadAllDotenvs } from "../allDotenvs.ts"
+import env from "../env.ts"
 
 // Import all of conditional operators to make querying easier
 import { 
@@ -37,13 +37,6 @@ import { PgTableWithColumns } from "drizzle-orm/pg-core"
 
 
 
-// Load environment variables
-loadAllDotenvs()
-
-const testing = Deno.env.get("TESTING") === "true"
-
-
-
 // #region Utils
 
 /** getDbCredentials
@@ -51,20 +44,13 @@ const testing = Deno.env.get("TESTING") === "true"
  * Get database credentials from an environment variable.
  */
 const getDbCredentials = () => {
-	// Set the environment variable name based on testing
-	const envVarName = (!testing) ? "DATABASE_URL" : "TEST_DATABASE_URL"
-
 	// Get database URL from environment variables
-	const dbURLString = Deno.env.get(envVarName)
-		
-	// Throw an error if the database URL is not found
-	if (!dbURLString) throw new Error(
-		`${envVarName} environment variable not found`
-	)
+	const dbURLString = (!env.TESTING) ? 
+		env.DATABASE_URL : 
+		env.TEST_DATABASE_URL as string    // Is string when TESTING is true
 
 	// Parse the database URL
 	const dbURL = new URL(dbURLString)
-
 
 	// Return the database credentials
 	return {
