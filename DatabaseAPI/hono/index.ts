@@ -12,9 +12,6 @@ import { createApp } from "./lib/createApp.ts"
 
 // Create the app
 const app = createApp()
-	.get("/egg", (c) => {
-		return c.json({ egg: "🥚" })
-	})
 
 // Serve the app
 Deno.serve({
@@ -23,5 +20,5 @@ Deno.serve({
 	app.fetch
 )
 
-
+// Export the type for clients to the API
 export type HonoAppType = typeof app
