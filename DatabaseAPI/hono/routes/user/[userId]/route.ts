@@ -1,22 +1,25 @@
 // #region Imports
 
-import { createRouter } from "../../lib/createRouter.ts"
+import { createRouter } from "../../../lib/createRouter.ts"
 
 // Import child routes
-import userId from "./[userId]/route.ts"
+import session from "./session/route.ts"
 
 // #endregion Imports
 
 
 
 // Create router
-const router = createRouter().basePath("/user")
+const router = createRouter().basePath("/:userId")
 
 // Mount child routers onto router
-router.route("/", userId)
+router.route("/", session)
 
 // Define methods for this path
 router.get("/", (c) => {
+    // Correct type
+    const { userId } = c.req.param()
+
     return c.json({
         message: "Hello user!"
     })
