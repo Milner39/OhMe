@@ -7,7 +7,7 @@ import type { Actions } from "./$types"
 
 
 
-const dbAPI = "http://localhost:" + (Deno.env.get("DATABASE_API_PORT") || "3001") + "/"
+const dbAPI = "http://localhost:" + (Deno.env.get("DATABASE_API_PORT") || "3001")
 
 
 
@@ -17,7 +17,7 @@ export const actions = {
 
 	// #region Register
 	register: async (event) => {
-		const response = await fetch(dbAPI + "user", {
+		const response = await fetch(dbAPI + "/user", {
 			method: "POST"
 		})
 		console.log(response)
