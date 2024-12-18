@@ -1,10 +1,10 @@
 // #region Imports
 
-import { hc } from "hono/client"
-import type { HonoAppType } from "../../../../../DatabaseAPI/hono/index.ts"
+// Get DB API client
+import {
+	createApiClient as createDbApiClient
+} from "../../../../../DatabaseAPI/hono/client.ts"
 
-// Import to get environment variables
-import env from "../../../../env.ts"
 
 // Import types
 import type { Actions } from "./$types"
@@ -13,8 +13,7 @@ import type { Actions } from "./$types"
 
 
 
-const dbAPI = "http://localhost:" + new String(env.DATABASE_API_PORT)
-const honoClient = hc<HonoAppType>(dbAPI)
+const dbAPI = createDbApiClient()
 
 
 // #region Actions
@@ -23,9 +22,7 @@ export const actions = {
 
 	// #region Register
 	register: async (event) => {
-		const response = await fetch(dbAPI + "/user", {
-			method: "POST"
-		})
+		const response = await dbAPI.user.$post()
 		console.log(response)
 
 		const body = await response.json()

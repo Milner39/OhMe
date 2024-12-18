@@ -3,7 +3,7 @@
 // Import to get environment variables
 import env from "../env.ts"
 
-// Import to create configured Hono app
+// Create configured Hono app
 import { createApp } from "./lib/createApp.ts"
 
 // #endregion Imports
@@ -19,6 +19,3 @@ Deno.serve({
 	},
 	app.fetch
 )
-
-// Export the type for clients to the API
-export type HonoAppType = typeof app

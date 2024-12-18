@@ -12,7 +12,7 @@ export const createApp = () => {
 	const app = createRouter()
 
 	// Mount router onto app
-	app.route("/", router)
+	const routedApp = app.route("/", router)
 
-	return app
+	return routedApp
 }

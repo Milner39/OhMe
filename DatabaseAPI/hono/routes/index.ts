@@ -3,21 +3,30 @@
 import { createRouter } from "../lib/createRouter.ts"
 
 // Import child routes
-import user from "./user/route.ts"
+import user from "./user/index.ts"
 
 // #endregion Imports
 
 
 
 // Create base router
-const router = createRouter()
+const router = createRouter().basePath("/")
+	// Define methods for this path
+	.get("/", (ctx) => {
+		return ctx.json({
+			message: "Welcome to the OhMe DB API!"
+		})
+	})
 
-// Mount child routers onto base router
-router.route("/", user)
 
-// Base path has no methods
+// Mount sub routes
+const deepRouter = router
+	// Mount static routes first
+	.route("/", user)
 
+	// Mount dynamic routes
+	// N/A
 
 
 // Export base router
-export default router
+export default deepRouter
