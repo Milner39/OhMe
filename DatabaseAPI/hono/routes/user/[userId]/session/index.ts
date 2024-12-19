@@ -2,6 +2,9 @@
 
 import { createRouter } from "../../../../lib/createRouter.ts"
 
+// Import param schema
+import paramSchema from "../params.ts"
+
 // #endregion Imports
 
 
@@ -10,12 +13,20 @@ import { createRouter } from "../../../../lib/createRouter.ts"
 const router = createRouter().basePath("/session")
 	// Define methods for this path
 	.get("/", (ctx) => {
-        const { userId } = ctx.req.param()
+        const {
+            data: params,
+            error
+        } = paramSchema.safeParse(ctx.req.param())
+
+        if (error) {
+            console.error(error)
+            return ctx.text("Bad request", 400)
+        }
 
 		return ctx.json({
 			message: 
 				"Database API received request to get session of user of id: " +
-				userId
+				params.userId
 		})
 	})
 

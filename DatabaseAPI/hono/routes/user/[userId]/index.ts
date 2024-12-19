@@ -2,6 +2,9 @@
 
 import { createRouter } from "../../../lib/createRouter.ts"
 
+// Import param schema
+import paramSchema from "./params.ts"
+
 // Import child routes
 import sessionR from "./session/index.ts"
 
@@ -13,12 +16,21 @@ import sessionR from "./session/index.ts"
 const router = createRouter().basePath("/:userId")
 	// Define methods for this path
 	.get("/", (ctx) => {
-        const { userId } = ctx.req.param()
+        const {
+            data: params,
+            error
+        } = paramSchema.safeParse(ctx.req.param())
+
+        if (error) {
+            console.error(error)
+            return ctx.text("Bad request", 400)
+        }
+
 
 		return ctx.json({
 			message: 
                 "Database API received request to get user of id: " +
-                userId
+                params.userId
 		})
 	})
 
