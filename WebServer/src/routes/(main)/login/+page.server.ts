@@ -14,6 +14,7 @@ import type { Actions } from "./$types"
 
 
 const dbAPI = createDbApiClient()
+dbAPI.user[":userId"].session.$get({ param: { userId: "abc" } })
 
 
 // #region Actions

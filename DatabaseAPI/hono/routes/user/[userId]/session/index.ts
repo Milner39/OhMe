@@ -1,20 +1,21 @@
 // #region Imports
 
-import { createRouter } from "../../lib/createRouter.ts"
-
-// Import child routes
-import userIdR from "./[userId]/index.ts"
+import { createRouter } from "../../../../lib/createRouter.ts"
 
 // #endregion Imports
 
 
 
 // Create router
-const router = createRouter().basePath("/user")
+const router = createRouter().basePath("/session")
 	// Define methods for this path
-	.post("/", (ctx) => {
+	.get("/", (ctx) => {
+        const { userId } = ctx.req.param()
+
 		return ctx.json({
-			message: "Database API received request to create user"
+			message: 
+				"Database API received request to get session of user of id: " +
+				userId
 		})
 	})
 
@@ -25,7 +26,7 @@ const deepRouter = router
 	// N/A
 
 	// Mount dynamic routes
-	.route("/", userIdR)
+	// N/A
 
 
 // Export router
