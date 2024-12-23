@@ -3,7 +3,7 @@
 // Get DB API client
 import {
 	createApiClient as createDbApiClient
-} from "../../../../../DatabaseAPI/hono/client.ts"
+} from "~db/hono/client.ts"
 
 
 // Import types

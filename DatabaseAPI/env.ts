@@ -11,7 +11,7 @@ import { z } from "zod"
 
 
 // Import parent environment variables
-import parentEnv from "../env.ts"
+import parentEnv from "@/env.ts"
 
 // #endregion Imports
 

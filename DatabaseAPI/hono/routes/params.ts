@@ -8,9 +8,9 @@ import { z } from "zod"
 
 
 /*
-    Create a schema for the params of this route.
-    Child routes can extend this schema so that the availibale
-    params in each route are type-safe and correct.
+	Create a schema for the params of this route. 
+	Child routes can extend this schema so that the available params in each 
+	route are type-safe and correct.
 */
 const paramSchema = z.object({})
 

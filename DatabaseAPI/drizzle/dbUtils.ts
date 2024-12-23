@@ -26,7 +26,7 @@ import {
 	keepKeys,
 	tsObjectEntries,
 	tsObjectKeys
-} from "../../Utils/objectUtils.ts"
+} from "@/Utils/objectUtils.ts"
 
 
 // Import types

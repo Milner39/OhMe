@@ -3,7 +3,7 @@
 import { drizzle } from "drizzle-orm/node-postgres"
 
 // Import to get db credentials and schemas
-import { getDbCredentials, tables } from "../drizzle/dbUtils.ts"
+import { getDbCredentials, tables } from "./dbUtils.ts"
 
 // #endregion Imports
 

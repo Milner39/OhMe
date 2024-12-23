@@ -21,7 +21,11 @@
 		"dotenv": "npm:dotenv@16.4.5",
 		"zod": "npm:zod@3.24.1",
 		"vitest": "npm:vitest@2.1.8",
-		"hono": "npm:hono@4.6.14"
+		"hono": "npm:hono@4.6.14",
+
+
+		"@/": "./",
+		"~db/": "./DatabaseAPI/"
 	},
 
 	"nodeModulesDir": "auto",

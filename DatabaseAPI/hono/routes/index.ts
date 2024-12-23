@@ -1,6 +1,6 @@
 // #region Imports
 
-import { createRouter } from "../lib/createRouter.ts"
+import { createRouter } from "~db/hono/lib/createRouter.ts"
 
 // Import child routes
 import userR from "./user/index.ts"

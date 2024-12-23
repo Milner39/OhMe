@@ -1,6 +1,6 @@
 // #region Imports
 
-import { createRouter } from "../../../../lib/createRouter.ts"
+import { createRouter } from "~db/hono/lib/createRouter.ts"
 
 // Import param schema
 import paramSchema from "../params.ts"
@@ -13,15 +13,15 @@ import paramSchema from "../params.ts"
 const router = createRouter().basePath("/session")
 	// Define methods for this path
 	.get("/", (ctx) => {
-        const {
-            data: params,
-            error
-        } = paramSchema.safeParse(ctx.req.param())
+		const {
+			data: params,
+			error
+		} = paramSchema.safeParse(ctx.req.param())
 
-        if (error) {
-            console.error(error)
-            return ctx.text("Bad request", 400)
-        }
+		if (error) {
+			console.error(error)
+			return ctx.text("Bad request", 400)
+		}
 
 		return ctx.json({
 			message: 

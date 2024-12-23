@@ -17,7 +17,7 @@ import {
 import {
 	tsObjectEntries,
 	tsObjectKeys
-} from "../../../Utils/objectUtils.ts"
+} from "@/Utils/objectUtils.ts"
 
 
 // Import types
@@ -34,7 +34,7 @@ import type {
 import type {
 	NotNull,
 	MatchListLength,
-} from "../../../Utils/typeUtils.ts"
+} from "@/Utils/typeUtils.ts"
 
 // #endregion Imports
 

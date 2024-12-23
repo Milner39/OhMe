@@ -38,7 +38,7 @@ import type {
 import {
 	NotNull,
 	asLiteralArray
-} from "../../../Utils/typeUtils.ts"
+} from "@/Utils/typeUtils.ts"
 
 // #endregion Imports
 

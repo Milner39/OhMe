@@ -12,7 +12,7 @@ import { z } from "zod"
 
 // Create a schema for the params of this route
 const extendedParamSchema = paramSchema.extend({
-    userId: z.string().uuid()
+	userId: z.string().uuid()
 })
 
 // Export param schema
