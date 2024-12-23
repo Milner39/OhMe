@@ -14,6 +14,7 @@ const command = new Deno.Command(Deno.execPath(), { args: [
 	"-E",
 	"-R",
 	"-N",
+	"--unstable-node-globals",
 	"./build/index.js"
 ]})
 

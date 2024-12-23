@@ -1,7 +1,11 @@
 // #region Imports
 
-// Import to get environment variables
-import env from "../env.ts"
+/*
+	Import to get environment variables.
+	Only get shared environment variables or this client will not work and could 
+	be unsafe.
+*/
+import env from "@/env.ts"
 
 // Create configured Hono app
 import { createApp } from "./lib/createApp.ts"
