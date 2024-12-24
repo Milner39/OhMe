@@ -1,6 +1,8 @@
 // #region Imports
 
 import { createRouter } from "./createRouter.ts"
+
+// Import to mount router onto app
 import router from "../routes/index.ts"
 
 // #endregion Imports
