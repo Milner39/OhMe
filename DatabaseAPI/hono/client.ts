@@ -20,7 +20,6 @@ import { hc } from "hono/client"
 // Create a mock app
 const mockApp = createApp()
 
-
 /*
 	Create a mock client to speed up the TypeScript language server
 
@@ -28,6 +27,7 @@ const mockApp = createApp()
 	https://hono.dev/docs/guides/rpc#compile-your-code-before-using-it-recommended
 */
 const mockClient = hc<typeof mockApp>("")
+
 
 
 // Subroutine to create a client for this API
