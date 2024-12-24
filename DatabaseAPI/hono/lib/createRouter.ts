@@ -6,7 +6,7 @@ import { Hono } from "hono"
 
 
 
-// Subroutine to create basic router that can be mounted to main app
+// Subroutine to create basic router that can be mounted onto main app
 export const createRouter = () => {
 	return new Hono({
 		// Ignore trailing slashes
