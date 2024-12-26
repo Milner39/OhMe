@@ -46,9 +46,18 @@ import {
 
 // Get tables used in this file
 const { 
-	user: userT, 
-	email: emailT 
+	user: userT,
+	email: emailT,
+	password: passwordT
 } = tables
+
+
+// Define types
+type FullUserRow = {
+	user: InferSelectModel<typeof userT>,
+	email: InferSelectModel<typeof emailT>,
+	password: InferSelectModel<typeof passwordT>
+}
 
 
 
@@ -59,6 +68,7 @@ const {
  * Use a transaction to:
  * 	- Create a single row in `userT`.
  * 	- Create a single row in `emailT` joined to the new `userT` row.
+ * 	- Create a single row in `passwordT` joined to the new `userT` row.
  */
 export const create = async (
 	// Infer the types of the tables
@@ -67,13 +77,11 @@ export const create = async (
 
 		// Omit `userId` since it will be found in the user row
 		email: Omit<InferInsertModel<typeof emailT>, "userId">
+		password: Omit<InferInsertModel<typeof passwordT>, "userId">
 	}
 ): Promise<
 	{
-		result: {
-			user: InferSelectModel<typeof userT>,
-			email: InferSelectModel<typeof emailT>
-		},
+		result: FullUserRow,
 		error: null
 	} | {
 		result: null,
@@ -114,11 +122,29 @@ export const create = async (
 			const email = emails[0]
 
 
+			// Create password
+			const {
+				result: passwords,
+				error: cPasswordError
+			} = await gCreate(tables.password, asLiteralArray({
+				userId: user.id,
+				...values.password,
+			}), tx)
+
+			if (cPasswordError !== null) {
+				throw new Error("Failed to create password for user")
+			}
+
+			const password = passwords[0]
+
+
+
 			// Return created rows
 			return {
 				result: {
 					user: user,
-					email: email
+					email: email,
+					password: password
 				},
 				error: null
 			}
@@ -140,11 +166,6 @@ export const create = async (
 
 // #region READ
 
-type FullUserRow = {
-	user: InferSelectModel<typeof userT>,
-	email: InferSelectModel<typeof emailT>
-}
-
 /** readMany
  * 
  * Use a dynamic query to:
@@ -160,6 +181,11 @@ export const readMany = async (
 		email?: (
 			user: ReturnType<typeof getTableColumns<typeof userT>>,
 			email: ReturnType<typeof getTableColumns<typeof emailT>>,
+			operators: typeof cOps
+		) => SQL | undefined,
+		password?: (
+			user: ReturnType<typeof getTableColumns<typeof userT>>,
+			password: ReturnType<typeof getTableColumns<typeof passwordT>>,
 			operators: typeof cOps
 		) => SQL | undefined
 	}
@@ -187,6 +213,10 @@ export const readMany = async (
 				.innerJoin(emailT, (user, email, cOps) => cOps.and(
 					cOps.eq(user.id, email.userId),
 					filters.email?.(userT, email, cOps)
+				))
+				.innerJoin(passwordT, (user, password, cOps) => cOps.and(
+					cOps.eq(user.id, password.userId),
+					filters.password?.(userT, password, cOps)
 				))
 		})
 
@@ -227,6 +257,11 @@ export const readOne = async (
 			user: ReturnType<typeof getTableColumns<typeof userT>>,
 			email: ReturnType<typeof getTableColumns<typeof emailT>>,
 			operators: typeof cOps
+		) => SQL | undefined,
+		password?: (
+			user: ReturnType<typeof getTableColumns<typeof userT>>,
+			password: ReturnType<typeof getTableColumns<typeof passwordT>>,
+			operators: typeof cOps
 		) => SQL | undefined
 	}
 ): Promise<
@@ -253,6 +288,10 @@ export const readOne = async (
 				.innerJoin(emailT, (user, email, cOps) => cOps.and(
 					cOps.eq(user.id, email.userId),
 					filters.email?.(userT, email, cOps)
+				))
+				.innerJoin(passwordT, (user, password, cOps) => cOps.and(
+					cOps.eq(user.id, password.userId),
+					filters.password?.(userT, password, cOps)
 				))
 		})
 
@@ -290,13 +329,15 @@ export const readOne = async (
 export const findUniqueCollisions = async (
 	values: Partial<{
 		user: Partial<InferSelectModel<typeof userT>>,
-		email: Partial<InferSelectModel<typeof emailT>>
+		email: Partial<InferSelectModel<typeof emailT>>,
+		password: Partial<InferSelectModel<typeof passwordT>>
 	}>
 ): Promise<
 	{
 		result: {
 			user: (keyof InferSelectModel<typeof userT> | undefined)[],
-			email: (keyof InferSelectModel<typeof emailT> | undefined)[]
+			email: (keyof InferSelectModel<typeof emailT> | undefined)[],
+			password: (keyof InferSelectModel<typeof passwordT> | undefined)[]
 		},
 		error: null
 	} | {
@@ -332,12 +373,28 @@ export const findUniqueCollisions = async (
 			throw new Error("Failed with finding unique collisions for email")
 		}
 
+
+		// Get collisions from password values
+		const {
+			result: takenPasswordColumns,
+			error: rPasswordError
+		} = await gFindUniqueCollisions(
+			passwordT,
+			values.password ?? {}
+		)
+
+		if (rPasswordError !== null) {
+			throw new Error("Failed with finding unique collisions for password")
+		}
+
+
 		
 		// Return results from all queries
 		return {
 			result: {
 				user: takenUserColumns,
-				email: takenEmailColumns
+				email: takenEmailColumns,
+				password: takenPasswordColumns
 			},
 			error: null
 		}

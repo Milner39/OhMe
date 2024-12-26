@@ -6,6 +6,7 @@ import { relations } from "drizzle-orm"
 
 // Import other table schemas
 import { email } from "../email/schema.ts"
+import { password } from "../password/schema.ts"
 
 // #endregion Imports
 
@@ -40,5 +41,8 @@ export const user = pgTable("user", {
 // Define table relations
 export const userRelations = relations(user, ({ one }) => ({
 	// Email relation
-	email: one(email)
+	email: one(email),
+
+	// Password relation
+	password: one(password)
 }))
