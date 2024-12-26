@@ -2,9 +2,9 @@
 	"tasks": {
 		"orm:generate": "drizzle-kit generate --config=./drizzle/drizzle.config.ts",
 		"orm:migrate": "drizzle-kit migrate --config=./drizzle/drizzle.config.ts",
-		"orm:push": "deno task generate && deno task migrate",
+		"orm:push": "deno task orm:generate && deno task orm:migrate",
 		"orm:test": "vitest --config=./tests/vitest.config.ts",
-		"orm:test:push": "TESTING=true deno task push",
+		"orm:test:push": "TESTING=true deno task orm:push",
 
 		"server:serve": "deno run -E -R -N ./hono/index.ts"
 	},
