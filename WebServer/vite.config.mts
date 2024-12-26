@@ -12,44 +12,17 @@ import { fileURLToPath } from "node:url"
 // Import to get environment variables
 import env from "@/WebServer/env.ts"
 
-// Import to get import aliases
+// Import to get path aliases
 import rootDenoJson from "@/deno.json" with { type: "json" }
+
+// Import to convert Deno path aliases to Vite path aliases
+import { denoAliasesToViteAliases } from "@/Utils/viteUtils.ts"
 
 
 // Import types
 import type { UserConfig as Config } from "vite"
 
 // #endregion Imports
-
-
-
-/*
-	Subroutine to get import aliases and format them for Vite so they can be 
-	used by SvelteKit.
-*/
-const getImportAliases = () => {
-	return Object.fromEntries(
-		Object.entries(rootDenoJson.imports)
-			// Filter out npm or jsr dependencies
-			.filter((entry) => {
-				return entry[1].startsWith(".")
-			})
-
-			// Map the entries to the correct format
-			.map((entry) => {
-				// Get the path relative to this file
-				const relativePath = "../" + entry[1]
-
-				return [
-					// Format the alias
-					entry[0].slice(0, -1),
-
-					// Get the absolute path
-					fileURLToPath(new URL(relativePath, import.meta.url))
-				]
-			})
-	)
-}
 
 
 
@@ -62,10 +35,8 @@ const config = {
 	// Vite settings
 	cacheDir: fileURLToPath(new URL("./.vite", import.meta.url)),
 	resolve: {
-		// Import aliases
-		alias: {
-			...getImportAliases()
-		}
+		// Path aliases
+		alias: denoAliasesToViteAliases(rootDenoJson.imports)
 	},
 
 	// Plugin configuration
