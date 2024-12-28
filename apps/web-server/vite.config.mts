@@ -1,0 +1,79 @@
+// #region Imports
+
+/*
+	https://vite.dev/guide/using-plugins
+	Import SvelteKit plugin for Vite
+*/
+import { sveltekit as SvelteKit } from "@sveltejs/kit/vite"
+
+// Import to get file paths
+import { fileURLToPath } from "node:url"
+
+// Import to get environment variables
+import env from "~web-server/env.ts"
+
+// Import to get path aliases
+import rootDenoJson from "@/deno.json" with { type: "json" }
+import { denoAliasesToViteAliases } from "#utils/src/vite-utils.ts"
+
+
+// Import types
+import type { UserConfig as Config } from "vite"
+
+// #endregion Imports
+
+
+
+/*
+	https://vite.dev/config/
+	Define Vite config
+*/
+const config = {
+
+	// Vite settings
+	cacheDir: fileURLToPath(new URL("./.vite", import.meta.url)),
+	resolve: {
+		// Path aliases
+		alias: denoAliasesToViteAliases(
+			rootDenoJson.imports,
+			new URL("../../", import.meta.url)
+		)
+	},
+
+	// Plugin configuration
+	plugins: [
+		SvelteKit(), // Currently no way to specify where the config file is
+	],
+
+	// Development settings
+	server: {
+		// Allows devices on same network to access the site
+		host: true,
+
+		// Host on specified port during development
+		port: env.DEV_PORT,
+		strictPort: true,
+		
+		// https://github.com/sveltejs/kit/issues/2973
+		fs: {
+			allow: [
+				fileURLToPath(new URL("../../", import.meta.url))
+			]
+		}
+	},
+
+	// Preview settings
+	preview: {
+		// Allows devices on same network to access the site
+		host: true,
+
+		// Host on specified port during preview
+		port: env.PREV_PORT,
+		strictPort: true
+	}
+
+} satisfies Config
+
+
+// Export Vite config
+export default config

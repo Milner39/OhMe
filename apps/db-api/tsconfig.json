@@ -1,0 +1,15 @@
+/*
+	This file is only here to allow drizzle-kit commands to work correctly with
+	path aliases.
+*/
+
+{
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["../../*"],
+			"~db-api/*": ["./*"],
+			"#utils/*": ["../../packages/utils/*"],
+		}
+	}
+}

@@ -1,19 +1,19 @@
 {
 	"tasks": {
-		"web:dev": "cd WebServer && deno task dev",
-		"web:build": "cd WebServer && deno task build",
-		"web:preview": "cd WebServer && deno task preview",
-		"web:serve": "cd WebServer && deno task serve",
+		"web-server:dev": "cd apps/web-server && deno task dev",
+		"web-server:build": "cd apps/web-server && deno task build",
+		"web-server:preview": "cd apps/web-server && deno task preview",
+		"web-server:serve": "cd apps/web-server && deno task serve",
 
 
+
+		"db-api:orm:generate": "cd apps/db-api && deno task orm:generate",
+		"db-api:orm:migrate": "cd apps/db-api && deno task orm:migrate",
+		"db-api:orm:push": "cd apps/db-api && deno task orm:push",
+		"db-api:orm:test": "cd apps/db-api && deno task orm:test",
+		"db-api:orm:test:push": "cd apps/db-api && deno task orm:test:push",
 		
-		"db:orm:generate": "cd DatabaseAPI && deno task orm:generate",
-		"db:orm:migrate": "cd DatabaseAPI && deno task orm:migrate",
-		"db:orm:push": "cd DatabaseAPI && deno task orm:push",
-		"db:orm:test": "cd DatabaseAPI && deno task orm:test",
-		"db:orm:test:push": "cd DatabaseAPI && deno task orm:test:push",
-		
-		"db:server:serve": "cd DatabaseAPI && deno task server:serve"
+		"db-api:server:serve": "cd apps/db-api && deno task server:serve"
 	},
 
 	"imports": {
@@ -25,14 +25,19 @@
 
 
 		"@/": "./",
-		"~db/": "./DatabaseAPI/"
-	},
+		
+		"~db-api/": "./apps/db-api/",
+		"~web-server/": "./apps/web-server/",
 
+		"#db-api-client/": "./packages/db-api-client/",
+		"#utils/": "./packages/utils/"
+	},
 	"nodeModulesDir": "auto",
+
 	"workspace": {
 		"members": [
-			"WebServer/",
-			"DatabaseAPI/"
+			"apps/*",
+			"packages/*"
 		]
 	}
 }

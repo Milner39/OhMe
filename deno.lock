@@ -1263,7 +1263,7 @@
       "npm:zod@3.24.1"
     ],
     "members": {
-      "DatabaseAPI": {
+      "apps/db-api": {
         "dependencies": [
           "npm:@types/pg@8.11.10",
           "npm:drizzle-kit@0.29.1",
@@ -1271,7 +1271,7 @@
           "npm:pg@8.13.1"
         ]
       },
-      "WebServer": {
+      "apps/web-server": {
         "dependencies": [
           "npm:@sveltejs/adapter-node@5.2.9",
           "npm:@sveltejs/kit@2.8.1",
