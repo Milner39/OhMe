@@ -3,7 +3,7 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"serve": "deno run -E -R --allow-run ./web/app.ts"
+		"serve": "deno run -E -R --allow-run ./app/serve-build.ts"
 	},
 
 	"imports": {

@@ -23,8 +23,8 @@ import { fileURLToPath } from "node:url"
 
 
 // Define directories
-const webDirURL = new URL("./web/", import.meta.url)
-const srcDirURL = new URL("./src/", webDirURL)
+const thisDirURL = new URL("./", import.meta.url)
+const srcDirURL = new URL("./src/", thisDirURL)
 
 
 /*
@@ -44,8 +44,8 @@ const config = {
 		adapter: adapter({
 			// The directory to build the Node server
 			out: fileURLToPath(new URL(
-				"./build",
-				webDirURL
+				"./app/build",
+				thisDirURL
 			)),
 
 			// Prefix for environment variables used by the Node server
@@ -55,7 +55,7 @@ const config = {
 		// The directory for SvelteKit to write temp files and cache
 		outDir: fileURLToPath(new URL(
 			"./.svelte-kit",
-			webDirURL
+			thisDirURL
 		)),
 		
 		env: {

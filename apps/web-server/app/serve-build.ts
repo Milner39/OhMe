@@ -18,7 +18,7 @@ const command = new Deno.Command(Deno.execPath(), { args: [
 	"-R",
 	"-N",
 	"--unstable-node-globals",
-	"./web/build/index.js"
+	"./app/build/index.js"
 ]})
 
 // Start the server
