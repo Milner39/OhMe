@@ -14,7 +14,7 @@ import env from "~web-server/env.ts"
 
 // Import to get path aliases
 import rootDenoJson from "@/deno.json" with { type: "json" }
-import { denoAliasesToViteAliases } from "#utils/src/vite-utils.ts"
+import { denoAliasesToAbsoluteAliases } from "#utils/src/deno-utils.ts"
 
 
 // Import types
@@ -34,7 +34,7 @@ const config = {
 	cacheDir: fileURLToPath(new URL("./.vite", import.meta.url)),
 	resolve: {
 		// Path aliases
-		alias: denoAliasesToViteAliases(
+		alias: denoAliasesToAbsoluteAliases(
 			rootDenoJson.imports,
 			new URL("../../", import.meta.url)
 		)

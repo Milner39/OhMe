@@ -8,15 +8,15 @@ import { fileURLToPath } from "node:url"
 
 // #region Utils
 
-/** denoAliasesToViteAliases
+/** denoAliasesToAbsoluteAliases
  * 
- * Convert Deno path aliases to Vite path aliases.
+ * Convert Deno path aliases to absolute path aliases.
  */
-export const denoAliasesToViteAliases = (
+export const denoAliasesToAbsoluteAliases = (
 	denoImports: Record<string, string>,
 	denoFileURL: URL
 ) => {
-	const viteAliases = Object.fromEntries(
+	const absoluteAliases = Object.fromEntries(
 		Object.entries(denoImports)
 			// Filter out npm or jsr dependencies
 			.filter((entry) => {
@@ -34,7 +34,7 @@ export const denoAliasesToViteAliases = (
 				]
 			})
 	)
-	return viteAliases
+	return absoluteAliases
 }
 
 // #endregion Utils

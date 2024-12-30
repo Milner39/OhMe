@@ -20,7 +20,7 @@ import { fileURLToPath } from "node:url"
 
 // Import to get path aliases
 import rootDenoJson from "@/deno.json" with { type: "json" }
-import { denoAliasesToViteAliases } from "#utils/src/vite-utils.ts"
+import { denoAliasesToAbsoluteAliases } from "#utils/src/deno-utils.ts"
 
 // #endregion Imports
 
@@ -122,7 +122,7 @@ const config = {
 		},
 
 		// Path aliases
-		alias: denoAliasesToViteAliases(
+		alias: denoAliasesToAbsoluteAliases(
 			rootDenoJson.imports,
 			new URL("../../", import.meta.url)
 		),
