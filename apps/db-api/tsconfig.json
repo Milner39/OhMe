@@ -9,6 +9,8 @@
 		"paths": {
 			"@/*": ["../../*"],
 			"~db-api/*": ["./*"],
+			"~web-server/*": ["../web-server/*"],
+			"#db-api-client/*": ["../../packages/db-api-client/*"],
 			"#utils/*": ["../../packages/utils/*"],
 		}
 	}

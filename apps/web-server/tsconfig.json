@@ -1,5 +1,21 @@
+/*
+	This file is only here to allow the SvelteKit extension to interpret types 
+	and path aliases correctly
+*/
+
 {
 	"extends": [
 		"./.svelte-kit/tsconfig.json"
-	]
+	],
+
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["../../*"],
+			"~db-api/*": ["../db-api/*"],
+			"~web-server/*": ["./*"],
+			"#db-api-client/*": ["../../packages/db-api-client/*"],
+			"#utils/*": ["../../packages/utils/*"]
+		}
+	}
 }
