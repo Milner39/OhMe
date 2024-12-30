@@ -115,6 +115,14 @@ const config = {
 
 				return tsconfig
 			}
+		},
+
+		alias: {
+			"@": "../../",
+			"~db-api": "../db-api",
+			"~web-server": "./",
+			"#db-api-client": "../../packages/db-api-client",
+			"#utils": "../../packages/utils/*"
 		}
 	}
 
