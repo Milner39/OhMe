@@ -1,5 +1,5 @@
 {
 	"deno.disablePaths": [
-		"./apps/web-server"
+		"./apps/web-server/src"
 	]
 }
