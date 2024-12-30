@@ -18,6 +18,10 @@ import adapter from "@sveltejs/adapter-node"
 // Import to get file paths
 import { fileURLToPath } from "node:url"
 
+// Import to get path aliases
+import rootDenoJson from "@/deno.json" with { type: "json" }
+import { denoAliasesToViteAliases } from "#utils/src/vite-utils.ts"
+
 // #endregion Imports
 
 
@@ -117,13 +121,11 @@ const config = {
 			}
 		},
 
-		alias: {
-			"@": "../../",
-			"~db-api": "../db-api",
-			"~web-server": "./",
-			"#db-api-client": "../../packages/db-api-client",
-			"#utils": "../../packages/utils/*"
-		}
+		// Path aliases
+		alias: denoAliasesToViteAliases(
+			rootDenoJson.imports,
+			new URL("../../", import.meta.url)
+		),
 	}
 
 }
