@@ -20,8 +20,10 @@ const asLiteralArray = <
  * Any type other than `null`.
  */
 type NotNull = 
-	unknown &
 	{ [key: string | number | symbol]: unknown } |
+	string |
+	number |
+	any[] |
 	undefined
 
 /** MatchListLength
