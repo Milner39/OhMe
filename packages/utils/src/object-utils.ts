@@ -12,10 +12,7 @@
  */
 const isRecord = (
 	target: unknown
-): target is Record<
-	string | number | symbol,
-	unknown
-> => {
+): target is Record<string | number | symbol, unknown> => {
 	return (
 		typeof target === "object" &&
 		target !== null
