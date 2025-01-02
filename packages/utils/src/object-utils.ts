@@ -168,26 +168,20 @@ export const deepMerge = (
 	visited = new WeakMap()
 ): UnknownRecord | Array<unknown> => {
 
-	// If `target` is not a record
-	if (!isRecord(target)) {
-		throw new Error(
-			`Cannot merge target that is not a record: ${typeof target}`
-		)
-	}
-
-	// If `source` is not a record
-	if (!isRecord(source)) {
-		throw new Error(
-			`Cannot merge source that is not a record: ${typeof source}`
-		)
-	}
+	// If `target` is not a record or array
+	if (!(isRecord(target) || Array.isArray(target))) throw new Error(
+		`Param target must be record or array, but got: ${typeof target}`
+	)
+	
+	// If `source` is not a record or array
+	if (!(isRecord(source) || Array.isArray(source))) throw new Error(
+		`Param source must be record or array, but got: ${typeof source}`
+	)
 
 	// if `visited` is not a WeakMap
-	if (!(visited instanceof WeakMap)) {
-		throw new Error(
-			`Param visited is not a WeakMap: ${typeof visited}`
-		)
-	}
+	if (!(visited instanceof WeakMap)) throw new Error(
+		`Param visited must be WeakMap, but got: ${typeof visited}`
+	)
 
 
 	// If `source` is already in `visited`
@@ -200,23 +194,33 @@ export const deepMerge = (
 	visited.set(source, target)
 
 
-	// Define result record
-	const result: UnknownRecord = {}
+	// Define result structure
+	const result = Array.isArray(source) 
+		? (Array.isArray(target) 
+			? [...target] 
+			: []
+		) 
+		: {...target}
+		
 
 	// Iterate over keys in `source`
-	for (const key of tsObjectKeys(source)) {
-		const targetValue = target[key]
-		const sourceValue = source[key]
+	for (const key of Reflect.ownKeys(source)) {
+		// deno-lint-ignore no-explicit-any
+		const unsafeKey = key as any
 
+		const targetValue = target[unsafeKey]
+		const sourceValue = source[unsafeKey]
+
+		
 		// If `source[key]` has already been visited
 		if (visited.has(sourceValue as WeakKey)) {
 			// Record the value stored in `visited` at `source[key]`
-			result[key] = visited.get(sourceValue as WeakKey)
+			result[unsafeKey] = visited.get(sourceValue as WeakKey)
 		}
 
 		// If `source[key]` is an array
 		else if (Array.isArray(sourceValue)) {
-			result[key] = Array.isArray(targetValue) ?
+			result[unsafeKey] = Array.isArray(targetValue) ?
 				// If `target[key]` is an array
 				// Recursively merge the arrays
 				deepMerge(
@@ -227,13 +231,11 @@ export const deepMerge = (
 
 				// If `target[key]` is not an array
 				sourceValue
-
-
 		}
 
 		// If `source[key]` is a record
 		else if (isRecord(sourceValue)) {
-			result[key] = isRecord(targetValue) ?
+			result[unsafeKey] = isRecord(targetValue) ?
 				// If `target[key]` is a record
 				// Recursively merge the records
 				deepMerge(
@@ -251,7 +253,7 @@ export const deepMerge = (
 		// If `source[key]` is another value
 		else {
 			// Record the value
-			result[key] = source[key]
+			result[unsafeKey] = sourceValue
 		}
 	}
 
