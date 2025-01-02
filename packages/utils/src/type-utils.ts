@@ -7,7 +7,7 @@
  * Convert a list of values to a literal array retaining the types of the 
  * individual values.
  */
-const asLiteralArray = <
+export const asLiteralArray = <
 	Targets extends any[]
 > (
 	...targets: Targets
@@ -15,38 +15,29 @@ const asLiteralArray = <
 	return targets
 }
 
+/** UnknownRecord
+ * 
+ * A record with any of the standard keys but unknown values.
+ */
+export type UnknownRecord = Record<string | number | symbol, unknown>
+
 /** NotNull
  * 
  * Any type other than `null`.
  */
-type NotNull = 
-	{ [key: string | number | symbol]: unknown } |
+export type NotNull = 
+	UnknownRecord |
+	any[] |
 	string |
 	number |
-	any[] |
 	undefined
 
 /** MatchListLength
  * 
  * An array of `Type`s with the same length as `List`.
  */
-type MatchListLength<List extends any[], Type extends any> = {
+export type MatchListLength<List extends any[], Type extends any> = {
 	[Key in keyof List]: List[Key] extends any ? Type : never
 }
 
 // #endregion Utils
-
-
-
-// #region Exports
-
-export {
-	asLiteralArray
-}
-
-export type {
-	NotNull,
-	MatchListLength
-}
-
-// #endregion Exports

@@ -1,5 +1,7 @@
 // #region Imports
 
+import type { UnknownRecord } from "#utils/src/type-utils.ts"
+
 // #endregion Imports
 
 
@@ -10,9 +12,9 @@
  * 
  * Check if `target` is a record.
  */
-const isRecord = (
+export const isRecord = (
 	target: unknown
-): target is Record<string | number | symbol, unknown> => {
+): target is UnknownRecord => {
 	return (
 		typeof target === "object" &&
 		target !== null
@@ -27,7 +29,7 @@ const isRecord = (
  * Returns an array of key-value pairs from an object whilst retaining the type 
  * of the keys and values in the object.
  */
-const tsObjectEntries = <
+export const tsObjectEntries = <
 	Target extends object
 > (
 	target: Target
@@ -47,7 +49,7 @@ const tsObjectEntries = <
  * Returns an array of keys from an object whilst retaining the type of the 
  * keys in the object.
  */
-const tsObjectKeys = <
+export const tsObjectKeys = <
 	Target extends object
 > (
 	target: Target
@@ -78,7 +80,7 @@ type KKs_Rule =
 
 type KKs_Filtered<Target, Rule> = Rule extends true ? 
 	Target : 
-	Rule extends Record<string | number | symbol, unknown> ?
+	Rule extends UnknownRecord ?
 		{ 
 			[Key in keyof Rule & keyof Target]: 
 			KKs_Filtered<Target[Key], Rule[Key]> 
@@ -92,7 +94,7 @@ type KKs_Filtered<Target, Rule> = Rule extends true ?
  * 
  * Key-value pairs are omitted if the key is not in the `rule` record.
  */
-const keepKeys = <
+export const keepKeys = <
 	Target extends KKs_Target,
 	Rule extends KKs_Rule
 > (
@@ -118,7 +120,7 @@ const keepKeys = <
 
 
 	// Define result record
-	const result: Record<string | number | symbol, unknown> = {}
+	const result: UnknownRecord = {}
 
 	// Iterate over rule keys
 	for (const key of Object.keys(rule)) {
@@ -150,17 +152,112 @@ const keepKeys = <
 
 // #endregion Keep keys
 
-// #endregion Utils
 
 
+// #region deepMerge
 
-// #region Exports
+/** deepMerge
+ * 
+ * Returns a record based on the first record but recursively overridden with 
+   the key-value pairs from the second record.
+ * 
+ */
+export const deepMerge = (
+	target: UnknownRecord | Array<unknown>,
+	source: UnknownRecord | Array<unknown>,
+	visited = new WeakMap()
+): UnknownRecord | Array<unknown> => {
 
-export {
-	isRecord,
-	tsObjectEntries,
-	tsObjectKeys,
-	keepKeys
+	// If `target` is not a record
+	if (!isRecord(target)) {
+		throw new Error(
+			`Cannot merge target that is not a record: ${typeof target}`
+		)
+	}
+
+	// If `source` is not a record
+	if (!isRecord(source)) {
+		throw new Error(
+			`Cannot merge source that is not a record: ${typeof source}`
+		)
+	}
+
+	// if `visited` is not a WeakMap
+	if (!(visited instanceof WeakMap)) {
+		throw new Error(
+			`Param visited is not a WeakMap: ${typeof visited}`
+		)
+	}
+
+
+	// If `source` is already in `visited`
+	if (visited.has(source)) {
+		// Return the value stored in `visited` at `source`
+		return visited.get(source)
+	}
+
+	// Record `target` in `visited` at `source`
+	visited.set(source, target)
+
+
+	// Define result record
+	const result: UnknownRecord = {}
+
+	// Iterate over keys in `source`
+	for (const key of tsObjectKeys(source)) {
+		const targetValue = target[key]
+		const sourceValue = source[key]
+
+		// If `source[key]` has already been visited
+		if (visited.has(sourceValue as WeakKey)) {
+			// Record the value stored in `visited` at `source[key]`
+			result[key] = visited.get(sourceValue as WeakKey)
+		}
+
+		// If `source[key]` is an array
+		else if (Array.isArray(sourceValue)) {
+			result[key] = Array.isArray(targetValue) ?
+				// If `target[key]` is an array
+				// Recursively merge the arrays
+				deepMerge(
+					targetValue,
+					sourceValue,
+					visited
+				) :
+
+				// If `target[key]` is not an array
+				sourceValue
+
+
+		}
+
+		// If `source[key]` is a record
+		else if (isRecord(sourceValue)) {
+			result[key] = isRecord(targetValue) ?
+				// If `target[key]` is a record
+				// Recursively merge the records
+				deepMerge(
+					targetValue,
+					sourceValue,
+					visited
+				) :
+
+				// If `target[key]` is not a record
+				sourceValue
+
+
+		}
+
+		// If `source[key]` is another value
+		else {
+			// Record the value
+			result[key] = source[key]
+		}
+	}
+
+	return result
 }
 
-// #endregion Exports
+// #endregion deepMerge
+
+// #endregion Utils
