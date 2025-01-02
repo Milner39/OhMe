@@ -1,5 +1,7 @@
 // #region Imports
 
+import { createConfig } from "#create-configs/src/vite.ts"
+
 /*
 	https://vite.dev/guide/using-plugins
 	Import SvelteKit plugin for Vite
@@ -12,14 +14,6 @@ import { fileURLToPath } from "node:url"
 // Import to get environment variables
 import env from "~web-server/env.ts"
 
-// Import to get path aliases
-import rootDenoJson from "@/deno.json" with { type: "json" }
-import { denoAliasesToAbsoluteAliases } from "#utils/src/deno-utils.ts"
-
-
-// Import types
-import type { UserConfig as Config } from "vite"
-
 // #endregion Imports
 
 
@@ -28,52 +22,41 @@ import type { UserConfig as Config } from "vite"
 	https://vite.dev/config/
 	Define Vite config
 */
-const config = {
+const config = createConfig(
+	// Override
+	{
+		// Plugin configuration
+		plugins: [
+			SvelteKit(), // Currently no way to specify where the config file is
+		],
 
-	// Vite settings
-	cacheDir: fileURLToPath(new URL("./.vite", import.meta.url)),
-	resolve: {
-		// Path aliases
-		alias: denoAliasesToAbsoluteAliases(
-			rootDenoJson.imports,
-			new URL("../../", import.meta.url)
-		)
-	},
+		// Development settings
+		server: {
+			// Allows devices on same network to access the site
+			host: true,
 
-	// Plugin configuration
-	plugins: [
-		SvelteKit(), // Currently no way to specify where the config file is
-	],
+			// Host on specified port during development
+			port: env.DEV_PORT,
+			
+			// https://github.com/sveltejs/kit/issues/2973
+			fs: {
+				allow: [
+					fileURLToPath(new URL("../../", import.meta.url))
+				]
+			}
+		},
 
-	// Development settings
-	server: {
-		// Allows devices on same network to access the site
-		host: true,
+		// Preview settings
+		preview: {
+			// Allows devices on same network to access the site
+			host: true,
 
-		// Host on specified port during development
-		port: env.DEV_PORT,
-		strictPort: true,
-		
-		// https://github.com/sveltejs/kit/issues/2973
-		fs: {
-			allow: [
-				fileURLToPath(new URL("../../", import.meta.url))
-			]
+			// Host on specified port during preview
+			port: env.PREV_PORT
 		}
 	},
+	// Extend
+	{}
+)
 
-	// Preview settings
-	preview: {
-		// Allows devices on same network to access the site
-		host: true,
-
-		// Host on specified port during preview
-		port: env.PREV_PORT,
-		strictPort: true
-	}
-
-} satisfies Config
-
-
-// Export Vite config
 export default config

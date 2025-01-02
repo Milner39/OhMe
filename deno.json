@@ -31,7 +31,8 @@
 		"~web-server/": "./apps/web-server/",
 
 		"#db-api-client/": "./packages/db-api-client/",
-		"#utils/": "./packages/utils/"
+		"#utils/": "./packages/utils/",
+		"#create-configs/": "./packages/create-configs/"
 	},
 	"nodeModulesDir": "auto",
 
