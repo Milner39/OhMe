@@ -14,7 +14,6 @@
 		"svelte-check": "npm:svelte-check@4.0.9",
 		"svelte-preprocess": "npm:svelte-preprocess@6.0.3",
 		"sass": "npm:sass@1.81.0",
-		"vite": "npm:vite@5.4.11",
 
 		"os": "node:os",
 		"path": "node:path",
