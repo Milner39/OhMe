@@ -8,13 +8,13 @@ import RegisterForm from "./_components/RegisterForm.svelte"
 
 
 // Import types
-import type { PageData } from "./$types"
+import type { PageData, ActionData } from "./$types"
 
 // #endregion Imports
 
 
 // Get page data
-let { data }: { data: PageData } = $props()
+let { data, form }: { data: PageData, form: ActionData } = $props()
 
 </script>
 
