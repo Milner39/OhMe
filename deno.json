@@ -32,6 +32,7 @@
 
 		"#db-api-client/": "./packages/db-api-client/",
 		"#utils/": "./packages/utils/",
+		"#validation/": "./packages/validation/",
 		"#create-configs/": "./packages/create-configs/"
 	},
 	"nodeModulesDir": "auto",

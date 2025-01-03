@@ -25,6 +25,20 @@ type ValidatorResult =
 	error: NotNull
 }
 
+export const settings = {
+	username: {
+		minLen: 3,
+		maxLen: 64
+	},
+	password: {
+		minLen: 8,
+		maxLen: 256
+	},
+	email: {
+		maxLen: 320
+	}
+}
+
 /** Validator
  * 
  * Validates several different types of user input
@@ -32,8 +46,7 @@ type ValidatorResult =
 export class Validator {
 	username = (string: string): ValidatorResult => {
 		let result = false
-		const minLen = 3
-		const maxLen = 64
+		const { minLen, maxLen } = settings.username
 
 		// Checks
 		if (typeof string !== "string") return {
@@ -67,8 +80,7 @@ export class Validator {
 
 	password = (string: string): ValidatorResult => {
 		let result = false
-		const minLen = 8
-		const maxLen = 256
+		const { minLen, maxLen } = settings.password
 
 		// Checks
 		if (typeof string !== "string") return {
@@ -102,7 +114,7 @@ export class Validator {
 
 	email = (string: string): ValidatorResult => {
 		let result = false
-		const maxLen = 320
+		const { maxLen } = settings.email
 		const emailRegex = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)*\.[A-Za-z]{2,}$/
 
 		// Checks
@@ -120,9 +132,9 @@ export class Validator {
 			result,
 			error: "Email cannot contain a space"
 		}
-		else if (!string.includes("@") || !string.includes(".")) return {
+		else if (!string.includes("@")) return {
 			result,
-			error: "Email must contain '@' and '.'"
+			error: "Email must contain 1 '@'"
 		}
 		else if (!emailRegex.test(string)) return {
 			result,
