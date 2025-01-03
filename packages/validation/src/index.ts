@@ -115,7 +115,8 @@ export class Validator {
 	email = (string: string): ValidatorResult => {
 		let result = false
 		const { maxLen } = settings.email
-		const emailRegex = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)*\.[A-Za-z]{2,}$/
+		const emailRegex = 
+			/^[^\s@.]+(?:\.[^\s@.]+)*@[^\s@.]+(?:\.[^\s@.]+)*\.[A-Za-z]{2,}$/
 
 		// Checks
 		if (typeof string !== "string") return {
