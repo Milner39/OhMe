@@ -18,9 +18,15 @@ import adapter from "@sveltejs/adapter-node"
 // Import to get file paths
 import { fileURLToPath } from "node:url"
 
-// Import to get path aliases
-import rootDenoJson from "@/deno.json" with { type: "json" }
-import { denoAliasesToAbsoluteAliases } from "#utils/src/deno-utils.ts"
+/*
+	Import to get path aliases
+	The SvelteKit extension for VSCode doesn't like Deno aliases or TS, so the 
+	full path to these files must be used.
+*/
+import rootDenoJson from "../../deno.json" with { type: "json" }
+import { 
+	denoAliasesToAbsoluteAliases 
+} from "../../packages/utils/js-only/deno-utils.mjs"
 
 // #endregion Imports
 
