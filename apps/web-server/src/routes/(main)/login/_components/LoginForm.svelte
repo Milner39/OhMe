@@ -3,19 +3,18 @@
 // #region Imports
 
 import Form from "$lib/components/Inputs/Form/Form.svelte"
+import { applyAction } from "$app/forms"
+import { getFormData } from "$lib/utils/form-utils.ts"
 
 import { Validator } from "#validation/src/index"
-import { applyAction } from "$app/forms"
+
+
+// Import types
+import type { LoginFormData } from "../.d.ts"
 
 // #endregion Imports
 
 
-
-// Type form inputs
-type FromInputs = {
-	username: string,
-	password: string
-}
 
 // Instantiate the validator
 const validator = new Validator()
@@ -27,40 +26,31 @@ const validator = new Validator()
 	onsubmit={(event) => {
 
 		// Get form inputs
-		const formInputs = Object.fromEntries(
-			event.formData.entries()
-		) as FromInputs
-		console.log(formInputs)
+		const formData = getFormData(event.formData) as LoginFormData
+		console.log(formData)
 
 
 		// Validate form inputs
 		let validInputs = true
 
-		const validateUsername = validator.username(formInputs.username)
-		if (validateUsername.result === false) {
-			validInputs = false
-		}
+		const validateUsername = validator.username(formData.username)
+		if (validateUsername.result === false) validInputs = false
 		console.log("Username:", validateUsername)
 
-		const validatePassword = validator.password(formInputs.password)
-		if (validatePassword.result === false) {
-			validInputs = false
-		}
+		const validatePassword = validator.password(formData.password)
+		if (validatePassword.result === false) validInputs = false
 		console.log("Password:", validatePassword)
 
 
 		// Cancel form submission if inputs are invalid
 		if (!validInputs) {
 			console.log("Form submission cancelled")
-
 			event.cancel()
 			return
 		}
 
-		// Allow form submission if inputs are valid
+		// Allow form submission
 		console.log("Form submission allowed")
-
-		
 		return async ({ result, update }) => {
 			await update()
 			await applyAction(result)

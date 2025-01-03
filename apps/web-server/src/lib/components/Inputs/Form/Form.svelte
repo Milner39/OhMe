@@ -55,7 +55,7 @@ let onsubmitDefault: Onsubmit = (event, waitingStatus) => {
 		// Update `waitingForResponse` state
 		waitingStatus = false
 
-		// Update `$page.form`
+		// Update `$props().form`
 		await applyAction(result)
 	}
 
