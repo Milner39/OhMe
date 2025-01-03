@@ -21,19 +21,19 @@ import type { ActionResult } from "@sveltejs/kit"
 
 // use:enhance types
 interface UseEnhanceEvent {
-	action: URL,
-	formData: FormData,
 	formElement: HTMLFormElement,
-	controller: AbortController,
-	submitter: HTMLElement | null,
+	formData: FormData,
+	action: URL,
 	cancel: () => void
+	submitter: HTMLElement | null,
+	controller: AbortController,
 }
 interface UseEnhanceCallbackParams {
 	result: ActionResult, 
 	update: () => Promise<void>
 }
 type UseEnhanceCallback = (params: UseEnhanceCallbackParams) => Promise<any> | any
-type Onsubmit = (event: UseEnhanceEvent, waitingStatus: boolean) => UseEnhanceCallback
+type Onsubmit = (event: UseEnhanceEvent, waitingStatus?: boolean) => UseEnhanceCallback
 
 
 
