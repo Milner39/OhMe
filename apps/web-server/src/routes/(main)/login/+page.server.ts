@@ -59,8 +59,16 @@ export const actions = {
 			}
 		})
 
-		
-		// Inputs are valid, continue
+		// Inputs are valid, send request to DB API
+		const res = await dbAPI.user.$post({
+			form: {
+				body: JSON.stringify({
+					username: formData.username,
+					email: formData.email,
+					password: formData.password
+				})
+			}
+		})
 	},
 	// #endregion Register
 
