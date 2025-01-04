@@ -19,13 +19,10 @@ import userIdR from "./[userId]/index.ts"
 const router = createRouter().basePath("/user")
 	// Define methods for this path
 	.post(
-		"/", 
-		zValidator(
-			"form",
-			z.object({
-				body: stringToJSON.pipe(userRegisterSchema)
-			})
-		),
+		"/",
+		zValidator("form", z.object({
+			body: stringToJSON.pipe(userRegisterSchema)
+		})),
 		(ctx) => {
 			const { body } = ctx.req.valid("form")
 
