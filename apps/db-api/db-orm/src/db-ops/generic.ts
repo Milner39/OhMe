@@ -32,6 +32,7 @@ import type {
 import type {
 	NotNull,
 	MatchListLength,
+	PartialKeysTrue
 } from "#utils/src/type-utils.ts"
 
 // #endregion Imports
@@ -568,7 +569,7 @@ export const gFindUniqueCollisions = async <
 	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
 ): Promise<
 	{
-		result: (keyof Values | undefined)[],
+		result: PartialKeysTrue<Values>, 
 		error: null
 	} | {
 		result: null,
@@ -581,7 +582,7 @@ export const gFindUniqueCollisions = async <
 
 		// Return early if no unique columns
 		if (tsObjectEntries(uniqueColumnValues).length === 0) return {
-			result: [],
+			result: {},
 			error: null
 		}
 
@@ -622,16 +623,17 @@ export const gFindUniqueCollisions = async <
 
 		// Find which unique columns have been matched
 		const takenUniqueColumns: 
-			(keyof Partial<Values> | undefined)[] & 
-			(keyof typeof uniqueColumnValues | undefined)[] 
-			= []
+			PartialKeysTrue<Values> & 
+			PartialKeysTrue<typeof uniqueColumnValues>
+			= {}
 		
 		if (typedRows.length > 0) {
 			for (const columnName of tsObjectKeys(uniqueColumnValues)) {
 				for (const row of typedRows) {
 					// @ts-ignore:
 					if (row[columnName] === uniqueColumnValues[columnName]) {
-						takenUniqueColumns.push(columnName)
+						// @ts-ignore:
+						takenUniqueColumns[columnName] = true
 					}
 				}
 			}

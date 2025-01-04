@@ -40,4 +40,12 @@ export type MatchListLength<List extends any[], Type extends any> = {
 	[Key in keyof List]: List[Key] extends any ? Type : never
 }
 
+/** PartialKeysTrue<T> = {
+ * 
+ * A record with some of the keys of `Record` set to `true`.
+ */
+export type PartialKeysTrue<Record> = {
+	[Key in keyof Record]?: true
+}
+
 // #endregion Utils
