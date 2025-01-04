@@ -149,13 +149,15 @@ export const create = async (
 
 
 
+			const fullRow = selectFullUserRowSchema.parse({
+				user: user,
+				email: email,
+				password: password
+			})
+
 			// Return created rows
 			return {
-				result: {
-					user: user,
-					email: email,
-					password: password
-				},
+				result: fullRow,
 				error: null
 			}
 		})
