@@ -27,7 +27,6 @@ const validator = new Validator()
 
 		// Get form inputs
 		const formData = getFormData(event.formData) as RegisterFormData
-		console.log(formData)
 
 
 		// Validate form inputs
