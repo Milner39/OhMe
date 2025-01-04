@@ -14,6 +14,7 @@
 		"drizzle-kit": "npm:drizzle-kit@0.29.1",
 		"pg": "npm:pg@8.13.1",
 		"@types/pg": "npm:@types/pg@8.11.10",
-		"@hono/zod-validator": "npm:@hono/zod-validator@0.4.2"
+		"@hono/zod-validator": "npm:@hono/zod-validator@0.4.2",
+		"drizzle-zod": "npm:drizzle-zod@0.6.1"
 	}
 }

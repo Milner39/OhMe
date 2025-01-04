@@ -4,6 +4,13 @@
 import { pgTable, uuid, timestamp } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
+// Import to create Zod schemas
+import { 
+	createSelectSchema,
+	createInsertSchema,
+	createUpdateSchema 
+} from "drizzle-zod"
+
 // Import other table schemas
 import { user } from "../user/schema.ts"
 
@@ -43,6 +50,25 @@ export const session = pgTable("session", {
 
 	// #endregion Secondary keys
 })
+
+// Define Zod schemas
+export const sessionSelectSchema = createSelectSchema(session)
+
+export const sessionSafeSelectSchema = createSelectSchema(session).omit({
+	id: true,
+	userId: true
+})
+
+export const sessionInsertSchema = createInsertSchema(session).omit({
+	id: true
+})
+
+export const sessionUpdateSchema = createUpdateSchema(session).omit({
+	id: true,
+	userId: true
+})
+
+
 
 // Define table relations
 export const sessionRelations = relations(session, ({ one }) => ({

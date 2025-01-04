@@ -11,6 +11,7 @@
     "npm:dotenv@16.4.5": "16.4.5",
     "npm:drizzle-kit@0.29.1": "0.29.1_esbuild@0.19.12",
     "npm:drizzle-orm@0.37.0": "0.37.0_@types+pg@8.11.10_pg@8.13.1",
+    "npm:drizzle-zod@0.6.1": "0.6.1_drizzle-orm@0.37.0__@types+pg@8.11.10__pg@8.13.1_zod@3.24.1_@types+pg@8.11.10_pg@8.13.1",
     "npm:hono@4.6.14": "4.6.14",
     "npm:pg@8.13.1": "8.13.1",
     "npm:sass@1.81.0": "1.81.0",
@@ -665,6 +666,13 @@
         "pg"
       ]
     },
+    "drizzle-zod@0.6.1_drizzle-orm@0.37.0__@types+pg@8.11.10__pg@8.13.1_zod@3.24.1_@types+pg@8.11.10_pg@8.13.1": {
+      "integrity": "sha512-huEbUgnsuR8tupnmLiyB2F1I2H9dswI3GfM36IbIqx9i0YUeYjRsDpJVyFVeziUvI1ogT9JHRL2Q03cC4QmvxA==",
+      "dependencies": [
+        "drizzle-orm",
+        "zod"
+      ]
+    },
     "es-module-lexer@1.5.4": {
       "integrity": "sha512-MVNK56NiMrOwitFB7cqDwq0CQutbw+0BvLshJSse0MUNU+y1FC3bUS/AQg7oUng+/wKrrki7JfmwtVHkVfPLlw=="
     },
@@ -1278,6 +1286,7 @@
           "npm:@types/pg@8.11.10",
           "npm:drizzle-kit@0.29.1",
           "npm:drizzle-orm@0.37.0",
+          "npm:drizzle-zod@0.6.1",
           "npm:pg@8.13.1"
         ]
       },

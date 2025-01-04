@@ -4,6 +4,13 @@
 import { pgTable, uuid, varchar, char } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
+// Import to create Zod schemas
+import { 
+	createSelectSchema,
+	createInsertSchema,
+	createUpdateSchema 
+} from "drizzle-zod"
+
 // Import other table schemas
 import { email } from "../email/schema.ts"
 import { password } from "../password/schema.ts"
@@ -38,6 +45,23 @@ export const user = pgTable("user", {
 
 	// #endregion Secondary keys
 })
+
+// Define Zod schemas
+export const userSelectSchema = createSelectSchema(user)
+
+export const userSafeSelectSchema = createSelectSchema(user).omit({
+	id: true
+})
+
+export const userInsertSchema = createInsertSchema(user).omit({
+	id: true
+})
+
+export const userUpdateSchema = createUpdateSchema(user).omit({
+	id: true
+})
+
+
 
 // Define table relations
 export const userRelations = relations(user, ({ one, many }) => ({
