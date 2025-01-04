@@ -31,6 +31,8 @@ import { zodTableSchemas } from "../schemas/index.ts"
 
 
 // Import types
+import type { DBTransaction } from "../db-connection.ts"
+
 import type { SQL } from "drizzle-orm"
 
 import {
@@ -88,7 +90,8 @@ const createFullUserRowSchema = z.object({
  * 	- Create a single row in `passwordT` joined to the new `userT` row.
  */
 export const create = async (
-	values: z.infer<typeof createFullUserRowSchema>
+	values: z.infer<typeof createFullUserRowSchema>,
+	sharedTx?: DBTransaction
 ): Promise<
 	{
 		result: SelectFullUserRow,
@@ -100,7 +103,7 @@ export const create = async (
 > => {
 	try {
 		// Create a transaction
-		const txResult = await db.transaction(async (tx) => {
+		const txResult = await (sharedTx || db).transaction(async (tx) => {
 	
 			// Create user
 			const {
