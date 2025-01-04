@@ -26,8 +26,7 @@ import {
 } from "../db-utils.ts"
 
 // Import tables and schemas
-import tables from "../schemas/index.ts"
-import { zodTableSchemas } from "../schemas/index.ts"
+import tables, { zodTableSchemas } from "../schemas/index.ts"
 
 
 // Import types
@@ -109,7 +108,7 @@ export const create = async (
 			const {
 				result: users,
 				error: cUserError
-			} = await gCreate(tables.user, asLiteralArray(values.user), tx)
+			} = await gCreate(userT, asLiteralArray(values.user), tx)
 	
 			if (cUserError !== null) {
 				throw new Error("Failed to create user")
@@ -123,7 +122,7 @@ export const create = async (
 			const {
 				result: emails,
 				error: cEmailError
-			} = await gCreate(tables.email, asLiteralArray({
+			} = await gCreate(emailT, asLiteralArray({
 				userId: user.id,
 				...values.email,
 			}), tx)
@@ -139,7 +138,7 @@ export const create = async (
 			const {
 				result: passwords,
 				error: cPasswordError
-			} = await gCreate(tables.password, asLiteralArray({
+			} = await gCreate(passwordT, asLiteralArray({
 				userId: user.id,
 				...values.password,
 			}), tx)
@@ -426,3 +425,86 @@ export const findUniqueCollisions = async (
 }
 
 // #endregion MISC
+
+
+// #region Common Operations
+
+import { 
+	create as createSession,
+	SelectSession
+} from "./session.ts"
+
+/** registerUser
+ * 
+ * Use a transaction to:
+ * 	- Create a full user row.
+ *  - create a session row, joined to the user.
+ * 
+ * If any step fails, rollback the transaction.
+ */
+export const registerUser = async (
+	values: z.infer<typeof createFullUserRowSchema>
+): Promise<
+	{
+		result: {
+			extendedUser: SelectFullUserRow,
+			session: SelectSession
+		},
+		error: null
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
+	try {
+		// Create a transaction
+		const txResult = await db.transaction(async (tx) => {
+
+			// Create user
+			const {
+				result: fullUser,
+				error: cUserError
+			} = await create(values, tx)
+
+			if (cUserError !== null) {
+				throw new Error("Failed to create user")
+			}
+
+
+			// Create session
+			const {
+				result: session,
+				error: cSessionError
+			} = await createSession({
+				user: { id: fullUser.user.id },
+				session: { expiresAt: new Date() } // TODO: PROPER EXPIRY DATE
+			}, tx)
+
+			if (cSessionError !== null) {
+				throw new Error("Failed to create session for user")
+			}
+
+
+			// Return created rows
+			return {
+				result: {
+					extendedUser: fullUser,
+					session: session
+				},
+				error: null
+			}
+		})
+
+		return txResult
+	}
+	
+	catch (error) {
+		return {
+			result: null,
+			error: error as NotNull
+		}
+	}
+}
+
+
+// #endregion Common Operations
