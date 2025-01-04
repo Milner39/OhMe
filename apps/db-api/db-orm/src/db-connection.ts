@@ -21,3 +21,10 @@ const db = drizzle({
 
 // Export the database connection
 export default db
+
+
+// Export types
+export type DB = typeof db
+export type DBTransaction = Parameters<
+	Parameters<DB["transaction"]>[0]
+>[0]

@@ -19,6 +19,8 @@ import {
 
 
 // Import types
+import type { DBTransaction } from "../db-connection.ts"
+
 import type { 
 	PgTableWithColumns,
 } from "drizzle-orm/pg-core"
@@ -79,7 +81,7 @@ class DynamicQuery<
 	constructor(
 		table: Table,
 
-		tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+		tx?: DBTransaction
 	) {
 		// Store table information
 		this.table = table
@@ -173,7 +175,7 @@ export const gReadMany = async <
 	table: Table,
 	query: (dynamicQuery: DynamicQuery<Table>) => DynamicQuery<Table>,
 
-	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+	tx?: DBTransaction
 ): Promise<
 	{
 		result: unknown[],
@@ -221,7 +223,7 @@ export const gReadOne = async <
 	table: Table,
 	query: (dynamicQuery: DynamicQuery<Table>) => DynamicQuery<Table>,
 
-	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+	tx?: DBTransaction
 ): Promise<
 	{
 		result: unknown,
@@ -274,7 +276,7 @@ export const gCreate = async <
 	table: Table,
 	values: Values,
 
-	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+	tx?: DBTransaction
 ): Promise<
 	{
 		result: MatchListLength<Values, InferSelectModel<Table>>,
@@ -328,7 +330,7 @@ export const gUpdateMany = async <
 		conditionalOperators: typeof cOps
 	) => SQL | undefined,
 
-	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+	tx?: DBTransaction
 ): Promise<
 	{
 		result: InferSelectModel<Table>[],
@@ -382,7 +384,7 @@ export const gUpdateOne = async <
 		conditionalOperators: typeof cOps
 	) => SQL | undefined,
 
-	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+	tx?: DBTransaction
 ): Promise<
 	{
 		result: InferSelectModel<Table>,
@@ -444,7 +446,7 @@ export const gDeleteMany = async <
 		conditionalOperators: typeof cOps
 	) => SQL | undefined,
 
-	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+	tx?: DBTransaction
 ): Promise<
 	{
 		result: InferSelectModel<Table>[],
@@ -495,7 +497,7 @@ export const gDeleteOne = async <
 		conditionalOperators: typeof cOps
 	) => SQL | undefined,
 
-	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+	tx?: DBTransaction
 ): Promise<
 	{
 		result: InferSelectModel<Table>,
@@ -566,7 +568,7 @@ export const gFindUniqueCollisions = async <
 	table: Table,
 	values: Values,
 
-	tx?: Parameters<Parameters<typeof db["transaction"]>[0]>[0]
+	tx?: DBTransaction
 ): Promise<
 	{
 		result: PartialKeysTrue<Values>, 
