@@ -10,6 +10,9 @@ import {
 	createInsertSchema,
 	createUpdateSchema 
 } from "drizzle-zod"
+import {
+	username as usernameSchema
+} from "#validation/src/zod-schemas/index.ts"
 
 // Import other table schemas
 import { email } from "../email/schema.ts"
@@ -55,11 +58,11 @@ export const userSafeSelectSchema = createSelectSchema(user).omit({
 
 export const userInsertSchema = createInsertSchema(user).omit({
 	id: true
-})
+}).setKey("username", usernameSchema)
 
 export const userUpdateSchema = createUpdateSchema(user).omit({
 	id: true
-})
+}).setKey("username", usernameSchema)
 
 
 

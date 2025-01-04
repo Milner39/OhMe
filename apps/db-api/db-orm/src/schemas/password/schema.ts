@@ -10,6 +10,9 @@ import {
 	createInsertSchema,
 	createUpdateSchema 
 } from "drizzle-zod"
+import {
+	password as rawPasswordSchema
+} from "#validation/src/zod-schemas/index.ts"
 
 // Import other table schemas
 import { user } from "../user/schema.ts"
@@ -71,12 +74,12 @@ export const passwordSafeSelectSchema = createSelectSchema(password).omit({
 
 export const passwordInsertSchema = createInsertSchema(password).omit({
 	id: true
-})
+}).setKey("hash", rawPasswordSchema)
 
 export const passwordUpdateSchema = createUpdateSchema(password).omit({
 	id: true,
 	userId: true
-})
+}).setKey("hash", rawPasswordSchema)
 
 
 

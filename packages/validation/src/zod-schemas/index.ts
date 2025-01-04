@@ -30,6 +30,8 @@ export const password = z.string().superRefine((val, ctx) => {
 		code: z.ZodIssueCode.custom,
 		message: String(validate.error)
 	})
+
+	// TODO: HASH BEFORE RETURNING
 })
 
 export const email = z.string().transform((val, ctx) => {
