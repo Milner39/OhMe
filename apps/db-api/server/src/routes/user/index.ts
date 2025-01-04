@@ -3,7 +3,6 @@
 // Validation
 import { zValidator } from "@hono/zod-validator"
 import { z } from "zod"
-import { stringToJSON } from "#utils/src/zod-utils.ts"
 import { userRegisterSchema } from "#validation/src/zod-schemas/index.ts"
 
 import { createRouter } from "~db-api/server/src/lib/create-router.ts"
@@ -20,14 +19,15 @@ const router = createRouter().basePath("/user")
 	// Define methods for this path
 	.post(
 		"/",
-		zValidator("form", z.object({
-			body: stringToJSON.pipe(userRegisterSchema)
+		zValidator("json", z.object({
+			body: userRegisterSchema
 		})),
 		(ctx) => {
-			const { body } = ctx.req.valid("form")
+			const { body } = ctx.req.valid("json")
 
 			return ctx.json({
-				message: "Database API received request to create user"
+				message: "Database API received request to create user",
+				username: body.username,
 			})
 		}
 	)
