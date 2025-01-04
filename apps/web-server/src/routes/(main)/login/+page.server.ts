@@ -4,7 +4,7 @@ import { fail } from "@sveltejs/kit"
 
 import { getFormData } from "$lib/utils/form-action-utils.ts"
 
-import { Validator } from "#validation/src"
+import { Validator } from "#validation/src/index.ts"
 
 import {
 	createApiClient as createDbApiClient
