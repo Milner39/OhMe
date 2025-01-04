@@ -10,6 +10,16 @@ import { createRouter } from "~db-api/server/src/lib/create-router.ts"
 // Import child routes
 import userIdR from "./[userId]/index.ts"
 
+
+import { registerUser } from "~db-api/db-orm/src/db-ops/user.ts"
+import { KnownError } from "~db-api/utils/error-utils.ts"
+
+
+// Import types
+import type { 
+	StandardResponseBody
+} from "~db-api/server/src/lib/utils/response-utils.ts"
+
 // #endregion Imports
 
 
@@ -22,13 +32,60 @@ const router = createRouter().basePath("/user")
 		zValidator("json", z.object({
 			body: userRegisterSchema
 		})),
-		(ctx) => {
+		async (ctx) => {
+			// Get request body
 			const { body } = ctx.req.valid("json")
 
-			return ctx.json({
-				message: "Database API received request to create user",
-				username: body.username,
+			// Create user
+			const regUserResponse = await registerUser({
+				user: { username: body.username },
+				password: { hash: body.password },
+				email: { address: body.email },
 			})
+
+			// Check for errors
+			if (regUserResponse.error !== null) {
+				// Get error
+				const error = regUserResponse.error
+
+
+				// Create base response
+				const baseBody = {
+					result: null,
+					error: {
+						message: "Error creating user",
+						cause: { code: "Unknown server error" },
+					}
+				} satisfies StandardResponseBody
+				const baseResponse = ctx.json(baseBody, 500)
+
+
+				// Check if error is one with a known cause
+				if (!(error instanceof KnownError)) return baseResponse
+
+				// Handle known error
+				switch (error.cause.code) {
+					case "UniqueCollision":
+						baseBody.error.cause = error.cause
+						return ctx.json(baseBody, 409)
+
+					default:
+						return baseResponse
+				}
+			}
+
+			// User registered successfully
+			
+			const resBody = {
+				result: {
+					userId: regUserResponse.result.extendedUser.user.id,
+					sessionId: regUserResponse.result.session.id,
+				},
+				error: null
+			} satisfies StandardResponseBody
+
+			// return success
+			return ctx.json(resBody, 200)
 		}
 	)
 
