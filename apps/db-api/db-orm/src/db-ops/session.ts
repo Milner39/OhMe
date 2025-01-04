@@ -75,10 +75,7 @@ export const create = async (
 			userId: values.user.id,
 			...values.session
 		}), sharedTx)
-
-		if (cSessionError !== null) {
-			throw new Error("Failed to create session")
-		}
+		if (cSessionError !== null) throw cSessionError
 
 		const session = zodTableSchemas.session.select.parse(sessions[0])
 

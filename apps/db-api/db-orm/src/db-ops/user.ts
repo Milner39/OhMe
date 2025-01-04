@@ -2,6 +2,8 @@
 
 import { z } from "zod"
 
+import { KnownError } from "~db-api/utils/error-utils.ts"
+
 // Import db connection
 import db from "../db-connection.ts"
 
@@ -109,10 +111,7 @@ export const create = async (
 				result: users,
 				error: cUserError
 			} = await gCreate(userT, asLiteralArray(values.user), tx)
-	
-			if (cUserError !== null) {
-				throw new Error("Failed to create user")
-			}
+			if (cUserError !== null) throw cUserError
 
 			const user = users[0]
 
@@ -126,10 +125,7 @@ export const create = async (
 				userId: user.id,
 				...values.email,
 			}), tx)
-	
-			if (cEmailError !== null) {
-				throw new Error("Failed to create email for user")
-			}
+			if (cEmailError !== null) throw cEmailError
 
 			const email = emails[0]
 
@@ -142,10 +138,7 @@ export const create = async (
 				userId: user.id,
 				...values.password,
 			}), tx)
-
-			if (cPasswordError !== null) {
-				throw new Error("Failed to create password for user")
-			}
+			if (cPasswordError !== null) throw cPasswordError
 
 			const password = passwords[0]
 
@@ -233,10 +226,7 @@ export const readMany = async (
 					filters.password?.(userT, password, cOps)
 				))
 		})
-
-		if (rUserError !== null) {
-			throw new Error("Failed to read many users")
-		}
+		if (rUserError !== null) throw rUserError
 
 		const rows = z.array(selectFullUserRowSchema).parse(maybeRows)
 		
@@ -309,10 +299,7 @@ export const readOne = async (
 					filters.password?.(userT, password, cOps)
 				))
 		})
-
-		if (rUserError !== null) {
-			throw new Error("Failed to read one user")
-		}
+		if (rUserError !== null) throw rUserError
 
 		const row = selectFullUserRowSchema.parse(maybeRow)
 
@@ -358,7 +345,7 @@ export const findUniqueCollisions = async (
 		error: null
 	} | {
 		result: null,
-		error: unknown
+		error: NotNull
 	}
 > => {
 	try {
@@ -370,10 +357,7 @@ export const findUniqueCollisions = async (
 			userT,
 			values.user ?? {}
 		)
-
-		if (rUserError !== null) {
-			throw new Error("Failed with finding unique collisions for user")
-		}
+		if (rUserError !== null) throw rUserError
 
 
 		// Get collisions from email values
@@ -384,10 +368,7 @@ export const findUniqueCollisions = async (
 			emailT,
 			values.email ?? {}
 		)
-
-		if (rEmailError !== null) {
-			throw new Error("Failed with finding unique collisions for email")
-		}
+		if (rEmailError !== null) throw rEmailError
 
 
 		// Get collisions from password values
@@ -398,13 +379,9 @@ export const findUniqueCollisions = async (
 			passwordT,
 			values.password ?? {}
 		)
-
-		if (rPasswordError !== null) {
-			throw new Error("Failed with finding unique collisions for password")
-		}
+		if (rPasswordError !== null) throw rPasswordError
 
 
-		
 		// Return results from all queries
 		return {
 			result: {
@@ -419,7 +396,7 @@ export const findUniqueCollisions = async (
 	catch (error) {
 		return {
 			result: null,
-			error: error
+			error: error as NotNull
 		}
 	}
 }
@@ -457,6 +434,28 @@ export const registerUser = async (
 	}
 > => {
 	try {
+		// Check for unique collisions
+		const {
+			result: collisions,
+			error: fuCollisionsError
+		} = await findUniqueCollisions({
+			user: values.user,
+			email: values.email,
+			password: values.password
+		})
+		if (fuCollisionsError !== null) throw fuCollisionsError
+
+		if (Object.keys({
+			...(collisions.user),
+			...(collisions.email),
+			...(collisions.password)
+		}).length !== 0) {
+			throw new KnownError("Unique collision found", { 
+				code: "UniqueCollision",
+				target: collisions
+			})
+		}
+
 		// Create a transaction
 		const txResult = await db.transaction(async (tx) => {
 
@@ -465,10 +464,7 @@ export const registerUser = async (
 				result: fullUser,
 				error: cUserError
 			} = await create(values, tx)
-
-			if (cUserError !== null) {
-				throw new Error("Failed to create user")
-			}
+			if (cUserError !== null) throw cUserError
 
 
 			// Create session
@@ -479,10 +475,7 @@ export const registerUser = async (
 				user: { id: fullUser.user.id },
 				session: { expiresAt: new Date() } // TODO: PROPER EXPIRY DATE
 			}, tx)
-
-			if (cSessionError !== null) {
-				throw new Error("Failed to create session for user")
-			}
+			if (cSessionError !== null) throw cSessionError
 
 
 			// Return created rows
