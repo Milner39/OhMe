@@ -16,7 +16,7 @@
 		"allowImportingTsExtensions": true,
 		"skipLibCheck": true,
 
-		"outFile": "./dist/.d.ts",
+		"outDir": "./dist",
 	},
 	"include": ["./src/lib"]
 }
