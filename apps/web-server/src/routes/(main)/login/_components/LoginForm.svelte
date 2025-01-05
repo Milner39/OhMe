@@ -63,7 +63,7 @@ const validator = new Validator()
 		FTextInput
 	})}
 		<Title>
-			<h1>Login</h1>
+			<h1>Log In</h1>
 			<p>All fields marked with "*" are required.</p>
 		</Title>
 		<Section>
@@ -107,7 +107,7 @@ const validator = new Validator()
 					>
 						<p>Register Instead</p>
 					</FButton>
-					<FButton><p>Login</p></FButton>
+					<FButton><p>Log In</p></FButton>
 				</div>
 			</div>
 		</Section>

@@ -114,7 +114,7 @@ const validator = new Validator()
 					<FButton classes="secondary"
 						type="link" href="?mode=login"
 					>
-						<p>Login Instead</p>
+						<p>Log In Instead</p>
 					</FButton>
 					<FButton><p>Register</p></FButton>
 				</div>
