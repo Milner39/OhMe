@@ -6,14 +6,14 @@ import { z, ZodError } from "zod"
 
 
 
-/** stringToJSON
+/** stringToJson
  * 
  * Parses stringified JSON and returns the parsed object if successful
  * 
  * Full credit:
    https://github.com/colinhacks/zod/discussions/2215#discussioncomment-5356286
  */
-export const stringToJSON = z.string().transform((str, ctx) => {
+export const stringToJson = z.string().transform((str, ctx) => {
 	try {
 		return JSON.parse(str)
 	} catch (_) {

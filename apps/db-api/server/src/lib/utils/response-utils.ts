@@ -29,7 +29,7 @@ export type StandardResponseBody = {
 
 // #region Validation hooks
 
-export const validateJSONHook = <
+export const validateJsonHook = <
 	ValidatorResult extends HonoZValidatorResult,
 	Context extends HonoContext
 > (

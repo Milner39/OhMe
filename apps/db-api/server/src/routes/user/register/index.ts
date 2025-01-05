@@ -12,7 +12,7 @@ import { KnownError } from "~db-api/utils/error-utils.ts"
 
 // Import to help with responses
 import { 
-	validateJSONHook,
+	validateJsonHook,
 	StandardResponseBody
 } from "~db-api/server/src/lib/utils/response-utils.ts"
 
@@ -25,7 +25,7 @@ const router = createRouter().basePath("/register")
 	// Define methods for this path
 	.post(
 		"/",
-		zValidator("json", userRegisterSchema, validateJSONHook),
+		zValidator("json", userRegisterSchema, validateJsonHook),
 		async (ctx) => {
 			// Get request body
 			const body = ctx.req.valid("json")
