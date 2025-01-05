@@ -4,13 +4,8 @@
 # Installed dependencies
 node_modules
 
-
-# Web Server temp files
-WebServer/**/build
-WebServer/**/.svelte-kit
-WebServer/**/vite.config.*.timestamp-*
-
-
+# Compiled output
+dist
 
 # Common temp files
 .vite
