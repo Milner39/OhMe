@@ -25,7 +25,20 @@ const router = createRouter().basePath("/register")
 	// Define methods for this path
 	.post(
 		"/",
-		zValidator("json", userRegisterSchema),
+		zValidator("json", userRegisterSchema, (res, ctx) => {
+			if (!res.success) return ctx.json(
+				{
+				result: null,
+				error: {
+					message: "Invalid request body",
+					cause: {
+						code: "InvalidRequestBody",
+						target: res.error.issues
+					},
+				}
+				} satisfies StandardResponseBody, 422
+			)
+		}),
 		async (ctx) => {
 			// Get request body
 			const body = ctx.req.valid("json")
