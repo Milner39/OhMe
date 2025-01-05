@@ -445,16 +445,16 @@ export const registerUser = async (
 		})
 		if (fuCollisionsError !== null) throw fuCollisionsError
 
-		if (Object.keys({
-			...(collisions.user),
-			...(collisions.email),
-			...(collisions.password)
-		}).length !== 0) {
+		if (
+			Object.values(collisions)
+				.some(row => Object.keys(row).length > 0)
+		) {
 			throw new KnownError("Unique collision found", { 
 				code: "UniqueCollision",
 				target: collisions
 			})
 		}
+		
 
 		// Create a transaction
 		const txResult = await db.transaction(async (tx) => {
