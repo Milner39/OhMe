@@ -411,6 +411,7 @@ import {
 	SelectSession
 } from "./session.ts"
 
+
 /** registerUser
  * 
  * Use a transaction to:
@@ -448,7 +449,7 @@ export const registerUser = async (
 			Object.values(collisions)
 				.some(row => Object.keys(row).length > 0)
 		) {
-			throw new KnownError("Unique collision found", { 
+			throw new KnownError("Unique collision found", {
 				code: "UniqueCollision",
 				target: collisions
 			})
@@ -497,6 +498,5 @@ export const registerUser = async (
 		}
 	}
 }
-
 
 // #endregion Common Operations
