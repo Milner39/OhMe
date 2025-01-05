@@ -1,0 +1,6 @@
+{
+	"tasks": {
+		"tsc:show-config": "tsc --showConfig",
+		"tsc": "tsc ./src/index.ts --outDir ./dist"
+	}
+}
