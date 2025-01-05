@@ -10,9 +10,9 @@ import { createRouter } from "~db-api/server/src/lib/create-router.ts"
 import { registerUser } from "~db-api/db-orm/src/db-ops/user.ts"
 import { KnownError } from "~db-api/utils/error-utils.ts"
 
-
-// Import types
-import type { 
+// Import to help with responses
+import { 
+	validateJSONHook,
 	StandardResponseBody
 } from "~db-api/server/src/lib/utils/response-utils.ts"
 
@@ -25,20 +25,7 @@ const router = createRouter().basePath("/register")
 	// Define methods for this path
 	.post(
 		"/",
-		zValidator("json", userRegisterSchema, (res, ctx) => {
-			if (!res.success) return ctx.json(
-				{
-				result: null,
-				error: {
-					message: "Invalid request body",
-					cause: {
-						code: "InvalidRequestBody",
-						target: res.error.issues
-					},
-				}
-				} satisfies StandardResponseBody, 422
-			)
-		}),
+		zValidator("json", userRegisterSchema, validateJSONHook),
 		async (ctx) => {
 			// Get request body
 			const body = ctx.req.valid("json")

@@ -1,6 +1,6 @@
 // #region Imports
 
-import { z } from "zod"
+import { z, ZodError } from "zod"
 
 // #endregion Imports
 
@@ -24,3 +24,17 @@ export const stringToJSON = z.string().transform((str, ctx) => {
 		return z.NEVER
 	}
 })
+
+
+/** HonoZValidatorResult
+ * 
+ * The result from `zValidator` in `@hono/zod-validator`
+ */
+export type HonoZValidatorResult = {
+	success: true,
+	data: unknown
+} | {
+	success: false,
+	data: unknown,
+	error: ZodError
+}
