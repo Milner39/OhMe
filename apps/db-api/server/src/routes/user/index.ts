@@ -12,7 +12,7 @@ import userIdR from "./[userId]/index.ts"
 
 
 import { registerUser } from "~db-api/db-orm/src/db-ops/user.ts"
-import { KnownError, KnownErrorCause } from "~db-api/utils/error-utils.ts"
+import { KnownError } from "~db-api/utils/error-utils.ts"
 
 
 // Import types
