@@ -79,7 +79,7 @@ const router = createRouter().basePath("/register")
 			} satisfies StandardResponseBody
 
 			// return success
-			return ctx.json(resBody, 200)
+			return ctx.json(resBody, 201)
 		}
 	)
 
