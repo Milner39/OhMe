@@ -3,6 +3,7 @@
 import { fail } from "@sveltejs/kit"
 
 import { getFormData } from "$lib/utils/form-action-utils.ts"
+import { setAuthCookies } from "$lib/utils/cookie-utils.ts"
 
 import { Validator } from "#validation/src/index.ts"
 
@@ -31,7 +32,7 @@ const dbAPI = createDbApiClient()
 export const actions = {
 
 	// #region Register
-	register: async ({ request }) => {
+	register: async ({ request, cookies }) => {
 
 		// Get form inputs
 		const formData = await getFormData(request) as RegisterFormData
@@ -52,6 +53,7 @@ export const actions = {
 
 		// Return response early if inputs are invalid
 		if (!validInputs) return fail(400, {
+			result: null,
 			error: {
 				username: validateUsername.error,
 				email: validateEmail.error,
@@ -59,15 +61,40 @@ export const actions = {
 			}
 		})
 
+
 		// Inputs are valid, send request to DB API
-		const res = await dbAPI.user.register.$post({
+		const dbRes = await dbAPI.user.register.$post({
 			json: {
 				username: formData.username,
 				email: formData.email,
 				password: formData.password
 			}
 		})
-		console.log(await res.json())
+		
+		// Check for errors
+		if (!dbRes.ok) {
+			// TODO: Handle known errors and return appropriate response
+			return fail(500, {
+				result: null,
+				error: {
+					message: "Error creating user",
+					cause: { code: "Unknown server error" }
+				}
+			})
+		}
+		const dbResJson = await dbRes.json()
+		// User has registered successfully after here
+
+
+		// Get IDs
+		const { userId, sessionId } = dbResJson.result
+
+		// Set auth cookies
+		setAuthCookies(cookies, userId, sessionId)
+
+		return {
+
+		}
 	},
 	// #endregion Register
 

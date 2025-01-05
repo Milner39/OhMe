@@ -70,10 +70,14 @@ const router = createRouter().basePath("/register")
 			// User has registered successfully after here
 			
 			
+			// Get IDs
+			const userId = regUserResponse.result.extendedUser.user.id
+			const sessionId = regUserResponse.result.session.id
+
 			const resBody = {
 				result: {
-					userId: regUserResponse.result.extendedUser.user.id,
-					sessionId: regUserResponse.result.session.id,
+					userId: userId,
+					sessionId: sessionId
 				},
 				error: null
 			} satisfies StandardResponseBody
