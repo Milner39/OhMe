@@ -12,7 +12,7 @@ import userIdR from "./[userId]/index.ts"
 
 
 import { registerUser } from "~db-api/db-orm/src/db-ops/user.ts"
-import { KnownError } from "~db-api/utils/error-utils.ts"
+import { KnownError, KnownErrorCause } from "~db-api/utils/error-utils.ts"
 
 
 // Import types
@@ -58,9 +58,9 @@ const router = createRouter().basePath("/user")
 				const baseResponse = ctx.json(baseBody, 500)
 
 
-				// Check if error is one with a known cause
-				if (!(error instanceof KnownError)) return baseResponse
-
+				// Return failure if error is not a known error
+				if (!(KnownError.isKnownError(error))) return baseResponse
+				
 				// Handle known error
 				switch (error.cause.code) {
 					case "UniqueCollision":

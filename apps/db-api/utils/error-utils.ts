@@ -17,6 +17,11 @@ export class KnownError<
 		super(message)
 		this.cause = cause
 	}
+
+	static isKnownError(value: unknown): value is KnownError<KnownErrorCause> {
+		return value instanceof KnownError
+	}
 }
 
 // #endregion KnownError
+
