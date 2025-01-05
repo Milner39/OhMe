@@ -29,12 +29,10 @@ const router = createRouter().basePath("/user")
 	// Define methods for this path
 	.post(
 		"/",
-		zValidator("json", z.object({
-			body: userRegisterSchema
-		})),
+		zValidator("json", userRegisterSchema),
 		async (ctx) => {
 			// Get request body
-			const { body } = ctx.req.valid("json")
+			const body = ctx.req.valid("json")
 
 			// Create user
 			const regUserResponse = await registerUser({
