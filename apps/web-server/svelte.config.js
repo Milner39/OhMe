@@ -44,6 +44,9 @@ const srcDirURL = new URL("./src/", thisDirURL)
 /** @type {import("@sveltejs/kit").Config} */
 const config = {
 
+	// Use Svelte5 syntax
+	compilerOptions: { runes: true },
+
 	// Preprocessor settings
 	preprocess: [
 		sveltePreprocess()
