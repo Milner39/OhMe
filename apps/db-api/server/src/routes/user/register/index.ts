@@ -67,8 +67,8 @@ const router = createRouter().basePath("/register")
 						return baseResponse
 				}
 			}
-
-			// User registered successfully
+			// User has registered successfully after here
+			
 			
 			const resBody = {
 				result: {
