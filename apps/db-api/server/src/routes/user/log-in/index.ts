@@ -2,16 +2,12 @@
 
 import { createRouter } from "~db-api/server/src/lib/create-router.ts"
 
-// Import child routes
-import logInR from "./log-in/index.ts"
-import registerR from "./register/index.ts"
-
 // #endregion Imports
 
 
 
 // Create router
-const router = createRouter().basePath("/user")
+const router = createRouter().basePath("/log-in")
 	// Define methods for this path
 	// N/A
 
@@ -19,8 +15,7 @@ const router = createRouter().basePath("/user")
 // Mount sub routes
 const deepRouter = router
 	// Mount static routes first
-	.route("/", logInR)
-	.route("/", registerR)
+	// N/A
 
 	// Mount dynamic routes
 	// N/A

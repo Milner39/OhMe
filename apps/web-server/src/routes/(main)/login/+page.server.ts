@@ -60,7 +60,7 @@ export const actions = {
 		})
 
 		// Inputs are valid, send request to DB API
-		const res = await dbAPI.user.$post({
+		const res = await dbAPI.user.register.$post({
 			json: {
 				username: formData.username,
 				email: formData.email,
