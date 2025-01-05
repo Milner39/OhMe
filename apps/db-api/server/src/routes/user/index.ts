@@ -2,7 +2,6 @@
 
 // Validation
 import { zValidator } from "@hono/zod-validator"
-import { z } from "zod"
 import { userRegisterSchema } from "#validation/src/zod-schemas/index.ts"
 
 import { createRouter } from "~db-api/server/src/lib/create-router.ts"
