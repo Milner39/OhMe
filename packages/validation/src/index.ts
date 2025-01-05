@@ -1,7 +1,5 @@
 // #region Imports
 
-import type { NotNull } from "#utils/src/type-utils.ts"
-
 // #endregion Imports
 
 
@@ -22,7 +20,7 @@ type ValidatorResult =
 	error: null
 } | {
 	result: false,
-	error: NotNull
+	error: string
 }
 
 export const settings = {
