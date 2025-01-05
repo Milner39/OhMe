@@ -1,8 +1,3 @@
-/*
-	This file is only here to allow tsc commands to work correctly with path 
-	aliases.
-*/
-
 {
 	"compilerOptions": {
 		"baseUrl": ".",
@@ -10,8 +5,9 @@
 			"@/*": ["../../*"],
 			"~db-api/*": ["../../apps/db-api/*"],
 			"~web-server/*": ["../../apps/web-server/*"],
-			"#db-api-client/*": ["../db-api-client/*"],
-			"#utils/*": ["../utils/*"],
+			"#db-api-client/*": ["../../packages/db-api-client/*"],
+			"#utils/*": ["../../packages/utils/*"],
+			"#validation/*": ["../../packages/validation/*"],
 		}
 	}
 }

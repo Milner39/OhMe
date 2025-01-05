@@ -1,6 +1,6 @@
 {
 	"tasks": {
-		"tsc:show-config": "tsc --showConfig",
-		"tsc": "tsc ./src/index.ts --outDir ./dist"
+		"tsc:show-config": "tsc --project tsconfig.types.json --showConfig",
+		"tsc": "tsc --project tsconfig.types.json"
 	}
 }

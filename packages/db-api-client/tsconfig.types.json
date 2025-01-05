@@ -1,0 +1,22 @@
+/*
+	This file is only here to allow tsc commands to work correctly with path 
+	aliases.
+*/
+
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"module": "ESNext",
+		"target": "ESNext",
+		"moduleResolution": "Node",
+
+
+		"declaration": true,
+		"emitDeclarationOnly": true,
+		"allowImportingTsExtensions": true,
+		"skipLibCheck": true,
+
+		"outFile": "./dist/.d.ts",
+	},
+	"include": ["./src/lib"]
+}
