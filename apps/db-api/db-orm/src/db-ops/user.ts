@@ -415,9 +415,8 @@ import {
  * 
  * Use a transaction to:
  * 	- Create a full user row.
- *  - create a session row, joined to the user.
- * 
- * If any step fails, rollback the transaction.
+ *  - Create a session row, joined to the user.
+ *  - If any step fails, rollback the transaction.
  */
 export const registerUser = async (
 	values: z.infer<typeof createFullUserRowSchema>
@@ -454,7 +453,7 @@ export const registerUser = async (
 				target: collisions
 			})
 		}
-		
+
 
 		// Create a transaction
 		const txResult = await db.transaction(async (tx) => {
