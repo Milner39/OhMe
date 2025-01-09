@@ -1,0 +1,11 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"types": ["../../deno.d.ts", "node"],
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+
+		"outDir": "./dist"
+	},
+	"include": ["src"],
+}

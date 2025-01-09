@@ -2,8 +2,5 @@
 	"extends": [
 		"./tsconfig.paths.json",
 		"./tsconfig.deno.json"
-	],
-	"compilerOptions": {
-
-	}
+	]
 }

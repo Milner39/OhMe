@@ -1,6 +1,6 @@
 // #region Imports
 
-import { fileURLToPath } from "node:url"
+import { fileURLToPath, URL } from "node:url"
 
 // #endregion Imports
 

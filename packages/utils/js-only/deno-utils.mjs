@@ -1,46 +1,9 @@
-// #region Imports
+import defaultExp from "../dist/deno-utils.js"
+import { 
+	denoAliasesToAbsoluteAliases 
+} from "../dist/deno-utils.js"
 
-import { fileURLToPath } from "node:url"
-
-// #endregion Imports
-
-
-
-// #region Utils
-
-/** denoAliasesToAbsoluteAliases
- * 
- * Convert Deno path aliases to absolute path aliases.
- */
-export const denoAliasesToAbsoluteAliases = (
-	denoImports,
-	denoFileURL
-) => {
-	const absoluteAliases = Object.fromEntries(
-		Object.entries(denoImports)
-			// Filter out npm or jsr dependencies
-			.filter((entry) => {
-				return entry[1].startsWith(".")
-			})
-
-			// Map the entries to the correct format
-			.map((entry) => {
-				return [
-					// Format the alias
-					entry[0].slice(0, -1),
-
-					// Get the absolute path
-					fileURLToPath(new URL(entry[1], denoFileURL))
-				]
-			})
-	)
-	return absoluteAliases
+export default defaultExp
+export {
+	denoAliasesToAbsoluteAliases
 }
-
-// #endregion Utils
-
-
-/* 
-	TODO: Set up a TS to JS compiler so this file does not have to be updated 
-	and the SvelteKit extension for VSCode can be used.
-*/
