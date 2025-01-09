@@ -13,16 +13,9 @@ SvelteKit project.
   Error in svelte.config.js    SyntaxError: Cannot use import statement outside a module
   ```
   This is annoying since the web app still works regardless but can be fixed
-  with a `package.json` file with this contents in the same directory:
+  with a `package.json` file with this contents:
   ```
   {
     "type": "module"
   }
   ```
-  The next issue is much more frustrating, since the extension language server
-  uses Node, it only supports Node dependencies, which means in order to not get
-  an error like this:
-  ```
-  Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@std/path' imported from ...\svelte.config.js
-  ```
-  You can't use any Deno dependencies in the `svelte.config.js` file.
