@@ -1,7 +1,7 @@
 // #region Imports
 
 // Import to get environment variables
-import dotenv from "dotenv"
+import * as dotenv from "dotenv"
 
 // Import to get file paths
 import { fileURLToPath, URL } from "node:url"
