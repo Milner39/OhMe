@@ -9,7 +9,7 @@ import { createConfig } from "#create-configs/src/vite.ts"
 import { sveltekit as SvelteKit } from "@sveltejs/kit/vite"
 
 // Import to get file paths
-import { fileURLToPath } from "node:url"
+import { fileURLToPath, URL } from "node:url"
 
 // Import to get environment variables
 import env from "~web-server/env.ts"

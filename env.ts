@@ -4,7 +4,7 @@
 import dotenv from "dotenv"
 
 // Import to get file paths
-import { fileURLToPath } from "node:url"
+import { fileURLToPath, URL } from "node:url"
 
 // Import to validate environment variables
 import { z } from "zod"
