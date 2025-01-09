@@ -1,6 +1,5 @@
 {
 	"tasks": {
-		"tsc:show-config": "tsc --project tsconfig.types.json --showConfig",
-		"tsc": "tsc --project tsconfig.types.json"
+		"compile": "tsc --project tsconfig.compile.json"
 	}
 }

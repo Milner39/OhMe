@@ -1,0 +1,14 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"types": ["../../deno.d.ts", "node"],
+		"skipLibCheck": true,
+
+		"allowImportingTsExtensions": true,
+		"declaration": true,
+		"emitDeclarationOnly": true,
+
+		"outDir": "./dist",
+	},
+	"include": ["./src/lib"]
+}
