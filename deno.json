@@ -1,5 +1,9 @@
 {
 	"tasks": {
+		"setup": "deno run -R -W --allow-run ./setup.ts",
+
+
+
 		"web-server:dev": "cd apps/web-server && deno task dev",
 		"web-server:build": "cd apps/web-server && deno task build",
 		"web-server:preview": "cd apps/web-server && deno task preview",
@@ -27,10 +31,8 @@
 
 
 		"@/": "./",
-		
 		"~db-api/": "./apps/db-api/",
 		"~web-server/": "./apps/web-server/",
-
 		"#db-api-client/": "./packages/db-api-client/",
 		"#utils/": "./packages/utils/",
 		"#validation/": "./packages/validation/",
