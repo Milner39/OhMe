@@ -21,7 +21,7 @@
 	},
 
 	"imports": {
-		"typescript": "npm:typescript@5.7.2",
+		"typescript": "npm:typescript@5.7.3",
 		"@types/node": "npm:@types/node@22.10.5",
 		"dotenv": "npm:dotenv@16.4.5",
 		"zod": "npm:zod@3.24.1",

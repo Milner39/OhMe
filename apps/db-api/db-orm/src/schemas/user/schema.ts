@@ -5,11 +5,7 @@ import { pgTable, uuid, varchar, char } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
 // Import to create Zod schemas
-import { 
-	createSelectSchema,
-	createInsertSchema,
-	createUpdateSchema 
-} from "drizzle-zod"
+import { createSelectSchema } from "drizzle-zod"
 import {
 	username as usernameSchema
 } from "#validation/src/zod-schemas/index.ts"
@@ -50,17 +46,17 @@ export const user = pgTable("user", {
 })
 
 // Define Zod schemas
-export const userSelectSchema = createSelectSchema(user)
+export const userSelectSchema = createSelectSchema(user).required()
 
 export const userSafeSelectSchema = createSelectSchema(user).omit({
 	id: true
 })
 
-export const userInsertSchema = createInsertSchema(user).omit({
+export const userInsertSchema = createSelectSchema(user).omit({
 	id: true
 }).setKey("username", usernameSchema)
 
-export const userUpdateSchema = createUpdateSchema(user).omit({
+export const userUpdateSchema = createSelectSchema(user).omit({
 	id: true
 }).setKey("username", usernameSchema)
 
@@ -77,3 +73,9 @@ export const userRelations = relations(user, ({ one, many }) => ({
 	// Session relation
 	session: many(session)
 }))
+
+
+
+import { z } from "zod"
+
+type inferred = z.infer<typeof userSelectSchema>

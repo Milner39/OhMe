@@ -5,11 +5,7 @@ import { pgTable, uuid, timestamp } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
 // Import to create Zod schemas
-import { 
-	createSelectSchema,
-	createInsertSchema,
-	createUpdateSchema 
-} from "drizzle-zod"
+import { createSelectSchema } from "drizzle-zod"
 
 // Import other table schemas
 import { user } from "../user/schema.ts"
@@ -59,11 +55,11 @@ export const sessionSafeSelectSchema = createSelectSchema(session).omit({
 	userId: true
 })
 
-export const sessionInsertSchema = createInsertSchema(session).omit({
+export const sessionInsertSchema = createSelectSchema(session).omit({
 	id: true
 })
 
-export const sessionUpdateSchema = createUpdateSchema(session).omit({
+export const sessionUpdateSchema = createSelectSchema(session).omit({
 	id: true,
 	userId: true
 })

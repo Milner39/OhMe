@@ -1,5 +1,5 @@
 {
 	"tasks": {
-		"compile": "tsc --project tsconfig.compile.json"
+		"compile": "tsc --project ./tsconfig.compile.json"
 	}
 }

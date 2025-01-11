@@ -2,5 +2,9 @@
 	"extends": [
 		"./tsconfig.paths.json",
 		"./tsconfig.deno.json"
-	]
+	],
+	"compilerOptions": {
+		"allowImportingTsExtensions": true,
+		"noEmit": true,
+	}
 }
