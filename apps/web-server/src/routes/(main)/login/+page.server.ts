@@ -57,12 +57,15 @@ export const actions = {
 		// Return response early if inputs are invalid
 		if (!validInputs) return fail(400, {
 			result: null,
-			error: {
-				username: validateUsername.error,
-				email: validateEmail.error,
-				password: validatePassword.error
-			}
-		})
+			error: new SafeKnownError("Invalid form inputs", {
+				code: "InvalidFormInputs",
+				target: {
+					username: validateUsername.error,
+					email: validateEmail.error,
+					password: validatePassword.error
+				}
+			})
+		} satisfies SafeResponseBody)
 
 
 		// Inputs are valid, send request to DB API
@@ -120,11 +123,15 @@ export const actions = {
 
 		// Return response early if inputs are invalid
 		if (!validInputs) return fail(400, {
-			error: {
-				username: validateUsername.error,
-				password: validatePassword.error
-			}
-		})
+			result: null,
+			error: new SafeKnownError("Invalid form inputs", {
+				code: "InvalidFormInputs",
+				target: {
+					username: validateUsername.error,
+					password: validatePassword.error
+				}
+			})
+		} satisfies SafeResponseBody)
 
 
 		// Inputs are valid, send request to DB API
