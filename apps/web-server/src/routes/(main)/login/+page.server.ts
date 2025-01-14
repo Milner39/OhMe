@@ -17,7 +17,7 @@ import {
 import type { Actions } from "./$types"
 import type { RegisterFormData, LoginFormData } from "./.d.ts"
 
-import type { StandardResponseBody } from "#utils/src/response-utils.ts"
+import type { SafeResponseBody } from "#utils/src/response-utils.ts"
 
 // #endregion Imports
 
@@ -82,7 +82,7 @@ export const actions = {
 				error: new SafeKnownError("Error registering user", {
 					code: "UnknownServerError"
 				})
-			} satisfies StandardResponseBody)
+			} satisfies SafeResponseBody)
 		}
 		const dbResJson = await dbRes.json()
 		// User has registered successfully after here
@@ -97,7 +97,7 @@ export const actions = {
 		return {
 			result: { message: "Registered successfully" },
 			error: null
-		} satisfies StandardResponseBody
+		} satisfies SafeResponseBody
 	},
 	// #endregion Register
 
@@ -143,7 +143,7 @@ export const actions = {
 				error: new SafeKnownError("Error logging in user", {
 					code: "UnknownServerError"
 				})
-			} satisfies StandardResponseBody)
+			} satisfies SafeResponseBody)
 		}
 		const dbResJson = await dbRes.json()
 		// User has logged in successfully after here
@@ -157,7 +157,7 @@ export const actions = {
 		return {
 			result: { message: "Logged in successfully" },
 			error: null
-		} satisfies StandardResponseBody
+		} satisfies SafeResponseBody
 	},
 	// #endregion Login
 
