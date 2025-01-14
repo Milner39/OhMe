@@ -6,7 +6,7 @@ import { getFormData } from "$lib/utils/form-action-utils.ts"
 import { setAuthCookies } from "$lib/utils/cookie-utils.ts"
 
 import { Validator } from "#validation/src/index.ts"
-import { KnownError } from "#utils/src/error-utils.ts"
+import { SafeKnownError } from "#utils/src/error-utils.ts"
 
 import {
 	createApiClient as createDbApiClient
@@ -79,7 +79,7 @@ export const actions = {
 			// TODO: Handle known errors and return appropriate response
 			return fail(500, {
 				result: null,
-				error: new KnownError("Error registering user", {
+				error: new SafeKnownError("Error registering user", {
 					code: "UnknownServerError"
 				})
 			} satisfies StandardResponseBody)
@@ -140,7 +140,7 @@ export const actions = {
 			// TODO: Handle known errors and return appropriate response
 			return fail(500, {
 				result: null,
-				error: new KnownError("Error logging in user", {
+				error: new SafeKnownError("Error logging in user", {
 					code: "UnknownServerError"
 				})
 			} satisfies StandardResponseBody)

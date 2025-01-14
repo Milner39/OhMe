@@ -23,4 +23,21 @@ export class KnownError<
 	}
 }
 
+export class SafeKnownError<
+	Cause extends KnownErrorCause
+> extends KnownError<Cause> {
+	override stack: undefined
+
+	constructor(
+		message: string,
+		cause: Cause
+	) {
+		super(message, cause)
+	}
+
+	static fromKnownError(knownError: KnownError<KnownErrorCause>) {
+		return new SafeKnownError(knownError.message, knownError.cause)
+	}
+}
+
 // #endregion KnownError
