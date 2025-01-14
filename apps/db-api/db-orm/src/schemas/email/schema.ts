@@ -5,7 +5,11 @@ import { pgTable, uuid, varchar, boolean, timestamp } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
 // Import to create Zod schemas
-import { createSelectSchema } from "drizzle-zod"
+import { 
+	createSelectSchema,
+	createInsertSchema,
+	createUpdateSchema
+ } from "drizzle-zod"
 import {
 	email as addressSchema
 } from "#validation/src/zod-schemas/index.ts"
@@ -72,11 +76,11 @@ export const emailSafeSelectSchema = createSelectSchema(email).omit({
 	verificationCode: true,
 })
 
-export const emailInsertSchema = createSelectSchema(email).omit({
+export const emailInsertSchema = createInsertSchema(email).omit({
 	id: true
 }).setKey("address", addressSchema)
 
-export const emailUpdateSchema = createSelectSchema(email).omit({
+export const emailUpdateSchema = createUpdateSchema(email).omit({
 	id: true,
 	userId: true
 }).setKey("address", addressSchema)

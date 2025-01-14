@@ -5,7 +5,11 @@ import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
 
 // Import to create Zod schemas
-import { createSelectSchema } from "drizzle-zod"
+import { 
+	createSelectSchema,
+	createInsertSchema,
+	createUpdateSchema
+} from "drizzle-zod"
 import {
 	password as rawPasswordSchema
 } from "#validation/src/zod-schemas/index.ts"
@@ -68,11 +72,11 @@ export const passwordSafeSelectSchema = createSelectSchema(password).omit({
 	resetCode: true,
 })
 
-export const passwordInsertSchema = createSelectSchema(password).omit({
+export const passwordInsertSchema = createInsertSchema(password).omit({
 	id: true
 }).setKey("hash", rawPasswordSchema)
 
-export const passwordUpdateSchema = createSelectSchema(password).omit({
+export const passwordUpdateSchema = createUpdateSchema(password).omit({
 	id: true,
 	userId: true
 }).setKey("hash", rawPasswordSchema)
