@@ -99,7 +99,7 @@ export const actions = {
 	// #endregion Register
 
 	// #region Login
-	login: async ({ request }) => {
+	login: async ({ request, cookies }) => {
 		
 		// Get form inputs
 		const formData = await getFormData(request) as LoginFormData
@@ -124,7 +124,37 @@ export const actions = {
 		})
 
 
-		// Inputs are valid, continue
+		// Inputs are valid, send request to DB API
+		const dbRes = await dbAPI.user["log-in"].$post({
+			json: {
+				username: formData.username,
+				password: formData.password
+			}
+		})
+
+		// Check for errors
+		if (!dbRes.ok) {
+			// TODO: Handle known errors and return appropriate response
+			return fail(500, {
+				result: null,
+				error: {
+					message: "Error creating user",
+					cause: { code: "Unknown server error" }
+				}
+			})
+		}
+		const dbResJson = await dbRes.json()
+		// User has logged in successfully after here
+
+		// Get IDs
+		const { userId, sessionId } = dbResJson.result
+
+		// Set auth cookies
+		setAuthCookies(cookies, userId, sessionId)
+
+		return {
+
+		}
 	},
 	// #endregion Login
 

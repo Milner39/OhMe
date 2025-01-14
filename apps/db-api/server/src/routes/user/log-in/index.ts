@@ -1,6 +1,18 @@
 // #region Imports
+import { zValidator } from "@hono/zod-validator"
+import { userLoginSchema } from "#validation/src/zod-schemas/index.ts"
 
 import { createRouter } from "~db-api/server/src/lib/create-router.ts"
+
+
+import { logInUser } from "~db-api/db-orm/src/db-ops/user.ts"
+import { KnownError } from "~db-api/utils/error-utils.ts"
+
+// Import to help with responses
+import { 
+	validateJsonHook,
+	StandardResponseBody
+} from "~db-api/server/src/lib/utils/response-utils.ts";
 
 // #endregion Imports
 
@@ -9,7 +21,68 @@ import { createRouter } from "~db-api/server/src/lib/create-router.ts"
 // Create router
 const router = createRouter().basePath("/log-in")
 	// Define methods for this path
-	// N/A
+	.post(
+		"/",
+		zValidator("json", userLoginSchema, validateJsonHook),
+		async (ctx) => {
+			// Get request body
+			const body = ctx.req.valid("json")
+
+			// Log in user
+			const logInUserResponse = await logInUser({
+				user: { username: body.username },
+				password: { hash: body.password }
+			})
+
+			// Check for errors
+			if (logInUserResponse.error !== null) {
+				// Get error
+				const error = logInUserResponse.error
+
+
+				// Create base response
+				const baseBody = {
+					result: null,
+					error: new KnownError("Error logging in user", {
+						code: "Unknown server error"
+					})
+				} satisfies StandardResponseBody
+				const baseResponse = ctx.json(baseBody, 500)
+
+
+				// Return failure of error is not a known error
+				if (!(KnownError.isKnownError(error))) return baseResponse
+
+				// Handle known errors
+				switch (error.cause.code) {
+					case "FindOneNoResult":
+						baseBody.error.message = "No user found"
+						baseBody.error.cause = error.cause
+						return ctx.json(baseBody, 404)
+					
+					default:
+						return baseResponse
+				}
+			}
+			// User has logged in successfully after here
+
+
+			// Get IDs
+			const userId = logInUserResponse.result.extendedUser.user.id
+			const sessionId = logInUserResponse.result.session.id
+
+			const resBody = {
+				result: {
+					userId: userId,
+					sessionId: sessionId
+				},
+				error: null
+			} satisfies StandardResponseBody
+
+			// Return success
+			return ctx.json(resBody, 200)
+		}
+	)
 
 
 // Mount sub routes

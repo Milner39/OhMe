@@ -30,11 +30,11 @@ const router = createRouter().basePath("/register")
 			// Get request body
 			const body = ctx.req.valid("json")
 
-			// Create user
+			// Register user
 			const regUserResponse = await registerUser({
 				user: { username: body.username },
 				password: { hash: body.password },
-				email: { address: body.email },
+				email: { address: body.email }
 			})
 
 			// Check for errors
@@ -46,10 +46,9 @@ const router = createRouter().basePath("/register")
 				// Create base response
 				const baseBody = {
 					result: null,
-					error: {
-						message: "Error creating user",
-						cause: { code: "Unknown server error" },
-					}
+					error: new KnownError("Error registering user", {
+						code: "Unknown server error" ,
+					})
 				} satisfies StandardResponseBody
 				const baseResponse = ctx.json(baseBody, 500)
 
@@ -57,9 +56,10 @@ const router = createRouter().basePath("/register")
 				// Return failure if error is not a known error
 				if (!(KnownError.isKnownError(error))) return baseResponse
 				
-				// Handle known error
+				// Handle known errors
 				switch (error.cause.code) {
 					case "UniqueCollision":
+						baseBody.error.message = "User already exists"
 						baseBody.error.cause = error.cause
 						return ctx.json(baseBody, 409)
 
@@ -82,7 +82,7 @@ const router = createRouter().basePath("/register")
 				error: null
 			} satisfies StandardResponseBody
 
-			// return success
+			// Return success
 			return ctx.json(resBody, 201)
 		}
 	)

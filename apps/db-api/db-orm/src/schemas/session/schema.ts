@@ -35,8 +35,7 @@ export const session = pgTable("session", {
 				onDelete: "cascade"
 			}
 		)
-		.notNull()
-		.unique(),
+		.notNull(),
 
 	// #endregion Primary & Foreign keys
 

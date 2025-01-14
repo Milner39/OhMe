@@ -1,11 +1,34 @@
 // #region Imports
 
-import { createApiClient as c } from "./lib/create-client.ts"
-import type { Client } from "../dist/packages/db-api-client/src/lib/create-client.d.ts"
+/*
+	Import to get environment variables.
+	Only get shared environment variables or this client will not work and could 
+	be unsafe.
+*/
+import env from "@/env.ts"
+
+// Create Hono client
+import { hc } from "hono/client"
+
+
+// Import types
+import type { App } from "~db-api/server/src/lib/create-app.ts"
 
 // #endregion Imports
 
 
 
-// Create wrapper function with compiled types
-export const createApiClient = (): Client => c()
+/*
+	Create a mock client to speed up the TypeScript language server
+
+	Trick from the Hono docs: 
+	https://hono.dev/docs/guides/rpc#compile-your-code-before-using-it-recommended
+*/
+const mockClient = hc<App>("")
+export type Client = typeof mockClient
+
+
+// Subroutine to create a client for this API
+export const createApiClient = (): Client => {
+	return hc<App>(`http://localhost:${env.DATABASE_API_PORT}`)
+}

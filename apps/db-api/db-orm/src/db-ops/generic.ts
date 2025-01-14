@@ -17,6 +17,8 @@ import {
 	tsObjectKeys
 } from "#utils/src/object-utils.ts"
 
+import { KnownError } from "~db-api/utils/error-utils.ts"
+
 
 // Import types
 import type { DBTransaction } from "../db-connection.ts"
@@ -238,8 +240,16 @@ export const gReadOne = async <
 			.limit(2)
 			.execute()
 
-		if (rows.length !== 1) {
-			throw new Error("Failed to read one row")
+		if (rows.length === 0) {
+			throw new KnownError("No row found with query", {
+				code: "FindOneNoResult"
+			})
+		}
+
+		if (rows.length > 1) {
+			throw new KnownError("Many rows found with query", {
+				code: "FindOneManyResult"
+			})
 		}
 
 		return {

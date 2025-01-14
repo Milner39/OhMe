@@ -1,7 +1,7 @@
 // #region Imports
 
 import { NotNull } from "@/packages/utils/src/type-utils.ts"
-import { KnownErrorCause } from "~db-api/utils/error-utils.ts"
+import { KnownError, KnownErrorCause } from "~db-api/utils/error-utils.ts"
 
 import { Context as HonoContext } from "hono"
 import { HonoZValidatorResult } from "#utils/src/zod-utils.ts"
@@ -17,10 +17,7 @@ export type StandardResponseBody = {
 	error: null
 } | {
 	result: null,
-	error: {
-		message: string
-		cause: KnownErrorCause
-	}
+	error: KnownError<KnownErrorCause>
 }
 
 // #endregion StandardResponseBody
@@ -38,13 +35,10 @@ export const validateJsonHook = <
 ) => {
 	if (!result.success) return context.json({
 		result: null,
-		error: {
-			message: "Invalid request body",
-			cause: {
-				code: "InvalidRequestBody",
-				target: result.error.issues
-			},
-		}
+		error: new KnownError("Invalid request body", {
+			code: "InvalidRequestBody",
+			target: result.error.issues
+		})
 	} satisfies StandardResponseBody, 422)
 }
 
