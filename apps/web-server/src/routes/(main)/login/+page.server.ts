@@ -93,7 +93,8 @@ export const actions = {
 		setAuthCookies(cookies, userId, sessionId)
 
 		return {
-
+			result: { message: "Registered successfully" },
+			error: null
 		}
 	},
 	// #endregion Register
@@ -153,7 +154,8 @@ export const actions = {
 		setAuthCookies(cookies, userId, sessionId)
 
 		return {
-
+			result: { message: "Logged in successfully" },
+			error: null
 		}
 	},
 	// #endregion Login

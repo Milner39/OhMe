@@ -31,16 +31,16 @@ const router = createRouter().basePath("/register")
 			const body = ctx.req.valid("json")
 
 			// Register user
-			const regUserResponse = await registerUser({
+			const registerUserResponse = await registerUser({
 				user: { username: body.username },
 				password: { hash: body.password },
 				email: { address: body.email }
 			})
 
 			// Check for errors
-			if (regUserResponse.error !== null) {
+			if (registerUserResponse.error !== null) {
 				// Get error
-				const error = regUserResponse.error
+				const error = registerUserResponse.error
 
 
 				// Create base response
@@ -71,8 +71,8 @@ const router = createRouter().basePath("/register")
 			
 			
 			// Get IDs
-			const userId = regUserResponse.result.extendedUser.user.id
-			const sessionId = regUserResponse.result.session.id
+			const userId = registerUserResponse.result.extendedUser.user.id
+			const sessionId = registerUserResponse.result.session.id
 
 			const resBody = {
 				result: {
