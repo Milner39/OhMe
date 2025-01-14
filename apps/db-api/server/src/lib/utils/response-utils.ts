@@ -1,26 +1,13 @@
 // #region Imports
 
-import { NotNull } from "@/packages/utils/src/type-utils.ts"
-import { KnownError, KnownErrorCause } from "~db-api/utils/error-utils.ts"
+import { KnownError } from "#utils/src/error-utils.ts"
+import { StandardResponseBody } from "#utils/src/response-utils.ts"
 
 import { Context as HonoContext } from "hono"
 import { HonoZValidatorResult } from "#utils/src/zod-utils.ts"
 
 // #endregion Imports
 
-
-
-// #region StandardResponseBody
-
-export type StandardResponseBody = {
-	result: NotNull
-	error: null
-} | {
-	result: null,
-	error: KnownError<KnownErrorCause>
-}
-
-// #endregion StandardResponseBody
 
 
 

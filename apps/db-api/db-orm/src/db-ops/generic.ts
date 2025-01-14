@@ -17,7 +17,7 @@ import {
 	tsObjectKeys
 } from "#utils/src/object-utils.ts"
 
-import { KnownError } from "~db-api/utils/error-utils.ts"
+import { KnownError } from "#utils/src/error-utils.ts"
 
 
 // Import types

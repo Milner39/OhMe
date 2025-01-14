@@ -3,18 +3,14 @@
 // Validation
 import { zValidator } from "@hono/zod-validator"
 import { userRegisterSchema } from "#validation/src/zod-schemas/index.ts"
+import { validateJsonHook } from "~db-api/server/src/lib/utils/response-utils.ts"
 
 import { createRouter } from "~db-api/server/src/lib/create-router.ts"
 
-
 import { registerUser } from "~db-api/db-orm/src/db-ops/user.ts"
-import { KnownError } from "~db-api/utils/error-utils.ts"
 
-// Import to help with responses
-import { 
-	validateJsonHook,
-	StandardResponseBody
-} from "~db-api/server/src/lib/utils/response-utils.ts"
+import { KnownError } from "#utils/src/error-utils.ts"
+import { StandardResponseBody } from "#utils/src/response-utils.ts"
 
 // #endregion Imports
 

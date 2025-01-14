@@ -6,6 +6,7 @@ import { getFormData } from "$lib/utils/form-action-utils.ts"
 import { setAuthCookies } from "$lib/utils/cookie-utils.ts"
 
 import { Validator } from "#validation/src/index.ts"
+import { KnownError } from "#utils/src/error-utils.ts"
 
 import {
 	createApiClient as createDbApiClient
@@ -15,6 +16,8 @@ import {
 // Import types
 import type { Actions } from "./$types"
 import type { RegisterFormData, LoginFormData } from "./.d.ts"
+
+import type { StandardResponseBody } from "#utils/src/response-utils.ts"
 
 // #endregion Imports
 
@@ -76,11 +79,10 @@ export const actions = {
 			// TODO: Handle known errors and return appropriate response
 			return fail(500, {
 				result: null,
-				error: {
-					message: "Error creating user",
-					cause: { code: "Unknown server error" }
-				}
-			})
+				error: new KnownError("Error registering user", {
+					code: "UnknownServerError"
+				})
+			} satisfies StandardResponseBody)
 		}
 		const dbResJson = await dbRes.json()
 		// User has registered successfully after here
@@ -95,7 +97,7 @@ export const actions = {
 		return {
 			result: { message: "Registered successfully" },
 			error: null
-		}
+		} satisfies StandardResponseBody
 	},
 	// #endregion Register
 
@@ -138,11 +140,10 @@ export const actions = {
 			// TODO: Handle known errors and return appropriate response
 			return fail(500, {
 				result: null,
-				error: {
-					message: "Error creating user",
-					cause: { code: "Unknown server error" }
-				}
-			})
+				error: new KnownError("Error logging in user", {
+					code: "UnknownServerError"
+				})
+			} satisfies StandardResponseBody)
 		}
 		const dbResJson = await dbRes.json()
 		// User has logged in successfully after here
@@ -156,7 +157,7 @@ export const actions = {
 		return {
 			result: { message: "Logged in successfully" },
 			error: null
-		}
+		} satisfies StandardResponseBody
 	},
 	// #endregion Login
 
