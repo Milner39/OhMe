@@ -24,7 +24,7 @@ import type { RegisterFormData, LoginFormData } from "./.d.ts"
 const validator = new Validator()
 
 // Create DB API client
-const dbAPI = createDbApiClient()
+const dbAPI = createDbApiClient() as any // Types are not working correctly
 
 
 // #region Actions
