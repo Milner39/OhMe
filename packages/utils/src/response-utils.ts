@@ -1,7 +1,7 @@
 // #region Imports
 
 import { NotNull } from "@/packages/utils/src/type-utils.ts"
-import { KnownError, SafeKnownError, KnownErrorCause } from "./error-utils.ts"
+import { KnownError, SafeKnownError } from "./error-utils.ts"
 
 // #endregion Imports
 
@@ -14,7 +14,7 @@ export type StandardResponseBody = {
 	error: null
 } | {
 	result: null,
-	error: KnownError<KnownErrorCause>
+	error: KnownError
 }
 
 export type SafeResponseBody = {
@@ -22,7 +22,7 @@ export type SafeResponseBody = {
 	error: null
 } | {
 	result: null,
-	error: SafeKnownError<KnownErrorCause>
+	error: SafeKnownError
 }
 
 // #endregion ResponseBody

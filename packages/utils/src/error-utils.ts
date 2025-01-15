@@ -6,7 +6,7 @@ export type KnownErrorCause = {
 }
 
 export class KnownError<
-	Cause extends KnownErrorCause
+	Cause extends KnownErrorCause = KnownErrorCause
 > extends Error {
 	override cause: Cause
 
@@ -18,13 +18,13 @@ export class KnownError<
 		this.cause = cause
 	}
 
-	static isKnownError(value: unknown): value is KnownError<KnownErrorCause> {
+	static isKnownError(value: unknown): value is KnownError {
 		return value instanceof KnownError
 	}
 }
 
 export class SafeKnownError<
-	Cause extends KnownErrorCause
+	Cause extends KnownErrorCause = KnownErrorCause
 > extends KnownError<Cause> {
 	override stack: undefined
 
@@ -35,7 +35,7 @@ export class SafeKnownError<
 		super(message, cause)
 	}
 
-	static fromKnownError(knownError: KnownError<KnownErrorCause>) {
+	static fromKnownError(knownError: KnownError) {
 		return new SafeKnownError(knownError.message, knownError.cause)
 	}
 }
