@@ -12,11 +12,7 @@ import userR from "./user/index.ts"
 // Create base router
 const router = createRouter().basePath("/")
 	// Define methods for this path
-	.get("/", (ctx) => {
-		return ctx.json({
-			message: "Welcome to the OhMe DB API!"
-		})
-	})
+	// N/A
 
 
 // Mount sub routes
