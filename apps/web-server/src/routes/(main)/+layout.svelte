@@ -27,6 +27,7 @@ let {
 		<Nav links={[
 			{ text: "Home", href: "/" },
 			{ text: "About", href: "/about" },
+			{ text: "Transactions", href: "/transactions" },
 		]}>
 			{#snippet brandContent()}
 				<h1>OhMe</h1>
