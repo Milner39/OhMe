@@ -1,5 +1,11 @@
 // #region Imports
 
+// Validation
+import { authIdsSchema } from "@/packages/validation/src/zod-schemas/index.ts"
+import { z } from "zod"
+
+
+// Import types
 import type { Cookies } from "@sveltejs/kit"
 
 // #endregion Imports
@@ -40,11 +46,30 @@ const sessionIdCookieName = "session-id"
  */
 export const getAuthCookies = (
 	cookies: Cookies
-) => {
+): {
+	result: z.infer<typeof authIdsSchema>,
+	error: null
+} | {
+	result: null,
+	error: z.ZodError
+}=> {
 	const userId = cookies.get(userIdCookieName)
 	const sessionId = cookies.get(sessionIdCookieName)
 
-	return { userId, sessionId }
+	const { data: authCookies, error } = authIdsSchema.safeParse({
+		userId: userId,
+		sessionId: sessionId
+	})
+
+	if (error) return {
+		result: null,
+		error: error
+	}
+
+	return {
+		result: authCookies,
+		error: null
+	}
 }
 
 

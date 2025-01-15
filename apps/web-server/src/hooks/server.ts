@@ -4,12 +4,8 @@ import { sequence } from "@sveltejs/kit/hooks"
 
 import { 
 	getAuthCookies,
-	setAuthCookies,
 	deleteAuthCookies 
-} from "$lib/utils/cookie-utils"
-
-// Validation
-import { authIdsSchema } from "@/packages/validation/src/zod-schemas/index.ts"
+} from "$lib/utils/cookie-utils.ts"
 
 import {
 	createApiClient as createDbApiClient
@@ -34,10 +30,7 @@ const auth: Handle = async ({ event, resolve }) => {
 	event.locals.userData = null
 
 	// Get the cookies needed for authentication
-	const maybeAuthCookies = getAuthCookies(event.cookies)
-
-	// Validate the cookies
-	const { data: authCookies, error } = authIdsSchema.safeParse(maybeAuthCookies)
+	const { result: authCookies, error } = getAuthCookies(event.cookies)
 	if (error) {
 		deleteAuthCookies(event.cookies)
 		return await resolve(event)
