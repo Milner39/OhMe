@@ -70,7 +70,7 @@ export const email = pgTable("email", {
 // Define Zod schemas
 export const emailSelectSchema = createSelectSchema(email)
 
-export const emailSafeSelectSchema = createSelectSchema(email).omit({
+export const emailSafeSelectSchema = emailSelectSchema.omit({
 	id: true,
 	userId: true,
 	verificationCode: true,
@@ -82,6 +82,10 @@ export const emailInsertSchema = createInsertSchema(email).omit({
 	verificationCode: true,
 	codeSentAt: true
 }).setKey("address", addressSchema)
+
+export const emailPureInsertSchema = emailInsertSchema.omit({
+	userId: true
+})
 
 export const emailUpdateSchema = createUpdateSchema(email).omit({
 	id: true,

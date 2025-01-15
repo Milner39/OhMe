@@ -40,16 +40,12 @@ const {
 // Define Zod schemas
 const createFullTransactionRowSchema = z.object({
 	user: zodTableSchemas.user.select.pick({ id: true }),
-
-	// Omit `userId` since it is provided
-	transaction: zodTableSchemas.transaction.insert.omit({ userId: true }),
+	transaction: zodTableSchemas.transaction.pureInsert,
 })
 
 const safeCreateTransactionRowSchema = z.object({
 	auth: authIdsSchema,
-	
-	// Omit `userId` since it is provided
-	transaction: zodTableSchemas.transaction.insert.omit({ userId: true }),
+	transaction: zodTableSchemas.transaction.pureInsert,
 })
 
 

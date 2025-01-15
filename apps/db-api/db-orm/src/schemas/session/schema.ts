@@ -53,13 +53,17 @@ export const session = pgTable("session", {
 // Define Zod schemas
 export const sessionSelectSchema = createSelectSchema(session)
 
-export const sessionSafeSelectSchema = createSelectSchema(session).omit({
+export const sessionSafeSelectSchema = sessionSelectSchema.omit({
 	id: true,
 	userId: true
 })
 
 export const sessionInsertSchema = createInsertSchema(session).omit({
 	id: true
+})
+
+export const sessionPureInsertSchema = sessionInsertSchema.omit({
+	userId: true
 })
 
 export const sessionUpdateSchema = createUpdateSchema(session).omit({

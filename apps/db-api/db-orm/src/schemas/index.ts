@@ -18,19 +18,19 @@ export default {
 
 // Import Zod schemas
 import { 
-	userSelectSchema, userSafeSelectSchema,userInsertSchema,userUpdateSchema
+	userSelectSchema, userSafeSelectSchema, userInsertSchema, userUpdateSchema
 } from "./user/schema.ts"
 import { 
-	emailSelectSchema, emailSafeSelectSchema, emailInsertSchema, emailUpdateSchema
+	emailSelectSchema, emailSafeSelectSchema, emailInsertSchema, emailPureInsertSchema, emailUpdateSchema
 } from "./email/schema.ts"
 import { 
-	passwordSelectSchema, passwordSafeSelectSchema, passwordInsertSchema, passwordUpdateSchema
+	passwordSelectSchema, passwordSafeSelectSchema, passwordInsertSchema, passwordPureInsertSchema, passwordUpdateSchema
 } from "./password/schema.ts"
 import { 
-	sessionSelectSchema, sessionSafeSelectSchema, sessionInsertSchema, sessionUpdateSchema
+	sessionSelectSchema, sessionSafeSelectSchema, sessionInsertSchema, sessionPureInsertSchema, sessionUpdateSchema
 } from "./session/schema.ts"
 import {
-	transactionSelectSchema, transactionSafeSelectSchema, transactionInsertSchema, transactionUpdateSchema
+	transactionSelectSchema, transactionSafeSelectSchema, transactionInsertSchema, transactionPureInsertSchema, transactionUpdateSchema
 } from "./transaction/schema.ts"
 
 // Export Zod schemas
@@ -45,24 +45,28 @@ export const zodTableSchemas = {
 		select: emailSelectSchema,
 		safeSelect: emailSafeSelectSchema,
 		insert: emailInsertSchema,
+		pureInsert: emailPureInsertSchema,
 		update: emailUpdateSchema
 	},
 	password: {
 		select: passwordSelectSchema,
 		safeSelect: passwordSafeSelectSchema,
 		insert: passwordInsertSchema,
+		pureInsert: passwordPureInsertSchema,
 		update: passwordUpdateSchema
 	},
 	session: {
 		select: sessionSelectSchema,
 		safeSelect: sessionSafeSelectSchema,
 		insert: sessionInsertSchema,
+		pureInsert: sessionPureInsertSchema,
 		update: sessionUpdateSchema
 	},
 	transaction: {
 		select: transactionSelectSchema,
 		safeSelect: transactionSafeSelectSchema,
 		insert: transactionInsertSchema,
+		pureInsert: transactionPureInsertSchema,
 		update: transactionUpdateSchema
 	}
 }

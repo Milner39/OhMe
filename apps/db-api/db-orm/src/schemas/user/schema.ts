@@ -53,7 +53,7 @@ export const user = pgTable("user", {
 // Define Zod schemas
 export const userSelectSchema = createSelectSchema(user)
 
-export const userSafeSelectSchema = createSelectSchema(user).omit({
+export const userSafeSelectSchema = userSelectSchema.omit({
 	id: true
 })
 

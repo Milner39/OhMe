@@ -52,13 +52,17 @@ export const transaction = pgTable("transaction", {
 // Define Zod schemas
 export const transactionSelectSchema = createSelectSchema(transaction)
 
-export const transactionSafeSelectSchema = createSelectSchema(transaction).omit({
+export const transactionSafeSelectSchema = transactionSelectSchema.omit({
 	id: true,
 	userId: true
 })
 
 export const transactionInsertSchema = createInsertSchema(transaction).omit({
 	id: true
+})
+
+export const transactionPureInsertSchema = transactionInsertSchema.omit({
+	userId: true
 })
 
 export const transactionUpdateSchema = createUpdateSchema(transaction).omit({

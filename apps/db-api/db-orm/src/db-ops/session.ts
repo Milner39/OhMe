@@ -58,9 +58,7 @@ const selectFullSessionRowSchema = z.object({
 
 const createFullSessionRowSchema = z.object({
 	user: zodTableSchemas.user.select.pick({ id: true }),
-
-	// Omit `userId` since it is provided
-	session: zodTableSchemas.session.insert.omit({ userId: true }),
+	session: zodTableSchemas.session.pureInsert,
 })
 
 

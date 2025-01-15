@@ -65,7 +65,7 @@ export const password = pgTable("password", {
 // Define Zod schemas
 export const passwordSelectSchema = createSelectSchema(password)
 
-export const passwordSafeSelectSchema = createSelectSchema(password).omit({
+export const passwordSafeSelectSchema = passwordSelectSchema.omit({
 	id: true,
 	userId: true,
 	hash: true,
@@ -77,6 +77,10 @@ export const passwordInsertSchema = createInsertSchema(password).omit({
 	resetCode: true,
 	codeSentAt: true
 }).setKey("hash", rawPasswordSchema)
+
+export const passwordPureInsertSchema = passwordInsertSchema.omit({
+	userId: true
+})
 
 export const passwordUpdateSchema = createUpdateSchema(password).omit({
 	id: true,
