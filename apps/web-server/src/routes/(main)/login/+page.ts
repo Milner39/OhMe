@@ -10,7 +10,6 @@ import type { PageLoad } from "./$types"
 // #endregion
 
 
-// #region Load
 
 export const load: PageLoad = ({ url }) => {
 
@@ -40,5 +39,3 @@ export const load: PageLoad = ({ url }) => {
 	// Return the form mode
 	return { mode }
 }
-
-// #endregion Load

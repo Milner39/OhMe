@@ -20,13 +20,17 @@ let { data, form }: { data: PageData, form: ActionData } = $props()
 
 
 <div class="page-wrapper">
-	<!-- Display the correct form based on the mode -->
-	{#if data.mode === "login"}
-		<LoginForm/>
-	{:else if data.mode === "register"}
-		<RegisterForm/>
-	{:else if data.mode === "reset-password"}
-		<h1>TODO</h1>
+	{#if data.userData !== null}
+		<h2>You are logged in</h2>
+	{:else}
+		<!-- Display the correct form based on the mode -->
+		{#if data.mode === "login"}
+			<LoginForm/>
+		{:else if data.mode === "register"}
+			<RegisterForm/>
+		{:else if data.mode === "reset-password"}
+			<h1>TODO</h1>
+		{/if}
 	{/if}
 </div>
 
