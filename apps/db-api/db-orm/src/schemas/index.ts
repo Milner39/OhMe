@@ -3,13 +3,15 @@ import { user, userRelations } from "./user/schema.ts"
 import { email, emailRelations } from "./email/schema.ts"
 import { password, passwordRelations } from "./password/schema.ts"
 import { session, sessionRelations } from "./session/schema.ts"
+import { transaction, transactionRelations } from "./transaction/schema.ts"
 
 // Export table schemas
 export default {
 	user, userRelations,
 	email, emailRelations,
 	password, passwordRelations,
-	session, sessionRelations
+	session, sessionRelations,
+	transaction, transactionRelations,
 }
 
 
@@ -27,6 +29,9 @@ import {
 import { 
 	sessionSelectSchema, sessionSafeSelectSchema, sessionInsertSchema, sessionUpdateSchema
 } from "./session/schema.ts"
+import {
+	transactionSelectSchema, transactionSafeSelectSchema, transactionInsertSchema, transactionUpdateSchema
+} from "./transaction/schema.ts"
 
 // Export Zod schemas
 export const zodTableSchemas = {
@@ -53,5 +58,11 @@ export const zodTableSchemas = {
 		safeSelect: sessionSafeSelectSchema,
 		insert: sessionInsertSchema,
 		update: sessionUpdateSchema
+	},
+	transaction: {
+		select: transactionSelectSchema,
+		safeSelect: transactionSafeSelectSchema,
+		insert: transactionInsertSchema,
+		update: transactionUpdateSchema
 	}
 }

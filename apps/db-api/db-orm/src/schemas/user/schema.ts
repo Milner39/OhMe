@@ -18,6 +18,7 @@ import {
 import { email } from "../email/schema.ts"
 import { password } from "../password/schema.ts"
 import { session } from "../session/schema.ts"
+import { transaction } from "../transaction/schema.ts"
 
 // #endregion Imports
 
@@ -75,5 +76,8 @@ export const userRelations = relations(user, ({ one, many }) => ({
 	password: one(password),
 
 	// Session relation
-	session: many(session)
+	session: many(session),
+
+	// Transaction relation
+	transaction: many(transaction)
 }))
