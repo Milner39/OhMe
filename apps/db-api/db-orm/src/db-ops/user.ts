@@ -127,7 +127,7 @@ export const create = async (
 	}
 > => {
 	try {
-		// Create a transaction
+		// Create a DB transaction
 		const txResult = await (sharedTx || db).transaction(async (tx) => {
 	
 			// Create user
@@ -479,7 +479,7 @@ export const registerUser = async (
 		}
 
 
-		// Create a transaction
+		// Create a DB transaction
 		const txResult = await db.transaction(async (tx) => {
 
 			// Create user
