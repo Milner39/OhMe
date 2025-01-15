@@ -13,7 +13,7 @@ import { HonoZValidatorResult } from "#utils/src/zod-utils.ts"
 
 // #region Validation hooks
 
-export const validateJsonHook = <
+export const validateRequestHook = <
 	ValidatorResult extends HonoZValidatorResult,
 	Context extends HonoContext
 > (
@@ -22,8 +22,8 @@ export const validateJsonHook = <
 ) => {
 	if (!result.success) return context.json({
 		result: null,
-		error: new KnownError("Invalid request body", {
-			code: "InvalidRequestBody",
+		error: new KnownError("Invalid request", {
+			code: "InvalidRequest",
 			target: result.error.issues
 		})
 	} satisfies StandardResponseBody, 422)

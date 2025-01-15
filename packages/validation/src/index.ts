@@ -148,6 +148,21 @@ export class Validator {
 			error: null
 		}
 	}
+
+	uuid = (string: string): ValidatorResult => {
+		const uuidRegex = 
+			/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+
+		const result = typeof string === "string" && uuidRegex.test(string)
+
+		return result ? {
+			result: true,
+			error: null
+		} : {
+			result: false,
+			error: "UUID is invalid"
+		}
+	}
 }
 
 // #endregion Validator

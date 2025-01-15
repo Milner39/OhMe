@@ -73,7 +73,9 @@ export const passwordSafeSelectSchema = createSelectSchema(password).omit({
 })
 
 export const passwordInsertSchema = createInsertSchema(password).omit({
-	id: true
+	id: true,
+	resetCode: true,
+	codeSentAt: true
 }).setKey("hash", rawPasswordSchema)
 
 export const passwordUpdateSchema = createUpdateSchema(password).omit({

@@ -49,6 +49,15 @@ export const email = z.string().transform((val, ctx) => {
 	return parsed
 })
 
+export const uuid = z.string().superRefine((val, ctx) => {
+	const validate = validator.uuid(val)
+
+	if (validate.result === false) ctx.addIssue({
+		code: z.ZodIssueCode.custom,
+		message: validate.error
+	})
+})
+
 
 
 export const userRegisterSchema = z.object({
@@ -59,6 +68,11 @@ export const userRegisterSchema = z.object({
 
 export const userLoginSchema = userRegisterSchema.omit({
 	email: true
+})
+
+export const authIdsSchema = z.object({
+	userId: uuid,
+	sessionId: uuid
 })
 
 // #endregion Zod Schemas

@@ -3,7 +3,7 @@
 // Validation
 import { zValidator } from "@hono/zod-validator"
 import { userRegisterSchema } from "#validation/src/zod-schemas/index.ts"
-import { validateJsonHook } from "~db-api/server/src/lib/utils/response-utils.ts"
+import { validateRequestHook } from "~db-api/server/src/lib/utils/response-utils.ts"
 
 import { createRouter } from "~db-api/server/src/lib/create-router.ts"
 
@@ -21,22 +21,22 @@ const router = createRouter().basePath("/register")
 	// Define methods for this path
 	.post(
 		"/",
-		zValidator("json", userRegisterSchema, validateJsonHook),
+		zValidator("json", userRegisterSchema, validateRequestHook),
 		async (ctx) => {
 			// Get request body
 			const body = ctx.req.valid("json")
 
 			// Register user
-			const registerUserResponse = await registerUser({
+			const registerUserRes = await registerUser({
 				user: { username: body.username },
 				password: { hash: body.password },
 				email: { address: body.email }
 			})
 
 			// Check for errors
-			if (registerUserResponse.error !== null) {
+			if (registerUserRes.error !== null) {
 				// Get error
-				const error = registerUserResponse.error
+				const error = registerUserRes.error
 
 
 				// Create base response
@@ -67,8 +67,7 @@ const router = createRouter().basePath("/register")
 			
 			
 			// Get IDs
-			const userId = registerUserResponse.result.extendedUser.user.id
-			const sessionId = registerUserResponse.result.session.id
+			const { userId, sessionId } = registerUserRes.result
 
 			const resBody = {
 				result: {

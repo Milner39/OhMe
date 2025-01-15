@@ -95,15 +95,15 @@ const config = {
 			)),
 			hooks: {
 				client: fileURLToPath(new URL(
-					"./hooks.client",
+					"./hooks/client",
 					srcDirURL
 				)),
 				server: fileURLToPath(new URL(
-					"./hooks.server",
+					"./hooks/server",
 					srcDirURL
 				)),
 				universal: fileURLToPath(new URL(
-					"./hooks",
+					"./hooks/universal",
 					srcDirURL
 				))
 			},

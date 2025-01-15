@@ -1,7 +1,7 @@
 // #region Imports
 import { zValidator } from "@hono/zod-validator"
 import { userLoginSchema } from "#validation/src/zod-schemas/index.ts"
-import { validateJsonHook } from "~db-api/server/src/lib/utils/response-utils.ts"
+import { validateRequestHook } from "~db-api/server/src/lib/utils/response-utils.ts"
 
 import { createRouter } from "~db-api/server/src/lib/create-router.ts"
 
@@ -19,21 +19,21 @@ const router = createRouter().basePath("/log-in")
 	// Define methods for this path
 	.post(
 		"/",
-		zValidator("json", userLoginSchema, validateJsonHook),
+		zValidator("json", userLoginSchema, validateRequestHook),
 		async (ctx) => {
 			// Get request body
 			const body = ctx.req.valid("json")
 
 			// Log in user
-			const logInUserResponse = await logInUser({
+			const logInUserRes = await logInUser({
 				user: { username: body.username },
 				password: { hash: body.password }
 			})
 
 			// Check for errors
-			if (logInUserResponse.error !== null) {
+			if (logInUserRes.error !== null) {
 				// Get error
-				const error = logInUserResponse.error
+				const error = logInUserRes.error
 
 
 				// Create base response
@@ -46,7 +46,7 @@ const router = createRouter().basePath("/log-in")
 				const baseResponse = ctx.json(baseBody, 500)
 
 
-				// Return failure of error is not a known error
+				// Return failure if error is not a known error
 				if (!(KnownError.isKnownError(error))) return baseResponse
 
 				// Handle known errors
@@ -64,8 +64,7 @@ const router = createRouter().basePath("/log-in")
 
 
 			// Get IDs
-			const userId = logInUserResponse.result.extendedUser.user.id
-			const sessionId = logInUserResponse.result.session.id
+			const { userId, sessionId } = logInUserRes.result
 
 			const resBody = {
 				result: {
@@ -76,7 +75,7 @@ const router = createRouter().basePath("/log-in")
 			} satisfies StandardResponseBody
 
 			// Return success
-			return ctx.json(resBody, 200)
+			return ctx.json(resBody, 201)
 		}
 	)
 

@@ -36,6 +36,20 @@ const sessionIdCookieName = "session-id"
 
 /** setAuthCookies
  * 
+ * Gets the cookies needed for authentication.
+ */
+export const getAuthCookies = (
+	cookies: Cookies
+) => {
+	const userId = cookies.get(userIdCookieName)
+	const sessionId = cookies.get(sessionIdCookieName)
+
+	return { userId, sessionId }
+}
+
+
+/** setAuthCookies
+ * 
  * Sets the cookies needed for authentication.
  */
 export const setAuthCookies = (

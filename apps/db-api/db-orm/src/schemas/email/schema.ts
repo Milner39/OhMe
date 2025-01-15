@@ -77,7 +77,10 @@ export const emailSafeSelectSchema = createSelectSchema(email).omit({
 })
 
 export const emailInsertSchema = createInsertSchema(email).omit({
-	id: true
+	id: true,
+	verified: true,
+	verificationCode: true,
+	codeSentAt: true
 }).setKey("address", addressSchema)
 
 export const emailUpdateSchema = createUpdateSchema(email).omit({

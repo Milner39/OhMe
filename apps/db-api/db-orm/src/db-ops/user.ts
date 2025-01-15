@@ -54,6 +54,7 @@ const {
 } = tables
 
 
+
 // Define Zod schemas
 const selectFullUserRowSchema = z.object({
 	user: zodTableSchemas.user.select,
@@ -69,21 +70,38 @@ const createFullUserRowSchema = z.object({
 	password: zodTableSchemas.password.insert.omit({ userId: true })
 })
 
+const registerUserSchema = z.object({
+	user: zodTableSchemas.user.insert.pick({ username: true }),
+	email: zodTableSchemas.email.insert.pick({ address: true }),
+	password: zodTableSchemas.password.insert.pick({ hash: true })
+})
+
 const logInUserSchema = z.object({
 	user: zodTableSchemas.user.select.pick({ username: true }),
 	password: zodTableSchemas.password.select.pick({ hash: true })
 })
 
+const safeReadSchema = z.object({
+	user: zodTableSchemas.user.safeSelect,
+	email: zodTableSchemas.email.safeSelect,
+	password: zodTableSchemas.password.safeSelect,
+	session: zodTableSchemas.session.safeSelect
+})
+
+
 
 // Define types
-type SelectUser = z.infer<typeof zodTableSchemas.user.select>
-type SelectEmail = z.infer<typeof zodTableSchemas.email.select>
-type SelectPassword = z.infer<typeof zodTableSchemas.password.select>
-type SelectFullUserRow = z.infer<typeof selectFullUserRowSchema>
+export type SelectUser = z.infer<typeof zodTableSchemas.user.select>
+export type SelectEmail = z.infer<typeof zodTableSchemas.email.select>
+export type SelectPassword = z.infer<typeof zodTableSchemas.password.select>
+export type SelectFullUserRow = z.infer<typeof selectFullUserRowSchema>
 
-type UserColumns = ReturnType<typeof getTableColumns<typeof userT>>
-type EmailColumns = ReturnType<typeof getTableColumns<typeof emailT>>
-type PasswordColumns = ReturnType<typeof getTableColumns<typeof passwordT>>
+export type SafeSelectUserSession = z.infer<typeof safeReadSchema>
+
+
+export type UserColumns = ReturnType<typeof getTableColumns<typeof userT>>
+export type EmailColumns = ReturnType<typeof getTableColumns<typeof emailT>>
+export type PasswordColumns = ReturnType<typeof getTableColumns<typeof passwordT>>
 
 
 
@@ -255,6 +273,7 @@ export const readMany = async (
  * Use a dynamic query to:
  * 	- Find a row of `userT` filtered by `filters.user`.
  * 	- Join a row of `emailT` filtered by `filters.email`.
+ * 	- Join a row of `passwordT` filtered by `filters.password`.
  * 
  * If more than one row found, return an error.
  */
@@ -288,7 +307,7 @@ export const readOne = async (
 		// Read users
 		const {
 			result: maybeRow,
-			error: rUserError
+			error: roUserError
 		} = await gReadOne(userT, (query) => {
 
 			return query
@@ -305,7 +324,7 @@ export const readOne = async (
 					filters.password?.(userT, password, cOps)
 				))
 		})
-		if (rUserError !== null) throw rUserError
+		if (roUserError !== null) throw roUserError
 
 		const row = selectFullUserRowSchema.parse(maybeRow)
 
@@ -414,7 +433,7 @@ export const findUniqueCollisions = async (
 
 import { 
 	create as createSession,
-	SelectSession
+	readOne as readOneSession
 } from "./session.ts"
 
 
@@ -428,12 +447,12 @@ import {
  * Return the IDs of the user and session row.
  */
 export const registerUser = async (
-	values: z.infer<typeof createFullUserRowSchema>
+	values: z.infer<typeof registerUserSchema>
 ): Promise<
 	{
 		result: {
-			extendedUser: SelectFullUserRow,
-			session: SelectSession
+			userId: string,
+			sessionId: string
 		},
 		error: null
 	} | {
@@ -446,11 +465,7 @@ export const registerUser = async (
 		const {
 			result: collisions,
 			error: fuCollisionsError
-		} = await findUniqueCollisions({
-			user: values.user,
-			email: values.email,
-			password: values.password
-		})
+		} = await findUniqueCollisions(values)
 		if (fuCollisionsError !== null) throw fuCollisionsError
 
 		if (
@@ -486,11 +501,11 @@ export const registerUser = async (
 			if (cSessionError !== null) throw cSessionError
 
 
-			// Return created rows
+			// Return IDs
 			return {
 				result: {
-					extendedUser: fullUser,
-					session: session
+					userId: fullUser.user.id,
+					sessionId: session.id
 				},
 				error: null
 			}
@@ -521,8 +536,8 @@ export const logInUser = async (
 ): Promise<
 	{
 		result: {
-			extendedUser: SelectFullUserRow,
-			session: SelectSession
+			userId: string,
+			sessionId: string
 		},
 		error: null
 	} | {
@@ -534,13 +549,11 @@ export const logInUser = async (
 		// Find the user row with the matching information
 		const {
 			result: fullUser,
-			error: readoError
+			error: roSessionError
 		} = await readOne({
-			user: (user, cOps) => cOps.and(
-				cOps.eq(user.username, values.user.username)
-			)
+			user: (user, cOps) => cOps.eq(user.username, values.user.username)
 		})
-		if (readoError !== null) throw readoError
+		if (roSessionError !== null) throw roSessionError
 
 
 		// Check password information matches
@@ -565,8 +578,8 @@ export const logInUser = async (
 		// Return rows
 		return {
 			result: {
-				extendedUser: fullUser,
-				session: session
+				userId: fullUser.user.id,
+				sessionId: session.id
 			},
 			error: null
 		}
@@ -579,4 +592,67 @@ export const logInUser = async (
 		}
 	}
 }
+
+
+/** safeRead
+ * 
+ * Use a provided user and session ID to find user information.
+ * Check if the IDs match up.
+ * Only return non-sensitive information.
+ */
+export const safeRead = async (
+	userId: string,
+	sessionId: string
+): Promise<
+	{
+		result: z.infer<typeof safeReadSchema>,
+		error: null
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
+	try {
+		// Find the session row with the matching information
+		const {
+			result: fullSession,
+			error: roSessionError
+		} = await readOneSession({
+			session: (session, cOps) => cOps.eq(session.id, sessionId),
+			user: (user, cOps) => cOps.eq(user.id, userId)
+		})
+		if (roSessionError !== null) throw roSessionError
+
+		// Get the full user row
+		const {
+			result: fullUser,
+			error: roUserError
+		} = await readOne({
+			user: (user, cOps) => cOps.eq(user.id, userId)
+		})
+		if (roUserError !== null) throw roUserError
+
+		
+		// Parse the non-sensitive information
+		const safeRow = safeReadSchema.parse({
+			user: fullUser.user,
+			email: fullUser.email,
+			password: fullUser.password,
+			session: fullSession.session
+		})
+
+		return {
+			result: safeRow,
+			error: null
+		}
+	}
+
+	catch (error) {
+		return {
+			result: null,
+			error: error as NotNull
+		}
+	}
+}
+
 // #endregion Common Operations
