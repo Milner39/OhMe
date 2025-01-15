@@ -28,7 +28,7 @@ const router = createRouter().basePath("/user")
 		"/",
 		zValidator("cookie", authIdsSchema, validateRequestHook),
 		async (ctx) => {
-			// Get request query params
+			// Get request cookies
 			const cookie = ctx.req.valid("cookie")
 
 			// Get safe user data using auth ids
