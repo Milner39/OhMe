@@ -1,3 +1,4 @@
 export type CreateTransactionFormData = {
-    ammount: string
+	username: string,
+	amount: string
 }

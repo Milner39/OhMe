@@ -14,25 +14,25 @@ import type { PageData, ActionData } from "./$types"
 
 // Get page data
 let { data, form }: { data: PageData, form: ActionData } = $props()
-    
+
 </script>
 
 
 <div class="page-wrapper">
-    <CreateTransactionForm/>
+	<CreateTransactionForm/>
 </div>
 
 
 <style lang="scss">
 
 .page-wrapper {
-    padding: var(--size-6);
+	padding: var(--size-6);
 
-    flex-grow: 1;
+	flex-grow: 1;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 </style>

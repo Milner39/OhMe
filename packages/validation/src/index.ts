@@ -165,16 +165,24 @@ export class Validator {
 		}
 	}
 
-	cost = (ammount: number): ValidatorResult => {
+	cost = (amount: number): ValidatorResult => {
 		let result = false
 
 		// Checks
-		if (typeof ammount !== "number") return {
+		if (typeof amount !== "number") return {
 			result,
-			error: "Email must be a string"
+			error: "Cost must be a number"
 		}
 
-		// TODO: add more limits
+		else if (amount < 0) return {
+			result,
+			error: "Cost cannot be negative"
+		}
+
+		else if (amount > 1_000_000) return {
+			result,
+			error: "Cost cannot be greater than 1,000,000"
+		}
 
 		// Success
 		result = true

@@ -23,76 +23,76 @@ const validator = new Validator()
 
 
 <Form action="?/create"
-    onsubmit={(event) => {
+	onsubmit={(event) => {
 
-        // Get form inputs
-        const formData = getFormData(event.formData) as CreateTransactionFormData
-
-
-        // Validate form inputs
-        let validInputs = true
-
-        const validateAmmount = validator.cost(Number(formData.ammount))
-        if (validateAmmount.result === false) validInputs = false
-        console.log("Ammount:", validateAmmount)
+		// Get form inputs
+		const formData = getFormData(event.formData) as CreateTransactionFormData
 
 
-        // Cancel form submission if inputs are invalid
-        if (!validInputs) {
-            console.log("Form submission cancelled")
-            event.cancel()
-            return
-        }
+		// Validate form inputs
+		let validInputs = true
 
-        // Allow form submission
-        console.log("Form submission allowed")
-        return async ({ result, update }) => {
-            await update()
-            await applyAction(result)
-        }
-    }}
+		const validateAmount = validator.cost(Number(formData.amount))
+		if (validateAmount.result === false) validInputs = false
+		console.log("Amount:", validateAmount)
+
+
+		// Cancel form submission if inputs are invalid
+		if (!validInputs) {
+			console.log("Form submission cancelled")
+			event.cancel()
+			return
+		}
+
+		// Allow form submission
+		console.log("Form submission allowed")
+		return async ({ result, update }) => {
+			await update()
+			await applyAction(result)
+		}
+	}}
 >
-    {#snippet children({
-        Title,
-        Section,
-        FButton,
-        FTextInput,
-        FNumberInput
-    })}
-        <Title>
-            <h1>Create Transaction</h1>
-            <p>All fields marked with "*" are required.</p>
-        </Title>
-        <Section>
-            {#snippet children()}
-                <div class="inputs__wrapper">
-                    <FTextInput 
-                        name="username"
-                        placeholder="John Doe"
-                        required={true}
-                    >
-                        {#snippet labelContent()}
-                            <p>Username *</p>
-                        {/snippet}
-                    </FTextInput>
-                    <FNumberInput 
-                        name="ammount"
-                        placeholder="15.99"
-                        required={true}
-                    >
-                        {#snippet labelContent()}
-                            <p>Ammount *</p>
-                        {/snippet}
-                    </FNumberInput>
-                </div>
-            {/snippet}
-        </Section>
-        <Section>
-            <div class="buttons__wrapper">
-                <div class="buttons__group">
-                    <FButton><p>Create</p></FButton>
-                </div>
-            </div>
-        </Section>
-    {/snippet}
+	{#snippet children({
+		Title,
+		Section,
+		FButton,
+		FTextInput,
+		FNumberInput
+	})}
+		<Title>
+			<h1>Create Transaction</h1>
+			<p>All fields marked with "*" are required.</p>
+		</Title>
+		<Section>
+			{#snippet children()}
+				<div class="inputs__wrapper">
+					<FTextInput 
+						name="username"
+						placeholder="John Doe"
+						required={true}
+					>
+						{#snippet labelContent()}
+							<p>Username *</p>
+						{/snippet}
+					</FTextInput>
+					<FNumberInput 
+						name="amount"
+						placeholder="15.99"
+						required={true}
+					>
+						{#snippet labelContent()}
+							<p>Amount *</p>
+						{/snippet}
+					</FNumberInput>
+				</div>
+			{/snippet}
+		</Section>
+		<Section>
+			<div class="buttons__wrapper">
+				<div class="buttons__group">
+					<FButton><p>Create</p></FButton>
+				</div>
+			</div>
+		</Section>
+	{/snippet}
 </Form>
