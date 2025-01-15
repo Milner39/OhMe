@@ -38,11 +38,12 @@ const auth: Handle = async ({ event, resolve }) => {
 
 	// Get safe user data using user and session IDs
 	const dbRes = await dbAPI.user.$get({
-		cookie: {
+		query: {
 			userId: authCookies.userId,
 			sessionId: authCookies.sessionId
 		}
 	})
+	//console.log(JSON.stringify(await dbRes.json(), null, 4))
 
 	// Check for errors
 	if (!dbRes.ok) {

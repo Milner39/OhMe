@@ -36,8 +36,8 @@ export const setWithMaxAge = (
 
 // #region Auth Cookies
 
-const userIdCookieName = "user-id"
-const sessionIdCookieName = "session-id"
+const userIdCookieName = "userId"
+const sessionIdCookieName = "sessionId"
 
 
 /** setAuthCookies

@@ -4,6 +4,7 @@ import { createRouter } from "../lib/create-router.ts"
 
 // Import child routes
 import userR from "./user/index.ts"
+import transactionR from "./transaction/index.ts"
 
 // #endregion Imports
 
@@ -19,6 +20,7 @@ const router = createRouter().basePath("/")
 const deepRouter = router
 	// Mount static routes first
 	.route("/", userR)
+	.route("/", transactionR)
 
 	// Mount dynamic routes
 	// N/A

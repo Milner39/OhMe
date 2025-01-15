@@ -16,6 +16,9 @@ import type { PageData, ActionData } from "./$types"
 // Get page data
 let { data, form }: { data: PageData, form: ActionData } = $props()
 
+// Log response from form submissions
+$effect(() => { if (form) console.log("form response:", form) })
+
 </script>
 
 
