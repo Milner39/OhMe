@@ -9,6 +9,7 @@ import Title from "./Title.svelte"
 import Section from "./Section.svelte"
 import FButton from "./FormInputs/FButton.svelte"
 import FTextInput from "./FormInputs/FTextInput.svelte"
+import FNumberInput from "./FormInputs/FNumberInput.svelte"
 
 
 // Import types
@@ -72,7 +73,8 @@ interface Props {
 		Title: typeof Title,
 		Section: typeof Section,
 		FButton: typeof FButton,
-		FTextInput: typeof FTextInput
+		FTextInput: typeof FTextInput,
+		FNumberInput: typeof FNumberInput
 	}]>
 }
 let {
@@ -90,7 +92,8 @@ let {
 			Title,
 			Section,
 			FButton,
-			FTextInput 
+			FTextInput,
+			FNumberInput
 		})}
 	</form>
 </div>

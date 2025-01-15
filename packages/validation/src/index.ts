@@ -153,6 +153,7 @@ export class Validator {
 		const uuidRegex = 
 			/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
 
+		// Checks
 		const result = typeof string === "string" && uuidRegex.test(string)
 
 		return result ? {
@@ -161,6 +162,25 @@ export class Validator {
 		} : {
 			result: false,
 			error: "UUID is invalid"
+		}
+	}
+
+	cost = (ammount: number): ValidatorResult => {
+		let result = false
+
+		// Checks
+		if (typeof ammount !== "number") return {
+			result,
+			error: "Email must be a string"
+		}
+
+		// TODO: add more limits
+
+		// Success
+		result = true
+		return {
+			result,
+			error: null
 		}
 	}
 }
