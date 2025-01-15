@@ -84,7 +84,8 @@ export const deleteAuthCookies = (
 
 	// Define shared options
 	const sharedOptions: Parameters<typeof cookies.delete>[1] = {
-		path: "/"
+		path: "/",
+		secure: false, // Since web server is not using HTTPS
 	}
 
 	// Delete user ID cookie
