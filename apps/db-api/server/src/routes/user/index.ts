@@ -26,13 +26,13 @@ const router = createRouter().basePath("/user")
 	// Define methods for this path
 	.get(
 		"/",
-		zValidator("query", authIdsSchema, validateRequestHook),
+		zValidator("cookie", authIdsSchema, validateRequestHook),
 		async (ctx) => {
 			// Get request query params
-			const query = ctx.req.valid("query")
+			const cookie = ctx.req.valid("cookie")
 
 			// Get safe user data using auth ids
-			const safeReadRes = await safeRead(query.userId, query.sessionId)
+			const safeReadRes = await safeRead(cookie.userId, cookie.sessionId)
 
 			// Check for errors
 			if (safeReadRes.error !== null) {

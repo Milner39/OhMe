@@ -38,7 +38,7 @@ const auth: Handle = async ({ event, resolve }) => {
 
 	// Get safe user data using user and session IDs
 	const dbRes = await dbAPI.user.$get({
-		query: {
+		cookie: {
 			userId: authCookies.userId,
 			sessionId: authCookies.sessionId
 		}
