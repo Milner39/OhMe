@@ -24,6 +24,9 @@ import {
 
 // Import tables and schemas
 import tables, { zodTableSchemas } from "../schemas/index.ts"
+import { authIdsSchema } from "#validation/src/zod-schemas/index.ts"
+
+import { KnownError } from "@/packages/utils/src/error-utils.ts"
 
 
 // Import types
@@ -73,6 +76,7 @@ import { UserColumns } from "./user.ts"
 
 /** create
  * 
+ * Create a row in `sessionT`.
  */
 export const create = async (
 	values: z.infer<typeof createFullSessionRowSchema>,
@@ -87,22 +91,21 @@ export const create = async (
 	}
 > => {
 	try {
-
 		// Create session
 		const {
-			result: sessions,
-			error: cSessionError
+			result: rows,
+			error: cError
 		} = await gCreate(sessionT, asLiteralArray({
 			userId: values.user.id,
 			...values.session
 		}), sharedTx)
-		if (cSessionError !== null) throw cSessionError
+		if (cError !== null) throw cError
 
-		const session = zodTableSchemas.session.select.parse(sessions[0])
+		const row = zodTableSchemas.session.select.parse(rows[0])
 
 		// Return created row
 		return {
-			result: session,
+			result: row,
 			error: null
 		}
 	}
@@ -184,3 +187,75 @@ export const readOne = async (
 }
 
 // #endregion READ
+
+
+// #region Common Operations
+
+/** safeCheckAuth
+ * 
+ * Check if a session and user exist, using the provided IDs.
+ */
+export const safeCheckAuth = async (
+	values: z.infer<typeof authIdsSchema>
+): Promise<
+	{
+		result: true,
+		error: null
+	} | {
+		result: false,
+		error: KnownError
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
+	try {
+		const { userId, sessionId } = authIdsSchema.parse(values)
+
+		// Find session row with matching IDs
+		const {
+			result: maybeRow,
+			error: roSessionError
+		} = await gReadOne(sessionT, (query) => {
+			
+			return query
+				// Filter session columns
+				.filter((session, cOps) => cOps.and(
+					cOps.eq(session.id, sessionId),
+					cOps.eq(session.userId, userId)
+				))
+		})
+		if (roSessionError !== null) {
+			if (!KnownError.isKnownError(roSessionError)) throw roSessionError
+
+			switch (roSessionError.cause.code) {
+				case "FindOneNoResult":
+					return {
+						result: false,
+						error: new KnownError("Incorrect authentication", {
+							code: "IncorrectAuth"
+						})
+					}
+				
+				default:
+					throw roSessionError
+			}
+		}
+
+		// Will throw error if parsing fails
+		zodTableSchemas.session.select.parse(maybeRow)
+
+		return {
+			result: true,
+			error: null
+		}
+	}
+
+	catch (error) {
+		return {
+			result: null,
+			error: error as NotNull
+		}
+	}
+}
+// #endregion Common Operations
