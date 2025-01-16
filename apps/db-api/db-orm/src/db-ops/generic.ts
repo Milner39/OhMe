@@ -247,8 +247,8 @@ export const gReadOne = async <
 		}
 
 		if (rows.length > 1) {
-			throw new KnownError("Many rows found with query", {
-				code: "FindOneManyResult"
+			throw new KnownError("Multiple rows found with query", {
+				code: "FindOneMultipleResults"
 			})
 		}
 

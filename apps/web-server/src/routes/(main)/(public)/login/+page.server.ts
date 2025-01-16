@@ -141,6 +141,7 @@ export const actions = {
 				password: formData.password
 			}
 		})
+		console.log(dbRes)
 
 		// Check for errors
 		if (!dbRes.ok) {
