@@ -14,7 +14,7 @@ export type StandardResponseBody = {
 	error: null
 } | {
 	result: null,
-	error: KnownError
+	error: KnownError | ReturnType<KnownError["toJSON"]>
 }
 
 export type SafeResponseBody = {
@@ -22,7 +22,7 @@ export type SafeResponseBody = {
 	error: null
 } | {
 	result: null,
-	error: SafeKnownError
+	error: SafeKnownError | ReturnType<SafeKnownError["toJSON"]>
 }
 
 // #endregion ResponseBody

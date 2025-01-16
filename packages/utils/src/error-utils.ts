@@ -5,6 +5,14 @@ export type KnownErrorCause = {
 	target?: unknown
 }
 
+export type KnownErrorJSON <
+	Cause extends KnownErrorCause = KnownErrorCause
+> = {
+	name: string,
+	message: string,
+	cause: Cause
+}
+
 export class KnownError<
 	Cause extends KnownErrorCause = KnownErrorCause
 > extends Error {
@@ -16,6 +24,14 @@ export class KnownError<
 	) {
 		super(message)
 		this.cause = cause
+	}
+
+	toJSON(): KnownErrorJSON<Cause> {
+		return {
+			name: this.name,
+			message: this.message,
+			cause: this.cause,
+		}
 	}
 
 	static isKnownError(value: unknown): value is KnownError {

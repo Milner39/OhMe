@@ -51,7 +51,7 @@ export const actions = {
 				result: null,
 				error: new SafeKnownError("Invalid authentication", {
 					code: "InvalidAuth"
-				})
+				}).toJSON()
 			} satisfies SafeResponseBody)
 		}
 
@@ -77,7 +77,7 @@ export const actions = {
 				target: {
 					amount: validateAmount.error
 				}
-			})
+			}).toJSON()
 		} satisfies SafeResponseBody)
 
 
@@ -98,7 +98,7 @@ export const actions = {
 				result: null,
 				error: new SafeKnownError("Error creating transaction", {
 					code: "UnknownServerError"
-				})
+				}).toJSON()
 			} satisfies SafeResponseBody)
 		}
 		// Transaction has been created successfully after here

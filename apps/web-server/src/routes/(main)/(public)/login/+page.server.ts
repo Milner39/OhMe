@@ -64,7 +64,7 @@ export const actions = {
 					email: validateEmail.error,
 					password: validatePassword.error
 				}
-			})
+			}).toJSON()
 		} satisfies SafeResponseBody)
 
 
@@ -84,7 +84,7 @@ export const actions = {
 				result: null,
 				error: new SafeKnownError("Error registering user", {
 					code: "UnknownServerError"
-				})
+				}).toJSON()
 			} satisfies SafeResponseBody)
 		}
 		const dbResJson = await dbRes.json()
@@ -130,7 +130,7 @@ export const actions = {
 					username: validateUsername.error,
 					password: validatePassword.error
 				}
-			})
+			}).toJSON()
 		} satisfies SafeResponseBody)
 
 
@@ -149,7 +149,7 @@ export const actions = {
 				result: null,
 				error: new SafeKnownError("Error logging in user", {
 					code: "UnknownServerError"
-				})
+				}).toJSON()
 			} satisfies SafeResponseBody)
 		}
 		const dbResJson = await dbRes.json()
