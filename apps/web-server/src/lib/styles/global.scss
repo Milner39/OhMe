@@ -123,6 +123,27 @@ body {
 }
 
 
+.flex {
+	display: flex;
+}
+.grid {
+	display: grid;
+}
+.col {
+	flex-direction: column;
+	grid-template-columns: auto;
+}
+.row {
+	flex-direction: row;
+	grid-template-rows: auto;
+}
+
+
+.text-center {
+	text-align: center;
+}
+
+
 // Button styles
 
 .button {
@@ -148,7 +169,6 @@ body {
 
 	--gap: var(--spacing);
 }
-
 
 // Div styles
 

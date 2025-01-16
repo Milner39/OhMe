@@ -29,7 +29,7 @@ $effect(() => { if (form) console.log("form response:", form) })
 <style lang="scss">
 
 .page-wrapper {
-	padding: var(--size-6);
+	padding: var(--size-4);
 
 	flex-grow: 1;
 

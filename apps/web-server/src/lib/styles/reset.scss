@@ -100,9 +100,9 @@ h1, h2, h3, h4, h5, h6 {
 
 	// Fix autofill colors
 	&:autofill,
-    &:autofill:hover, 
-    &:autofill:focus, 
-    &:autofill:active {
+	&:autofill:hover, 
+	&:autofill:focus, 
+	&:autofill:active {
 		font: inherit;
 
 		background-clip: text;
