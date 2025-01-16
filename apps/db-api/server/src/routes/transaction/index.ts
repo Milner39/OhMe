@@ -22,16 +22,16 @@ const router = createRouter().basePath("/transaction")
 	// Define methods for this path
 	.post(
 		"/",
-		zValidator("param", authIdsSchema, validateRequestHook),
+		zValidator("query", authIdsSchema, validateRequestHook),
 		zValidator("json", transactionPureInsertSchema, validateRequestHook),
 		async (ctx) => {
 			// Get request data
-			const params = ctx.req.valid("param")
+			const queries = ctx.req.valid("query")
 			const body = ctx.req.valid("json")
 
 			// Create transaction
 			const createTransactionRes = await safeCreate({
-				auth: params,
+				auth: queries,
 				transaction: body
 			})
 

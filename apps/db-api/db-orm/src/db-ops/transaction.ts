@@ -142,9 +142,12 @@ export const safeCreate = async (
 		})
 		if (cError !== null) throw cError
 
-		// Return created row
+
+		// Parse the non-sensitive information
+		const safeRow = zodTableSchemas.transaction.safeSelect.parse(row)
+
 		return {
-			result: row,
+			result: safeRow,
 			error: null
 		}
 	}

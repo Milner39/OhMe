@@ -23,7 +23,7 @@ const router = createRouter().basePath("/register")
 		"/",
 		zValidator("json", userRegisterSchema, validateRequestHook),
 		async (ctx) => {
-			// Get request body
+			// Get request data
 			const body = ctx.req.valid("json")
 
 			// Register user

@@ -21,7 +21,7 @@ const router = createRouter().basePath("/log-in")
 		"/",
 		zValidator("json", userLoginSchema, validateRequestHook),
 		async (ctx) => {
-			// Get request body
+			// Get request data
 			const body = ctx.req.valid("json")
 
 			// Log in user

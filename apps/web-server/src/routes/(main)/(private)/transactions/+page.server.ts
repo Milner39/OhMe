@@ -83,9 +83,11 @@ export const actions = {
 
 		// Inputs are valid, send request to DB API
 		const dbRes = await dbAPI.transaction.$post({
-			param: authCookies,
+			query: {
+				userId: authCookies.userId,
+				sessionId: authCookies.sessionId
+			},
 			json: {
-				username: formData.username,
 				amount: formData.amount
 			}
 		})
