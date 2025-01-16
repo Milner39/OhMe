@@ -125,12 +125,7 @@ export const safeCreate = async (
 			result: authRes,
 			error: authError
 		} = await safeCheckAuth(values.auth)
-		if (authError !== null) throw authError
-
-		// Check if auth is valid
-		if (!authRes) {
-			throw new Error()
-		}
+		if (!authRes || authError !== null) throw authError
 
 		// Create transaction
 		const {

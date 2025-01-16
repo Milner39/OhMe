@@ -29,6 +29,7 @@ import {
 
 // Import tables and schemas
 import tables, { zodTableSchemas } from "../schemas/index.ts"
+import { authIdsSchema } from "#validation/src/zod-schemas/index.ts"
 
 
 // Import types
@@ -50,7 +51,8 @@ import {
 const { 
 	user: userT,
 	email: emailT,
-	password: passwordT
+	password: passwordT,
+	session: sessionT
 } = tables
 
 
@@ -59,7 +61,8 @@ const {
 const selectFullUserRowSchema = z.object({
 	user: zodTableSchemas.user.select,
 	email: zodTableSchemas.email.select,
-	password: zodTableSchemas.password.select
+	password: zodTableSchemas.password.select,
+	session: zodTableSchemas.session.select
 })
 
 const createFullUserRowSchema = z.object({
@@ -100,6 +103,7 @@ export type SafeSelectUserSession = z.infer<typeof safeReadSchema>
 export type UserColumns = ReturnType<typeof getTableColumns<typeof userT>>
 export type EmailColumns = ReturnType<typeof getTableColumns<typeof emailT>>
 export type PasswordColumns = ReturnType<typeof getTableColumns<typeof passwordT>>
+import { SessionColumns } from "./session.ts"
 
 
 
@@ -291,6 +295,11 @@ export const readOne = async (
 			password: PasswordColumns,
 			operators: typeof cOps
 		) => SQL | undefined
+		session?: (
+			user: UserColumns,
+			password: SessionColumns,
+			operators: typeof cOps
+		) => SQL | undefined
 	}
 ): Promise<
 	{
@@ -320,6 +329,10 @@ export const readOne = async (
 				.innerJoin(passwordT, (user, password, cOps) => cOps.and(
 					cOps.eq(user.id, password.userId),
 					filters.password?.(userT, password, cOps)
+				))
+				.innerJoin(sessionT, (user, session, cOps) => cOps.and(
+					cOps.eq(user.id, session.userId),
+					filters.session?.(userT, session, cOps)
 				))
 		})
 		if (roUserError !== null) throw roUserError
@@ -431,7 +444,7 @@ export const findUniqueCollisions = async (
 
 import { 
 	create as createSession,
-	readOne as readOneSession
+	safeCheckAuth
 } from "./session.ts"
 
 
@@ -599,8 +612,7 @@ export const logInUser = async (
  * Only return non-sensitive information.
  */
 export const safeRead = async (
-	userId: string,
-	sessionId: string
+	values: z.infer<typeof authIdsSchema>
 ): Promise<
 	{
 		result: z.infer<typeof safeReadSchema>,
@@ -611,22 +623,20 @@ export const safeRead = async (
 	}
 > => {
 	try {
-		// Find the session row with the matching information
+		// Check if auth is correct
 		const {
-			result: fullSession,
-			error: roSessionError
-		} = await readOneSession({
-			session: (session, cOps) => cOps.eq(session.id, sessionId),
-			user: (user, cOps) => cOps.eq(user.id, userId)
-		})
-		if (roSessionError !== null) throw roSessionError
+			result: authRes,
+			error: authError
+		} = await safeCheckAuth(values)
+		if (!authRes || authError !== null) throw authError
 
 		// Get the full user row
 		const {
 			result: fullUser,
 			error: roUserError
 		} = await readOne({
-			user: (user, cOps) => cOps.eq(user.id, userId)
+			user: (user, cOps) => cOps.eq(user.id, values.userId),
+			session: (_, session, cOps) => cOps.eq(session.id, values.sessionId)
 		})
 		if (roUserError !== null) throw roUserError
 
@@ -636,7 +646,7 @@ export const safeRead = async (
 			user: fullUser.user,
 			email: fullUser.email,
 			password: fullUser.password,
-			session: fullSession.session
+			session: fullUser.session
 		})
 
 		return {
