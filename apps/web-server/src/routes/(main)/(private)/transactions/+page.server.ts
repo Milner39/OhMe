@@ -65,7 +65,7 @@ export const actions = {
 		const validateUsername = validator.username(formData.username)
 		if (validateUsername.result === false) validInputs = false
 
-		const validateAmount = validator.cost(Number(formData.amount))
+		const validateAmount = validator.cost(formData.amount)
 		if (validateAmount.result === false) validInputs = false
 
 

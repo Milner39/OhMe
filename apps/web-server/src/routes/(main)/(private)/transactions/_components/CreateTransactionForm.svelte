@@ -32,7 +32,7 @@ const validator = new Validator()
 		// Validate form inputs
 		let validInputs = true
 
-		const validateAmount = validator.cost(Number(formData.amount))
+		const validateAmount = validator.cost(formData.amount)
 		if (validateAmount.result === false) validInputs = false
 		console.log("Amount:", validateAmount)
 
@@ -79,6 +79,9 @@ const validator = new Validator()
 						name="amount"
 						placeholder="15.99"
 						required={true}
+						min="0"
+						max="1000000"
+						step="0.01"
 					>
 						{#snippet labelContent()}
 							<p>Amount *</p>

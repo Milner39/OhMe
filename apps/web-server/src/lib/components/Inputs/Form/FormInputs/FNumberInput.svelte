@@ -13,6 +13,9 @@ interface Props {
 	name: string,
 	placeholder?: string,
 	required?: boolean,
+	min?: string,
+	max?: string,
+	step?: string,
 	labelContent?: Snippet,
 	inputBoxContent?: Snippet,
 	helperContent?: Snippet
@@ -22,6 +25,9 @@ let {
 	name,
 	placeholder,
 	required = false,
+	min,
+	max,
+	step,
 	labelContent,
 	inputBoxContent,
 	helperContent,
@@ -34,7 +40,7 @@ let {
 	{@render labelContent?.()}
 	<div class="form__number-input__wrapper">
 		<input type="number"
-			{name} {placeholder} {required}
+			{name} {placeholder} {required} {min} {max} {step}
 		>
 		{@render inputBoxContent?.()}
 	</div>

@@ -52,16 +52,16 @@ export class Validator {
 			error: "Username must be a string"
 		}
 
-		else if (string.length < minLen) return {
+		if (string.length < minLen) return {
 			result,
 			error: `Username must be at least ${minLen} characters`
 		}
-		else if (string.length > maxLen) return {
+		if (string.length > maxLen) return {
 			result,
 			error: `Username must be at most ${maxLen} characters`
 		}
 
-		else if (
+		if (
 			containsWhitespace(string[0] + string[string.length - 1])
 		) return {
 			result,
@@ -86,16 +86,16 @@ export class Validator {
 			error: "Password must be a string"
 		}
 
-		else if (string.length < minLen) return {
+		if (string.length < minLen) return {
 			result,
 			error: `Password must be at least ${minLen} characters`
 		}
-		else if (string.length > maxLen) return {
+		if (string.length > maxLen) return {
 			result,
 			error: `Password must be at most ${maxLen} characters`
 		}
 
-		else if (
+		if (
 			containsWhitespace(string[0] + string[string.length - 1])
 		) return {
 			result,
@@ -122,20 +122,20 @@ export class Validator {
 			error: "Email must be a string"
 		}
 
-		else if (string.length > maxLen) return {
+		if (string.length > maxLen) return {
 			result,
 			error: `Email must be at most ${maxLen} characters`
 		}
 
-		else if (containsWhitespace(string)) return {
+		if (containsWhitespace(string)) return {
 			result,
 			error: "Email cannot contain a space"
 		}
-		else if (!string.includes("@")) return {
+		if (!string.includes("@")) return {
 			result,
 			error: "Email must contain 1 '@'"
 		}
-		else if (!emailRegex.test(string)) return {
+		if (!emailRegex.test(string)) return {
 			result,
 			error: "Email is invalid"
 		}
@@ -165,21 +165,33 @@ export class Validator {
 		}
 	}
 
-	cost = (amount: number): ValidatorResult => {
+	cost = (string: string): ValidatorResult => {
 		let result = false
 
 		// Checks
-		if (typeof amount !== "number") return {
+		if (typeof string !== "string") return {
 			result,
-			error: "Cost must be a number"
+			error: "Cost must be a string"
 		}
 
-		else if (amount < 0) return {
+		const number = Number(string)
+
+		if (isNaN(number)) return {
+			result,
+			error: "Cost must be in a valid number format"
+		}
+
+		if (string.split(".")[1]?.length > 2) return {
+			result,
+			error: "Cost must have at most 2 decimal places"
+		}
+
+		if (number < 0) return {
 			result,
 			error: "Cost cannot be negative"
 		}
 
-		else if (amount > 1_000_000) return {
+		if (number > 1_000_000) return {
 			result,
 			error: "Cost cannot be greater than 1,000,000"
 		}
