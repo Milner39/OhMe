@@ -29,7 +29,6 @@ const router = createRouter().basePath("/log-in")
 				user: { username: body.username },
 				password: { hash: body.password }
 			})
-			console.log(logInUserRes)
 
 			// Check for errors
 			if (logInUserRes.error !== null) {
