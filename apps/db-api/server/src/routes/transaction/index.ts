@@ -8,7 +8,7 @@ import { validateRequestHook } from "~db-api/server/src/lib/utils/response-utils
 
 import { createRouter } from "~db-api/server/src/lib/create-router.ts"
 
-import { safeCreate } from "~db-api/db-orm/src/db-ops/transaction.ts"
+import { safeCreate, safeReadMany } from "~db-api/db-orm/src/db-ops/transaction.ts"
 
 import { KnownError } from "@/packages/utils/src/error-utils.ts";
 import { StandardResponseBody } from "#utils/src/response-utils.ts"
@@ -20,6 +20,57 @@ import { StandardResponseBody } from "#utils/src/response-utils.ts"
 // Create router
 const router = createRouter().basePath("/transaction")
 	// Define methods for this path
+	.get(
+		"/",
+		zValidator("query", authIdsSchema, validateRequestHook),
+		async (ctx) => {
+			// Get request data
+			const queries = ctx.req.valid("query")
+
+			// Read transactions
+			const readTransactionsRes = await safeReadMany(queries)
+
+			// Check for errors
+			if (readTransactionsRes.error !== null) {
+				// Get error
+				const error = readTransactionsRes.error
+
+
+				// Create base response
+				const baseBody = {
+					result: null,
+					error: new KnownError("Error reading transactions", {
+						code: "UnknownServerError"
+					})
+				} satisfies StandardResponseBody
+				const baseResponse = ctx.json(baseBody, 500)
+
+
+				// Return failure if error is not a known error
+				if (!(KnownError.isKnownError(error))) return baseResponse
+
+				// Handle known errors
+				switch (error.cause.code) {
+					default:
+						return baseResponse
+				}
+			}
+			// Transactions have been read successfully after here
+
+
+			// Get transactions
+			const transactions = readTransactionsRes.result
+
+			const resBody = {
+				result: transactions,
+				error: null
+			} satisfies StandardResponseBody
+
+			// Return success
+			return ctx.json(resBody, 200)
+		}
+	)
+
 	.post(
 		"/",
 		zValidator("query", authIdsSchema, validateRequestHook),
@@ -45,7 +96,7 @@ const router = createRouter().basePath("/transaction")
 				const baseBody = {
 					result: null,
 					error: new KnownError("Error creating transaction", {
-						code: "Unknown server error" ,
+						code: "UnknownServerError" ,
 					})
 				} satisfies StandardResponseBody
 				const baseResponse = ctx.json(baseBody, 500)

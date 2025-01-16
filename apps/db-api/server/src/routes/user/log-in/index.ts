@@ -40,7 +40,7 @@ const router = createRouter().basePath("/log-in")
 				const baseBody = {
 					result: null,
 					error: new KnownError("Error logging in user", {
-						code: "Unknown server error"
+						code: "UnknownServerError"
 					})
 				} satisfies StandardResponseBody
 				const baseResponse = ctx.json(baseBody, 500)

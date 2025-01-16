@@ -1,3 +1,19 @@
+<script lang="ts">
+
+// #region Imports
+
+// Import types
+import type { PageData } from "./$types"
+
+// #endregion Imports
+
+
+// Get page data
+let { data }: { data: PageData } = $props()
+
+</script>
+
+
 <div class="page-wrapper flex col">
 	<div class="page-description main-content flex col">
 		<div class="flex col text-center">
@@ -9,12 +25,29 @@
 		</a>
 	</div>
 
-	<div class="page-stats main-content flex col">
-		<h2>Transaction Information</h2>
-		<div>
-			<p>Total cash flow: </p>
+	{#if data.transactions !== null && data.transactions.length > 0}
+		{@const totalCashFlow = data.transactions
+			.reduce((total, transaction) => {
+				return total + Number(transaction.amount)
+			}, 0)
+		}
+
+		<div class="page-stats main-content flex col">
+			<h2>Total Transaction Information</h2>
+			<div>
+				<p>Total cash flow: £{totalCashFlow}</p>
+			</div>
 		</div>
-	</div>
+
+		<div class="transactions main-content flex col">
+			<h2>Transactions</h2>
+			{#each data.transactions as transaction}
+				<div class="transaction flex col">
+					<p>Amount: £{transaction.amount}</p>
+				</div>
+			{/each}
+		</div>
+	{/if}
 </div>
 
 
@@ -33,6 +66,27 @@
 	align-items: center;
 
 	background-color: transparent;
+}
+
+.transactions {
+	gap: var(--gap);
+
+	& > :global(* + *) {
+		position: relative;
+
+
+		&::before {
+			content: "";
+			position: absolute;
+
+			--size: 1px;
+			width: 100%;
+			height: 1px;
+			top: calc(-1 * (var(--gap) / 2 + var(--size) / 2));
+
+			background-color: var(--color-bg-4);
+		}
+	}
 }
 
 </style>

@@ -43,7 +43,6 @@ const auth: Handle = async ({ event, resolve }) => {
 			sessionId: authCookies.sessionId
 		}
 	})
-	//console.log(JSON.stringify(await dbRes.json(), null, 4))
 
 	// Check for errors
 	if (!dbRes.ok) {

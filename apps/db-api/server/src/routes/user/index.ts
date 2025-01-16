@@ -32,10 +32,7 @@ const router = createRouter().basePath("/user")
 			const queries = ctx.req.valid("query")
 
 			// Get safe user data using auth ids
-			const safeReadRes = await safeRead(
-				queries.userId,
-				queries.sessionId
-			)
+			const safeReadRes = await safeRead(queries)
 
 			// Check for errors
 			if (safeReadRes.error !== null) {
@@ -47,7 +44,7 @@ const router = createRouter().basePath("/user")
 				const baseBody = {
 					result: null,
 					error: new KnownError("Error reading safe user data", {
-						code: "Unknown server error"
+						code: "UnknownServerError"
 					})
 				} satisfies StandardResponseBody
 				const baseResponse = ctx.json(baseBody, 500)

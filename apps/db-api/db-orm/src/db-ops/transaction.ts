@@ -5,6 +5,7 @@ import { z } from "zod"
 // Import generic CRUD operations
 import { 
 	gCreate,
+  gReadMany,
 	// gReadMany,
 	// gReadOne,
 	// gUpdateMany,
@@ -154,4 +155,63 @@ export const safeCreate = async (
 		}
 	}
 }
+
+
+/** safeReadMany
+ * 
+ * Check if a session and user exist, using the provided auth IDs.
+ * Read all rows `transactionT` with the provided userId.
+ */
+export const safeReadMany = async (
+	values: z.infer<typeof authIdsSchema>
+): Promise<
+	{
+		result: z.infer<typeof zodTableSchemas.transaction.safeSelect>[],
+		error: null
+	} | {
+		result: null,
+		error: NotNull
+	}
+> => {
+	try {
+		// Check if auth is correct
+		const {
+			result: authRes,
+			error: authError
+		} = await safeCheckAuth(values)
+		if (!authRes || authError !== null) throw authError
+
+		// Read rows
+		const {
+			result: maybeRows,
+			error: rError
+		} = await gReadMany(transactionT, (query) => {
+
+			return query
+				// Filter transaction columns
+				.filter((transaction, cOps) => cOps.eq(
+					transaction.userId,
+					values.userId
+				))
+		})
+		if (rError !== null) throw rError
+
+		// Parse the non-sensitive information
+		const safeRows = z.array(zodTableSchemas.transaction.safeSelect)
+			.parse(maybeRows)
+
+		return {
+			result: safeRows,
+			error: null
+		}
+	}
+
+	catch (error) {
+		return {
+			result: null,
+			error: error as NotNull
+		}
+	}
+}
+
 // #endregion Common Operations

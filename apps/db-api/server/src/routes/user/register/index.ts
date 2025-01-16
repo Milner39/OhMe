@@ -43,7 +43,7 @@ const router = createRouter().basePath("/register")
 				const baseBody = {
 					result: null,
 					error: new KnownError("Error registering user", {
-						code: "Unknown server error" ,
+						code: "UnknownServerError" ,
 					})
 				} satisfies StandardResponseBody
 				const baseResponse = ctx.json(baseBody, 500)
