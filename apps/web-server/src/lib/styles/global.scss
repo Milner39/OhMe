@@ -134,7 +134,22 @@ body {
 	padding: 0.25em 0.75em; // Add padding
 }
 
-
 // Button styles
+
+
+// Div styles
+.main-content {
+	background-color: var(--color-bg-3);
+	border: var(--border-1);
+
+	--spacing: calc(var(--element-scale, 1) * var(--size-6));
+	padding: var(--spacing);
+	border-radius: var(--spacing);
+
+	--gap: var(--spacing);
+}
+
+
+// Div styles
 
 // #endregion Global Styles

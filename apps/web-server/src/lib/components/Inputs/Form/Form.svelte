@@ -86,7 +86,7 @@ let {
 </script>
 
 
-<div class="form__wrapper" class:loading={waitingForResponse}>
+<div class="form__wrapper main-content" class:loading={waitingForResponse}>
 	<form method="POST" {action} use:enhance={(event) => onsubmit(event, waitingForResponse)}>
 		{@render children?.({
 			Title,
@@ -109,15 +109,7 @@ let {
 
 
 	& > form {
-		background-color: var(--color-bg-3);
-		border: var(--border-1);
-
-		--spacing: calc(var(--element-scale) * var(--size-6));
-		padding: var(--spacing);
-		border-radius: var(--spacing);
-
 		display: grid;
-		--gap: var(--spacing);
 		gap: var(--gap);
 
 
