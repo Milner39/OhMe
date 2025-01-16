@@ -93,6 +93,11 @@ const validator = new Validator()
 		<Section>
 			<div class="buttons__wrapper">
 				<div class="buttons__group">
+					<FButton classes="secondary"
+						type="link" href="/transactions"
+					>
+						<p>Cancel</p>
+					</FButton>
 					<FButton><p>Create</p></FButton>
 				</div>
 			</div>
