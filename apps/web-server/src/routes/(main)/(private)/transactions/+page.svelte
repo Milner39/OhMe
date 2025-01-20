@@ -25,7 +25,7 @@ let { data }: { data: PageData } = $props()
 		</a>
 	</div>
 
-	{#if data.transactions !== null && data.transactions.length > 0}
+	{#if Array.isArray(data.transactions) && data.transactions.length > 0}
 		{@const totalCashFlow = data.transactions
 			.reduce((total, transaction) => {
 				return total + Number(transaction.amount)
