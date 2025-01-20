@@ -37,7 +37,6 @@ export const load: LayoutServerLoad = async ({ locals, cookies }) => {
 		return
 	}
 	const dbResJson = await dbRes.json()
-	console.log(dbResJson)
 
 	// Return transactions
 	return {
