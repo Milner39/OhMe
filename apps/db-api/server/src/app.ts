@@ -1,10 +1,8 @@
 // #region Imports
 
-// Import to get environment variables
-import env from "~db-api/env.ts"
-
-// Create configured Hono app
-import { createApp } from "./lib/create-app.ts"
+import env from "~db-api/env"
+import { serve } from "@hono/node-server"
+import { createApp } from "./lib/create-app"
 
 // #endregion Imports
 
@@ -14,8 +12,9 @@ import { createApp } from "./lib/create-app.ts"
 const app = createApp()
 
 // Serve the app
-Deno.serve({
-		port: env.DATABASE_API_PORT
-	},
-	app.fetch
+serve(
+	{ port: env.DATABASE_API_PORT, fetch: app.fetch},
+	(info) => {
+		console.log(`Listening on http://localhost:${info.port}`)
+	}
 )

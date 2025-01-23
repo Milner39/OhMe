@@ -1,14 +1,12 @@
 // #region Imports
+
+import { createRouter } from "~db-api/server/src/lib/create-router"
 import { zValidator } from "@hono/zod-validator"
-import { userLoginSchema } from "#validation/src/zod-schemas/index.ts"
-import { validateRequestHook } from "~db-api/server/src/lib/utils/response-utils.ts"
-
-import { createRouter } from "~db-api/server/src/lib/create-router.ts"
-
-import { logInUser } from "~db-api/db-orm/src/db-ops/user.ts"
-
-import { KnownError } from "#utils/src/error-utils.ts"
-import { StandardResponseBody } from "#utils/src/response-utils.ts"
+import { validateRequestHook } from "~db-api/server/src/lib/utils/response-utils"
+import { userLoginSchema } from "#validation/src/zod-schemas/index"
+import { logInUser } from "~db-api/db-orm/src/db-ops/user"
+import { KnownError } from "#utils/src/error-utils"
+import { StandardResponseBody } from "#utils/src/response-utils"
 
 // #endregion Imports
 

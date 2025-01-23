@@ -1,17 +1,13 @@
 // #region Imports
 
-// Validation
+import { createRouter } from "~db-api/server/src/lib/create-router"
 import { zValidator } from "@hono/zod-validator"
-import { authIdsSchema } from "#validation/src/zod-schemas/index.ts"
-import { transactionPureInsertSchema } from "~db-api/db-orm/src/schemas/transaction/schema.ts"
-import { validateRequestHook } from "~db-api/server/src/lib/utils/response-utils.ts"
-
-import { createRouter } from "~db-api/server/src/lib/create-router.ts"
-
-import { safeCreate, safeReadMany } from "~db-api/db-orm/src/db-ops/transaction.ts"
-
-import { KnownError } from "@/packages/utils/src/error-utils.ts";
-import { StandardResponseBody } from "#utils/src/response-utils.ts"
+import { validateRequestHook } from "~db-api/server/src/lib/utils/response-utils"
+import { authIdsSchema } from "#validation/src/zod-schemas/index"
+import { transactionPureInsertSchema } from "~db-api/db-orm/src/schemas/transaction/schema"
+import { safeCreate, safeReadMany } from "~db-api/db-orm/src/db-ops/transaction"
+import { KnownError } from "@/packages/utils/src/error-utils"
+import { StandardResponseBody } from "#utils/src/response-utils"
 
 // #endregion Imports
 

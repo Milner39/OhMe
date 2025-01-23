@@ -1,9 +1,9 @@
 // Import table schemas
-import { user, userRelations } from "./user/schema.ts"
-import { email, emailRelations } from "./email/schema.ts"
-import { password, passwordRelations } from "./password/schema.ts"
-import { session, sessionRelations } from "./session/schema.ts"
-import { transaction, transactionRelations } from "./transaction/schema.ts"
+import { user, userRelations } from "./user/schema"
+import { email, emailRelations } from "./email/schema"
+import { password, passwordRelations } from "./password/schema"
+import { session, sessionRelations } from "./session/schema"
+import { transaction, transactionRelations } from "./transaction/schema"
 
 // Export table schemas
 export default {
@@ -19,19 +19,19 @@ export default {
 // Import Zod schemas
 import { 
 	userSelectSchema, userSafeSelectSchema, userInsertSchema, userUpdateSchema
-} from "./user/schema.ts"
+} from "./user/schema"
 import { 
 	emailSelectSchema, emailSafeSelectSchema, emailInsertSchema, emailPureInsertSchema, emailUpdateSchema
-} from "./email/schema.ts"
+} from "./email/schema"
 import { 
 	passwordSelectSchema, passwordSafeSelectSchema, passwordInsertSchema, passwordPureInsertSchema, passwordUpdateSchema
-} from "./password/schema.ts"
+} from "./password/schema"
 import { 
 	sessionSelectSchema, sessionSafeSelectSchema, sessionInsertSchema, sessionPureInsertSchema, sessionUpdateSchema
-} from "./session/schema.ts"
+} from "./session/schema"
 import {
 	transactionSelectSchema, transactionSafeSelectSchema, transactionInsertSchema, transactionPureInsertSchema, transactionUpdateSchema
-} from "./transaction/schema.ts"
+} from "./transaction/schema"
 
 // Export Zod schemas
 export const zodTableSchemas = {

@@ -1,10 +1,7 @@
 // #region Imports
 
-// Import to create base app
-import { createRouter } from "./create-router.ts"
-
-// Import to mount router onto app
-import router from "../routes/index.ts"
+import { createRouter } from "./create-router"
+import router from "../routes/index"
 
 // #endregion Imports
 
@@ -19,7 +16,6 @@ export const createApp = () => {
 
 	return routedApp
 }
-
 
 
 // Export type of app

@@ -1,10 +1,9 @@
 // #region Imports
 
-import { createRouter } from "../lib/create-router.ts"
+import { createRouter } from "../lib/create-router"
 
-// Import child routes
-import userR from "./user/index.ts"
-import transactionR from "./transaction/index.ts"
+import userR from "./user/index"
+import transactionR from "./transaction/index"
 
 // #endregion Imports
 

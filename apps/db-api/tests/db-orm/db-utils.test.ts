@@ -1,9 +1,8 @@
 // #region Imports
 
 import { describe, test, expect } from "vitest"
-
-import { filterUniqueColumns } from "~db-api/db-orm/src/db-utils.ts"
-import tables from "~db-api/db-orm/src/schemas/index.ts"
+import { filterUniqueColumns } from "~db-api/db-orm/src/db-utils"
+import tables from "~db-api/db-orm/src/schemas/index"
 
 // #endregion Imports
 

@@ -1,11 +1,12 @@
 // #region Imports
 
-import { createConfig } from "#create-configs/src/vitest.ts"
+import { createConfig } from "#create-configs/src/vitest"
 
 // #endregion Imports
 
 
 
+// Create config
 const config = createConfig(
 	// Override
 	{ cacheDir: "./.vite" },

@@ -1,11 +1,9 @@
 // #region Imports
 
-import { z } from "zod"
-
-// Import generic CRUD operations
+import tables, { zodTableSchemas } from "../schemas/index"
 import { 
 	gCreate,
-  gReadMany,
+	gReadMany,
 	// gReadMany,
 	// gReadOne,
 	// gUpdateMany,
@@ -13,18 +11,12 @@ import {
 	// gDeleteMany,
 	// gDeleteOne,
 	// gFindUniqueCollisions
-} from "./generic.ts"
+} from "./generic"
+import { z } from "zod"
+import { authIdsSchema } from "#validation/src/zod-schemas/index"
+import { NotNull, asLiteralArray } from "#utils/src/type-utils"
 
-// Import tables and schemas
-import tables, { zodTableSchemas } from "../schemas/index.ts"
-import { authIdsSchema } from "#validation/src/zod-schemas/index.ts"
-
-
-// Import types
-import {
-	NotNull,
-	asLiteralArray
-} from "#utils/src/type-utils.ts"
+import { safeCheckAuth } from "./session"
 
 // #endregion Imports
 
@@ -101,8 +93,6 @@ export const create = async (
 
 
 // #region Common Operations
-
-import { safeCheckAuth } from "./session.ts"
 
 /** safeCreate
  * 

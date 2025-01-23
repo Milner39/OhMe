@@ -1,8 +1,9 @@
 // #region Imports
 
-import { z } from "zod"
-
-// Import generic CRUD operations
+import { getTableColumns, SQL } from "drizzle-orm"
+import { DBTransaction } from "../db-connection"
+import { conditionalOperators as cOps } from "../db-utils"
+import tables, { zodTableSchemas } from "../schemas/index"
 import { 
 	gCreate,
 	// gReadMany,
@@ -12,32 +13,11 @@ import {
 	// gDeleteMany,
 	// gDeleteOne,
 	// gFindUniqueCollisions
-} from "./generic.ts"
-
-// Import utils
-import {
-	getTableColumns,
-} from "drizzle-orm"
-import { 
-	conditionalOperators as cOps,
-} from "../db-utils.ts"
-
-// Import tables and schemas
-import tables, { zodTableSchemas } from "../schemas/index.ts"
-import { authIdsSchema } from "#validation/src/zod-schemas/index.ts"
-
-import { KnownError } from "@/packages/utils/src/error-utils.ts"
-
-
-// Import types
-import type { DBTransaction } from "../db-connection.ts"
-
-import type { SQL } from "drizzle-orm"
-
-import {
-	NotNull,
-	asLiteralArray
-} from "#utils/src/type-utils.ts"
+} from "./generic"
+import { z } from "zod"
+import { authIdsSchema } from "#validation/src/zod-schemas/index"
+import { KnownError } from "@/packages/utils/src/error-utils"
+import { NotNull, asLiteralArray } from "#utils/src/type-utils"
 
 // #endregion Imports
 
@@ -67,7 +47,7 @@ type SelectSession = z.infer<typeof zodTableSchemas.session.select>
 type selectFullSessionRow = z.infer<typeof selectFullSessionRowSchema>
 
 export type SessionColumns = ReturnType<typeof getTableColumns<typeof sessionT>>
-import { UserColumns } from "./user.ts"
+import { UserColumns } from "./user"
 
 
 // #region CREATE

@@ -1,0 +1,31 @@
+{
+	"scripts": {
+		"orm:generate": "drizzle-kit generate --config=./db-orm/drizzle.config.ts",
+		"orm:migrate": "drizzle-kit migrate --config=./db-orm/drizzle.config.ts",
+		"orm:push": "pnpm run orm:generate && pnpm run orm:migrate",
+
+		"orm:test:push": "TESTING=true pnpm run orm:push",
+		"orm:test:run": "vitest --config=./tests/vitest.config.ts",
+		"orm:test": "pnpm run orm:test:push && pnpm run orm:test:run",
+
+
+		"server:serve": "node --experimental-strip-types ./server/src/app.ts",
+
+
+		"dev": "pnpm run server:serve",
+		"build": "pnpm run orm:push",
+		"serve": "pnpm run server:serve",
+		"test": "pnpm run orm:test"
+	},
+	"dependencies": {
+		"drizzle-orm": "npm:drizzle-orm@^0.38.3",
+		"drizzle-kit": "npm:drizzle-kit@^0.30.1",
+		"drizzle-zod": "npm:drizzle-zod@^0.6.1",
+
+		"pg": "npm:pg@^8.13.1",
+		"@types/pg": "npm:@types/pg@^8.11.10",
+
+		"@hono/zod-validator": "npm:@hono/zod-validator@^0.4.2",
+		"@hono/node-server": "npm:@hono/node-server@^1.13.7"
+	}
+}

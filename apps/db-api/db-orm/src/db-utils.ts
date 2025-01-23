@@ -2,30 +2,15 @@
 
 // #region Imports
 
-// Import to get environment variables
-import env from "~db-api/env.ts"
-
-// Import all of conditional operators to make querying easier
-import { 
+import env from "~db-api/env"
+import {
 	eq, ne, gt, gte, lt, lte, exists, notExists, isNull, isNotNull, 
 	inArray, notInArray, between, notBetween, like, notLike, ilike, notIlike, 
 	not, and, or, arrayContains, arrayContained, arrayOverlaps
 } from "drizzle-orm"
-
-import {
-	getTableColumns,
-} from "drizzle-orm"
-
-import { 
-	keepKeys,
-	tsObjectEntries,
-	tsObjectKeys
-} from "#utils/src/object-utils.ts"
-
-
-// Import types
-import { InferSelectModel } from "drizzle-orm"
+import { getTableColumns, InferSelectModel } from "drizzle-orm"
 import { PgTableWithColumns } from "drizzle-orm/pg-core"
+import { keepKeys,tsObjectEntries, tsObjectKeys } from "#utils/src/object-utils"
 
 // #endregion Imports
 

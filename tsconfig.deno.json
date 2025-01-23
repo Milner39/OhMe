@@ -1,8 +1,0 @@
-{
-	"compilerOptions": {
-		"types": ["./deno.d.ts", "node"],
-		"target": "ESNext",
-		"module": "ESNext",
-		"moduleResolution": "node"
-	}
-}

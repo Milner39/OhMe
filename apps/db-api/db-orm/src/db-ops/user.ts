@@ -1,13 +1,10 @@
 // #region Imports
 
-import { z } from "zod"
-
-import { KnownError } from "#utils/src/error-utils.ts"
-
 // Import db connection
-import db from "../db-connection.ts"
-
-// Import generic CRUD operations
+import { getTableColumns, SQL } from "drizzle-orm"
+import db, { DBTransaction } from "../db-connection"
+import { conditionalOperators as cOps } from "../db-utils"
+import tables, { zodTableSchemas } from "../schemas/index"
 import { 
 	gCreate,
 	gReadMany,
@@ -17,37 +14,13 @@ import {
 	// gDeleteMany,
 	// gDeleteOne,
 	gFindUniqueCollisions
-} from "./generic.ts"
+} from "./generic"
+import { z } from "zod"
+import { authIdsSchema } from "#validation/src/zod-schemas/index"
+import { KnownError } from "#utils/src/error-utils"
+import { NotNull, asLiteralArray, PartialKeysTrue } from "#utils/src/type-utils"
 
-// Import operations from other files
-import { 
-	create as createSession,
-	safeCheckAuth
-} from "./session.ts"
-
-// Import utils
-import {
-	getTableColumns,
-} from "drizzle-orm"
-import { 
-	conditionalOperators as cOps,
-} from "../db-utils.ts"
-
-// Import tables and schemas
-import tables, { zodTableSchemas } from "../schemas/index.ts"
-import { authIdsSchema } from "#validation/src/zod-schemas/index.ts"
-
-
-// Import types
-import type { DBTransaction } from "../db-connection.ts"
-
-import type { SQL } from "drizzle-orm"
-
-import {
-	NotNull,
-	asLiteralArray,
-	PartialKeysTrue
-} from "#utils/src/type-utils.ts"
+import { create as createSession, safeCheckAuth } from "./session"
 
 // #endregion Imports
 
@@ -117,7 +90,7 @@ export type SafeSelectFullUser = z.infer<typeof safeSelectFullUserSchema>
 export type UserColumns = ReturnType<typeof getTableColumns<typeof userT>>
 export type EmailColumns = ReturnType<typeof getTableColumns<typeof emailT>>
 export type PasswordColumns = ReturnType<typeof getTableColumns<typeof passwordT>>
-import { SessionColumns } from "./session.ts"
+import { SessionColumns } from "./session"
 
 
 

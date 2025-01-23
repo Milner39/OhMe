@@ -1,21 +1,15 @@
 // #region Imports
 
-// Validation
+import { createRouter } from "~db-api/server/src/lib/create-router"
 import { zValidator } from "@hono/zod-validator"
-import { authIdsSchema } from "#validation/src/zod-schemas/index.ts"
-import { validateRequestHook } from "~db-api/server/src/lib/utils/response-utils.ts"
+import { validateRequestHook } from "~db-api/server/src/lib/utils/response-utils"
+import { authIdsSchema } from "#validation/src/zod-schemas/index"
+import { safeRead } from "~db-api/db-orm/src/db-ops/user"
+import { KnownError } from "@/packages/utils/src/error-utils"
+import { StandardResponseBody } from "#utils/src/response-utils"
 
-import { createRouter } from "~db-api/server/src/lib/create-router.ts"
-
-import { safeRead } from "~db-api/db-orm/src/db-ops/user.ts"
-
-import { KnownError } from "@/packages/utils/src/error-utils.ts";
-import { StandardResponseBody } from "#utils/src/response-utils.ts"
-
-
-// Import child routes
-import logInR from "./log-in/index.ts"
-import registerR from "./register/index.ts"
+import logInR from "./log-in/index"
+import registerR from "./register/index"
 
 // #endregion Imports
 

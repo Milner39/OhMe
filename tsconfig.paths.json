@@ -5,9 +5,10 @@
 			"@/*": ["./*"],
 			"~db-api/*": ["./apps/db-api/*"],
 			"~web-server/*": ["./apps/web-server/*"],
+			"#create-configs/*": ["./packages/create-configs/*"],
 			"#db-api-client/*": ["./packages/db-api-client/*"],
 			"#utils/*": ["./packages/utils/*"],
-			"#validation/*": ["./packages/validation/*"],
+			"#validation/*": ["./packages/validation/*"]
 		}
 	}
 }

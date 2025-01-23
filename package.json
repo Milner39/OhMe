@@ -1,1 +1,36 @@
-{ "type": "module" }
+{
+	"type": "module",
+	"packageManager": "pnpm@10.0.0",
+	"engines": {
+		"node": ">=22.13.0",
+		"pnpm": ">=10.0.0"
+	},
+	"scripts": {
+		"dev": "pnpm run -r --parallel dev",
+		"build": "pnpm run -r build",
+		"serve": "pnpm run -r --parallel serve",
+		"test": "pnpm run -r --parallel test"
+	},
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"dependencies": {
+		"typescript": "npm:typescript@^5.7.3",
+		"@types/node": "npm:@types/node@^22.10.10",
+
+		"dotenv": "npm:dotenv@^16.4.7",
+
+		"vite": "npm:vite@^6.0.11",
+		"vitest": "npm:vitest@^3.0.4",
+		
+		"hono": "npm:hono@^4.6.18",
+
+		"zod": "npm:zod@^3.24.1"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild"
+		]
+	}
+}

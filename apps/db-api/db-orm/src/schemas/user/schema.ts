@@ -1,10 +1,7 @@
 // #region Imports
 
-// Import to create table, columns, and relations
 import { pgTable, uuid, varchar, char } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm"
-
-// Import to create Zod schemas
 import { 
 	createSelectSchema,
 	createInsertSchema,
@@ -12,13 +9,12 @@ import {
 } from "drizzle-zod"
 import {
 	username as usernameSchema
-} from "#validation/src/zod-schemas/index.ts"
+} from "#validation/src/zod-schemas/index"
 
-// Import other table schemas
-import { email } from "../email/schema.ts"
-import { password } from "../password/schema.ts"
-import { session } from "../session/schema.ts"
-import { transaction } from "../transaction/schema.ts"
+import { email } from "../email/schema"
+import { password } from "../password/schema"
+import { session } from "../session/schema"
+import { transaction } from "../transaction/schema"
 
 // #endregion Imports
 

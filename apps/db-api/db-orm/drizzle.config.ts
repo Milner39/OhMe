@@ -1,13 +1,7 @@
 // #region Imports
 
-// Import to get db credentials
-import { getDbCredentials } from "./src/db-utils.ts"
-
-// Import to get environment variables
-import env from "~db-api/env.ts"
-
-
-// Import types
+import { getDbCredentials } from "./src/db-utils"
+import env from "~db-api/env"
 import { Config } from "drizzle-kit"
 
 // #endregion Imports
