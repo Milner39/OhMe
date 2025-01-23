@@ -1,0 +1,6 @@
+{
+	"deno.disablePaths": [
+		"./apps/web-server/src"
+	],
+	"typescript.tsdk": "node_modules\\typescript\\lib"
+}

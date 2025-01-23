@@ -1,0 +1,4 @@
+# Temp files
+/vite.config.*.timestamp-*
+/.svelte-kit
+/app/build

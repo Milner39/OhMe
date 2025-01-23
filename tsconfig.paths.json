@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"baseUrl": "./",
+		"paths": {
+			"@/*": ["./*"],
+			"~db-api/*": ["./apps/db-api/*"],
+			"~web-server/*": ["./apps/web-server/*"],
+			"#db-api-client/*": ["./packages/db-api-client/*"],
+			"#utils/*": ["./packages/utils/*"],
+			"#validation/*": ["./packages/validation/*"],
+		}
+	}
+}

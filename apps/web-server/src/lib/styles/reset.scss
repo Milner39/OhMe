@@ -1,0 +1,116 @@
+// #region General CSS reset
+
+/* Resources I used to create this reset:
+	- Comeau, J. https://www.joshwcomeau.com/css/custom-css-reset/
+	  (Comeau credited Bell for inspiration)
+
+	- Bell, A. https://piccalil.li/blog/a-more-modern-css-reset/
+*/
+
+
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+
+* {
+	margin: 0; // Remove default margin
+
+	line-height: calc(1em + 1rem); // Use accessible line-height
+	-webkit-font-smoothing: antialiased; // Improve text rendering
+}
+
+
+// Prevent font size inflation
+html {
+	-moz-text-size-adjust: none;
+	-webkit-text-size-adjust: none;
+	text-size-adjust: none;
+}
+
+
+body {
+	// Ensure body fills the viewport
+	width: 100%;
+	min-height: 100dvh;
+}
+
+
+// Improve media defaults
+img, picture, video, canvas, svg {
+	display: block; // Remove default inline display
+	max-width: 100%; // Make responsive, use `max-width: revert` if needed
+}
+svg {
+	max-width: revert; 
+	min-width: 1rem; // Ensure SVGs are visible
+	path.fill {
+		fill: currentColor; // Make SVGs inherit text color
+	}
+}
+
+
+input, button, textarea, select {
+	font: inherit; // Inherit fonts for form controls
+}
+
+
+h1, h2, h3, h4, h5, h6, p {
+	overflow-wrap: break-word; // Avoid overflow
+}
+
+
+// Improve wrapping
+p {
+	text-wrap: pretty;
+}
+h1, h2, h3, h4, h5, h6 {
+	text-wrap: balance;
+}
+
+// #endregion General CSS reset
+
+
+
+// #region Finn's element resets
+:where(*) {
+	color: inherit; // Inherit text color
+	text-decoration: none; // Remove default underline
+}
+
+:where(ul) {
+	list-style: none; // Remove default list styles
+	padding: 0; // Remove default padding
+}
+
+:where(button) {
+	background: none; // Remove default background
+	border: none; // Remove default border
+	padding: 0; // Remove default padding
+	text-align: unset; // Remove default text alignment
+}
+
+:where(input[type=text]),
+:where(input[type=password]),
+:where(input[type=number]) {
+	background: none;
+	border: none;
+	padding: 0;
+	outline: none;
+
+
+	// Fix autofill colors
+	&:autofill,
+	&:autofill:hover, 
+	&:autofill:focus, 
+	&:autofill:active {
+		font: inherit;
+
+		background-clip: text;
+		-webkit-text-fill-color: var(--color-txt-1);
+	}
+	caret-color: var(--color-txt-1);
+
+	// Fix jumping text inputs on safari
+	float: left;
+}
+// #endregion Finn's element resets
