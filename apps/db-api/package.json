@@ -9,7 +9,7 @@
 		"orm:test": "pnpm run orm:test:push && pnpm run orm:test:run",
 
 
-		"server:serve": "node --experimental-strip-types ./server/src/app.ts",
+		"server:serve": "tsx ./server/src/app.ts",
 
 
 		"dev": "pnpm run server:serve",

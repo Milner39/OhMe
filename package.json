@@ -18,6 +18,7 @@
 	"dependencies": {
 		"typescript": "npm:typescript@^5.7.3",
 		"@types/node": "npm:@types/node@^22.10.10",
+		"tsx": "npm:tsx@^4.19.2",
 
 		"dotenv": "npm:dotenv@^16.4.7",
 
