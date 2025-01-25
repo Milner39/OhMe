@@ -4,7 +4,7 @@ import { fileURLToPath, URL } from "node:url"
 
 import { sveltePreprocess } from "svelte-preprocess"
 import adapter from "@sveltejs/adapter-node"
-import { tsRelativeAliasesToAbsolute } from "../../packages/utils/src/path-alias-utils"
+import { tsRelativeAliasesToAbsolute } from "../../packages/utils/src/path-alias-utils.js"
 
 // #endregion Imports
 

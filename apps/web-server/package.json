@@ -1,9 +1,9 @@
 {
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
+		"dev": "vite --config=./vite.config.mts dev",
+		"build": "vite --config=./vite.config.mts build",
+		"preview": "vite --config=./vite.config.mts preview",
 		"serve": "tsx ./app/serve-build.ts"
 	},
 	"dependencies": {

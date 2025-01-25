@@ -15,7 +15,7 @@ import { z } from "zod"
  * Remove `strToRemove` from the end of `targetStr`, only if `strToRemove` is 
    present.
  */
-const removeFromEnd = (targetStr: string, strToRemove: string) => {
+const removeFromEnd = (targetStr, strToRemove) => {
 	// Escape special regex chars
 	const escapedPattern = strToRemove.replace(
 		/[.*+?^=!:${}()|\[\]\/\\&]/g,
@@ -53,11 +53,11 @@ const tsConfigPathsFileSchema = z.object({
    formatted correctly too.
  */
 export const tsRelativeAliasesToAbsolute = async (
-	fileURL: URL = new URL("../../../tsconfig.paths.json", import.meta.url)
+	fileURL = new URL("../../../tsconfig.paths.json", import.meta.url)
 ) => {
 	// Import the tsconfig file
 	const tsconfigF = tsConfigPathsFileSchema.parse(
-		(await import(fileURL.href)).default
+		(await import(fileURL.href, { with: { type: "json" } })).default
 	)
 
 	// Get the relative aliases

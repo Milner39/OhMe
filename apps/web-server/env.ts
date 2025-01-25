@@ -8,7 +8,7 @@ import { z } from "zod"
 
 
 // Import parent environment variables
-import parentEnv from "@/env"
+import parentEnv from "../../env"
 
 // #endregion Imports
 
