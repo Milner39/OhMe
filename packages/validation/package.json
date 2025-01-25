@@ -1,4 +1,5 @@
 {
+	"type": "module",
 	"scripts": {
 		"test": "vitest --config=./tests/vitest.config.ts"
 	}
