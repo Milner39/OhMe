@@ -1,6 +1,6 @@
 // #region Imports
 
-import { Validator } from "../index.ts"
+import { Validator } from "../index"
 import { z } from "zod"
 
 // #endregion Imports

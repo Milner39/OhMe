@@ -1,35 +1,19 @@
 // #region Imports
 
-import { createConfig } from "#create-configs/src/vite.ts"
-
-/*
-	https://vite.dev/guide/using-plugins
-	Import SvelteKit plugin for Vite
-*/
-import { sveltekit as SvelteKit } from "@sveltejs/kit/vite"
-
-// Import to get file paths
 import { fileURLToPath, URL } from "node:url"
 
-// Import to get environment variables
-import env from "~web-server/env.ts"
+import { createConfig } from "#create-configs/src/vite"
+import { sveltekit } from "@sveltejs/kit/vite"
+import env from "~web-server/env"
 
 // #endregion Imports
 
 
 
-/*
-	https://vite.dev/config/
-	Define Vite config
-*/
+// Create config
 const config = createConfig(
 	// Override
 	{
-		// Plugin configuration
-		plugins: [
-			SvelteKit(), // Currently no way to specify where the config file is
-		],
-
 		// Development settings
 		server: {
 			// Allows devices on same network to access the site
@@ -56,7 +40,12 @@ const config = createConfig(
 		}
 	},
 	// Extend
-	{}
+	{
+		plugins: [
+			sveltekit()
+		]
+	}
 )
 
+// Export the Vite config
 export default config

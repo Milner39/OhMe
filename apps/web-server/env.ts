@@ -1,17 +1,14 @@
 // #region Imports
 
-// Import to get environment variables
-import * as dotenv from "dotenv"
-
-// Import to get file paths
+import * as process from "node:process"
 import { fileURLToPath, URL } from "node:url"
 
-// Import to validate environment variables
+import * as dotenv from "dotenv"
 import { z } from "zod"
 
 
 // Import parent environment variables
-import parentEnv from "@/env.ts"
+import parentEnv from "@/env"
 
 // #endregion Imports
 
@@ -35,17 +32,15 @@ const envSchema = z.object({
 
 
 // Validate environment variables
-const { data: env, error } = envSchema.safeParse(Deno.env.toObject())
-
+const { data: env, error } = envSchema.safeParse(process.env)
 if (error) {
-	console.error(error)
-	Deno.exit(1)
+	console.error("Incorrect env options:", error)
+	process.exit(1)
 }
 
 
 // Merge with parent environment variables
 const mergedEnv = { ...parentEnv, ...env! }
-
 
 // Export environment variables and types
 export default mergedEnv

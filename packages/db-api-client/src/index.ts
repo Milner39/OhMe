@@ -5,14 +5,10 @@
 	Only get shared environment variables or this client will not work and could 
 	be unsafe.
 */
-import env from "@/env.ts"
+import env from "@/env"
 
-// Create Hono client
 import { hc } from "hono/client"
-
-
-// Import types
-import type { App } from "~db-api/server/src/lib/create-app.ts"
+import { App } from "~db-api/server/src/lib/create-app"
 
 // #endregion Imports
 

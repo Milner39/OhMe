@@ -42,7 +42,6 @@ import { KnownError } from "#utils/src/error-utils"
  * 	- Reset the query to its base state.
  */
 class DynamicQuery<
-	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
 > {
 	// Attributes
@@ -91,7 +90,6 @@ class DynamicQuery<
 	}
 
 	innerJoin = <
-		// deno-lint-ignore no-explicit-any
 		ForeignTable extends PgTableWithColumns<any>
 	> (
 		foreignTable: ForeignTable,
@@ -144,7 +142,6 @@ class DynamicQuery<
  * Read many rows in the `table` based on the query.
  */
 export const gReadMany = async <
-	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
 > (
 	table: Table,
@@ -192,7 +189,6 @@ export const gReadMany = async <
  * query was not specific enough and found multiple rows.
  */
 export const gReadOne = async <
-	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
 > (
 	table: Table,
@@ -252,7 +248,6 @@ export const gReadOne = async <
  * Create many rows in the `table` based on the `values`.
  */
 export const gCreate = async <
-	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>,
 	Values extends InferInsertModel<Table>[],
 > (
@@ -303,7 +298,6 @@ export const gCreate = async <
  * new values.
  */
 export const gUpdateMany = async <
-	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
 > (
 	table: Table,
@@ -357,7 +351,6 @@ export const gUpdateMany = async <
  * transaction is reverted and an error is returned.
  */
 export const gUpdateOne = async <
-	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
 > (
 	table: Table,
@@ -420,7 +413,6 @@ export const gUpdateOne = async <
  * Delete many rows in `table` that match `filter`.
  */
 export const gDeleteMany = async <
-	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
 > (
 	table: Table,
@@ -471,7 +463,6 @@ export const gDeleteMany = async <
  * transaction is reverted and an error is returned.
  */
 export const gDeleteOne = async <
-	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>
 > (
 	table: Table,
@@ -544,7 +535,6 @@ export const gDeleteOne = async <
  * 	- Return an array of the column names that have been taken.
  */
 export const gFindUniqueCollisions = async <
-	// deno-lint-ignore no-explicit-any
 	Table extends PgTableWithColumns<any>,
 	Values extends Partial<InferSelectModel<Table>>
 > (

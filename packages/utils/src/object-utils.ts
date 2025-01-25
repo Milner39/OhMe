@@ -1,6 +1,6 @@
 // #region Imports
 
-import type { UnknownRecord } from "#utils/src/type-utils.ts"
+import { UnknownRecord } from "#utils/src/type-utils"
 
 // #endregion Imports
 
@@ -205,7 +205,6 @@ export const deepMerge = (
 
 	// Iterate over keys in `source`
 	for (const key of Reflect.ownKeys(source)) {
-		// deno-lint-ignore no-explicit-any
 		const unsafeKey = key as any
 
 		const targetValue = target[unsafeKey]

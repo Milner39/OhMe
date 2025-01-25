@@ -1,9 +1,3 @@
-// #region Imports
-
-// #endregion Imports
-
-
-
 // #region Extras
 
 const containsWhitespace = (string: string) => /\s/.test(string)

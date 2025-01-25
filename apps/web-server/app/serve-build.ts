@@ -11,15 +11,5 @@ import "~web-server/env.ts"
 
 
 
-// Create a command to start the server
-const command = new Deno.Command(Deno.execPath(), { args: [
-	"run",
-	"-E",
-	"-R",
-	"-N",
-	"--unstable-node-globals",
-	"./app/build/index.js"
-]})
-
 // Start the server
-command.spawn()
+import "./build/index"

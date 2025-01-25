@@ -1,10 +1,10 @@
 // #region Imports
 
-import { createConfig as createViteConfig } from "./vite.ts"
-
-// Import Vitest
 import { defineConfig, mergeConfig, configDefaults } from "vitest/config"
-import type { ViteUserConfig as VitestConfig } from "vitest/config"
+import { ViteUserConfig as VitestConfig } from "vitest/config"
+
+import { createConfig as createViteConfig } from "./vite"
+import { PluginOption } from "vite"
 
 // #endregion Imports
 
@@ -13,6 +13,7 @@ import type { ViteUserConfig as VitestConfig } from "vitest/config"
 // Type options
 type CreateConfigOptions = {
 	aliases?: Record<string, string>,
+	plugins?: PluginOption[]
 	test?: {
 		exclude?: string[]
 	}
@@ -38,7 +39,7 @@ const createDefaultConfig = (
 			include: ["./**.test.ts"],
 			exclude: [
 				...configDefaults.exclude,
-				...(options?.test?.exclude ?? [])
+				...options?.test?.exclude ?? []
 			]
 		}
 	})

@@ -1,7 +1,7 @@
 // #region Imports
 
-import { NotNull } from "@/packages/utils/src/type-utils.ts"
-import { KnownError, SafeKnownError } from "./error-utils.ts"
+import { NotNull } from "@/packages/utils/src/type-utils"
+import { KnownError, SafeKnownError } from "./error-utils"
 
 // #endregion Imports
 

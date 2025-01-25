@@ -1,0 +1,5 @@
+{
+	"dependencies": {
+		"vite-tsconfig-paths": "npm:vite-tsconfig-paths@^5.1.4"
+	}
+}

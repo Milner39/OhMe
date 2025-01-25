@@ -1,12 +1,8 @@
 // #region Imports
 
-// Import to get path aliases
-import rootDenoJson from "@/deno.json" with { type: "json" }
-import { denoAliasesToAbsoluteAliases } from "#utils/src/deno-utils.ts"
-
-// Import Vite
-import { defineConfig, mergeConfig } from "vite"
-import type { UserConfig as ViteConfig } from "vite"
+import { defineConfig, mergeConfig, PluginOption } from "vite"
+import { UserConfig as ViteConfig } from "vite"
+import tsconfigPaths from "vite-tsconfig-paths"
 
 // #endregion Imports
 
@@ -15,6 +11,7 @@ import type { UserConfig as ViteConfig } from "vite"
 // Type options
 type CreateConfigOptions = {
 	aliases?: Record<string, string>,
+	plugins?: PluginOption[]
 }
 
 
@@ -28,14 +25,16 @@ const createDefaultConfig = (
 	// Cache directory
 	cacheDir: "./.vite",
 
+	plugins: [
+		// Path aliases from tsconfig
+		tsconfigPaths(),
+		...options?.plugins ?? []
+	],
+
 	resolve: {
-		// Path aliases
+		// Extra path aliases
 		alias: {
-			...denoAliasesToAbsoluteAliases(
-				rootDenoJson.imports,
-				new URL("../../../", import.meta.url)
-			),
-			...(options?.aliases ?? {})
+			...options?.aliases ?? {}
 		}
 	},
 

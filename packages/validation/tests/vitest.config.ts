@@ -1,6 +1,6 @@
 // #region Imports
 
-import { createConfig } from "#create-configs/src/vitest.ts"
+import { createConfig } from "#create-configs/src/vitest"
 
 // #endregion Imports
 

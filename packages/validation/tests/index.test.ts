@@ -2,7 +2,7 @@
 
 import { describe, test, expect } from "vitest"
 
-import { Validator, settings } from "#validation/src/index.ts"
+import { Validator, settings } from "#validation/src/index"
 
 // #endregion Imports
 
@@ -26,7 +26,7 @@ describe("Validator", () => {
 			() => {
 				// #region results
 				test("Username must be string", () => {
-					// deno-lint-ignore no-explicit-any
+					
 					const { result, error } = validator.username(null as any)
 
 					expect(result).toBe(false)
@@ -101,7 +101,7 @@ describe("Validator", () => {
 			() => {
 				// #region results
 				test("Password must be string", () => {
-					// deno-lint-ignore no-explicit-any
+					
 					const { result, error } = validator.password(null as any)
 
 					expect(result).toBe(false)
@@ -176,7 +176,7 @@ describe("Validator", () => {
 			() => {
 				// #region results
 				test("Email must be string", () => {
-					// deno-lint-ignore no-explicit-any
+					
 					const invalid = validator.email(null as any)
 					expect(invalid.result).toBe(false)
 					expect(invalid.error).toBeTypeOf("string")
