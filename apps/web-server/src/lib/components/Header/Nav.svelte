@@ -387,6 +387,7 @@ onNavigate(() => {
 					position: relative;
 
 					
+					// ISSUE: This style is not applying correctly
 					& + .nav__link__wrapper::before {
 						content: "";
 						position: absolute;

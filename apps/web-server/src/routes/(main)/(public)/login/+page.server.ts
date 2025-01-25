@@ -2,22 +2,22 @@
 
 import { fail } from "@sveltejs/kit"
 
-import { getFormData } from "$lib/utils/form-action-utils.ts"
-import { setAuthCookies } from "$lib/utils/cookie-utils.ts"
+import { getFormData } from "$lib/utils/form-action-utils"
+import { setAuthCookies } from "$lib/utils/cookie-utils"
 
-import { Validator } from "#validation/src/index.ts"
-import { SafeKnownError } from "#utils/src/error-utils.ts"
+import { Validator } from "#validation/src/index"
+import { SafeKnownError } from "#utils/src/error-utils"
 
 import {
 	createApiClient as createDbApiClient
-} from "#db-api-client/src/index.ts"
+} from "#db-api-client/src/index"
 
 
 // Import types
 import type { Actions } from "./$types"
-import type { RegisterFormData, LoginFormData } from "./.d.ts"
+import type { RegisterFormData, LoginFormData } from "./.d"
 
-import type { SafeResponseBody } from "#utils/src/response-utils.ts"
+import type { SafeResponseBody } from "#utils/src/response-utils"
 
 // #endregion Imports
 

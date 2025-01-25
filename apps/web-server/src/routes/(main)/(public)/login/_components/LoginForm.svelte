@@ -4,13 +4,13 @@
 
 import Form from "$lib/components/Inputs/Form/Form.svelte"
 import { applyAction } from "$app/forms"
-import { getFormData } from "$lib/utils/form-utils.ts"
+import { getFormData } from "$lib/utils/form-utils"
 
-import { Validator } from "#validation/src/index.ts"
+import { Validator } from "#validation/src/index"
 
 
 // Import types
-import type { LoginFormData } from "../.d.ts"
+import type { LoginFormData } from "../.d"
 
 // #endregion Imports
 

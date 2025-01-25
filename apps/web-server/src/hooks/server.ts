@@ -3,10 +3,10 @@
 import { sequence } from "@sveltejs/kit/hooks"
 import type { Handle } from '@sveltejs/kit'
 
-import { getAuthCookies, deleteAuthCookies } from "$lib/utils/cookie-utils.ts"
+import { getAuthCookies, deleteAuthCookies } from "$lib/utils/cookie-utils"
 import {
 	createApiClient as createDbApiClient
-} from "#db-api-client/src/index.ts"
+} from "#db-api-client/src/index"
 
 // #endregion Imports
 

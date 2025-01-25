@@ -1,4 +1,4 @@
-import type { SafeSelectFullUser } from "~db-api/db-orm/src/db-ops/user.ts"
+import type { SafeSelectFullUser } from "~db-api/db-orm/src/db-ops/user"
 
 declare global {
 	namespace App {

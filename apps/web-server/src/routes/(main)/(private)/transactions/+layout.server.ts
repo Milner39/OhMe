@@ -3,11 +3,11 @@
 import {
 	getAuthCookies,
 	deleteAuthCookies
-} from "$lib/utils/cookie-utils.ts"
+} from "$lib/utils/cookie-utils"
 
 import {
 	createApiClient as createDbApiClient
-} from "#db-api-client/src/index.ts"
+} from "#db-api-client/src/index"
 
 
 // Import types
