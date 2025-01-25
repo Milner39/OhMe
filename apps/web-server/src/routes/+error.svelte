@@ -3,10 +3,10 @@
 // #region Imports
 
 /*
-	https://svelte.dev/docs/kit/@sveltejs-kit#Page
-	Store containing page information
+	https://svelte.dev/docs/kit/$app-state
+	State containing page information
 */
-import { page } from "$app/stores"
+import { page } from "$app/state"
 
 // #endregion Imports
 
@@ -15,5 +15,5 @@ import { page } from "$app/stores"
 
 <div>
 	<!-- Display the error status code and message -->
-	<h1>{$page.status}: {$page.error.message}</h1>
+	<h1>{page.status}: {page.error.message}</h1>
 </div>
