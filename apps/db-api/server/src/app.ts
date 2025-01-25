@@ -15,6 +15,6 @@ const app = createApp()
 serve(
 	{ port: env.DATABASE_API_PORT, fetch: app.fetch},
 	(info) => {
-		console.log(`Listening on http://localhost:${info.port}`)
+		console.info(`Listening on http://localhost:${info.port}`)
 	}
 )
