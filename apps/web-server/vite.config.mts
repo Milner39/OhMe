@@ -2,9 +2,9 @@
 
 import { fileURLToPath, URL } from "node:url"
 
-import { createConfig } from "#create-configs/src/vite"
+import { createConfig } from "../../packages/create-configs/src/vite"
 import { sveltekit } from "@sveltejs/kit/vite"
-import env from "~web-server/env"
+import env from "./env"
 
 // #endregion Imports
 
