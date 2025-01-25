@@ -4,7 +4,7 @@
 		"orm:migrate": "drizzle-kit migrate --config=./db-orm/drizzle.config.ts",
 		"orm:push": "pnpm run orm:generate && pnpm run orm:migrate",
 
-		"orm:test:push": "TESTING=true pnpm run orm:push",
+		"orm:test:push": "cross-env TESTING=true pnpm run orm:push",
 		"orm:test:run": "vitest --config=./tests/vitest.config.ts",
 		"orm:test": "pnpm run orm:test:push && pnpm run orm:test:run",
 

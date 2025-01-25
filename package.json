@@ -22,6 +22,7 @@
 		"@types/node": "npm:@types/node@^22.10.10",
 		"tsx": "npm:tsx@^4.19.2",
 
+		"cross-env": "npm:cross-env@^7.0.3",
 		"dotenv": "npm:dotenv@^16.4.7",
 
 		"vite": "npm:vite@^6.0.11",
