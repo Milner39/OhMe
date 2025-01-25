@@ -2,9 +2,17 @@
 
 import { defineConfig, mergeConfig, PluginOption } from "vite"
 import { UserConfig as ViteConfig } from "vite"
-import tsconfigPaths from "vite-tsconfig-paths"
+import { tsRelativeAliasesToAbsolute } from "#utils/src/path-alias-utils"
 
 // #endregion Imports
+
+
+
+// #region Extras
+
+const absoluteAliases = await tsRelativeAliasesToAbsolute()
+
+// #endregion Extras
 
 
 
@@ -26,14 +34,15 @@ const createDefaultConfig = (
 	cacheDir: "./.vite",
 
 	plugins: [
-		// Path aliases from tsconfig
-		tsconfigPaths(),
 		...options?.plugins ?? []
 	],
 
 	resolve: {
-		// Extra path aliases
 		alias: {
+			// Path aliases from tsconfig
+			...absoluteAliases,
+
+			// Extra path aliases
 			...options?.aliases ?? {}
 		}
 	},
