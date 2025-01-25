@@ -1,26 +1,20 @@
 // #region Imports
 
 import { sequence } from "@sveltejs/kit/hooks"
+import type { Handle } from '@sveltejs/kit'
 
-import { 
-	getAuthCookies,
-	deleteAuthCookies 
-} from "$lib/utils/cookie-utils.ts"
-
+import { getAuthCookies, deleteAuthCookies } from "$lib/utils/cookie-utils.ts"
 import {
 	createApiClient as createDbApiClient
 } from "#db-api-client/src/index.ts"
-
-
-// Import types
-import type { Handle } from '@sveltejs/kit'
 
 // #endregion Imports
 
 
 
 // Create DB API client
-const dbAPI = createDbApiClient() as any // Types are not working correctly
+const dbAPI = createDbApiClient()
+
 
 
 // #region Handles
