@@ -19,18 +19,18 @@
 	],
 	"dependencies": {
 		"typescript": "npm:typescript@^5.7.3",
-		"@types/node": "npm:@types/node@^22.10.10",
-		"tsx": "npm:tsx@^4.19.2",
+		"@types/node": "npm:@types/node@^22.13.5",
+		"tsx": "npm:tsx@^4.19.3",
 
 		"cross-env": "npm:cross-env@^7.0.3",
 		"dotenv": "npm:dotenv@^16.4.7",
 
-		"vite": "npm:vite@^6.0.11",
-		"vitest": "npm:vitest@^3.0.4",
+		"vite": "npm:vite@^6.1.1",
+		"vitest": "npm:vitest@^3.0.6",
 		
-		"hono": "npm:hono@^4.6.18",
+		"hono": "npm:hono@^4.7.2",
 
-		"zod": "npm:zod@^3.24.1"
+		"zod": "npm:zod@^3.24.2"
 	},
 	"pnpm": {
 		"onlyBuiltDependencies": [
