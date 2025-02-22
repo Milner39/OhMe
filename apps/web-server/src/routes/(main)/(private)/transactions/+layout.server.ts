@@ -18,7 +18,7 @@ import type { LayoutServerLoad } from "./$types"
 
 
 // Create DB API client
-const dbAPI = createDbApiClient() as any // Types are not working correctly
+const dbAPI = createDbApiClient()
 
 
 

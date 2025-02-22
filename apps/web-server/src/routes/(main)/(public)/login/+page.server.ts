@@ -27,7 +27,7 @@ import type { SafeResponseBody } from "#utils/src/response-utils"
 const validator = new Validator()
 
 // Create DB API client
-const dbAPI = createDbApiClient() as any // Types are not working correctly
+const dbAPI = createDbApiClient()
 
 
 // #region Actions
