@@ -1,34 +1,25 @@
 // #region Imports
 
-import * as process from "node:process"
-import { fileURLToPath, URL } from "node:url"
-
-import * as dotenv from "dotenv"
+import loadEnv from "#load-env/src"
 import { z } from "zod"
 
 // #endregion Imports
 
 
 
-// Load environment variables
-dotenv.config({
-	path: fileURLToPath(new URL("./.env", import.meta.url))
-})
+// Create URL to env file
+const envURL = new URL("./.env", import.meta.url)
 
 
-// Create a schema for environment variables
-const envSchema = z.object({
+// Create schema for env vars
+const schema = z.object({
 	DATABASE_API_PORT: z.coerce.number().default(3001)
 })
 
 
-// Validate environment variables
-const { data: env, error } = envSchema.safeParse(process.env)
-if (error) {
-	console.error("Incorrect env options:", error)
-	process.exit(1)
-}
+// Load env
+const env = loadEnv(envURL, schema)
 
 
-// Export environment variables
-export default env!
+// Export env vars
+export default env

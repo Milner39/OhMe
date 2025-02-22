@@ -1,11 +1,7 @@
 // #region Imports
 
-import * as process from "node:process"
-import { fileURLToPath, URL } from "node:url"
-
-import * as dotenv from "dotenv"
+import loadEnv from "#load-env/src"
 import { z } from "zod"
-
 
 // Import parent environment variables
 import parentEnv from "@/env"
@@ -14,41 +10,28 @@ import parentEnv from "@/env"
 
 
 
-// Load environment variables
-dotenv.config({
-	path: fileURLToPath(new URL("./.env", import.meta.url))
-})
+// Create URL to env file
+const envURL = new URL("./.env", import.meta.url)
 
 
-// Create a schema for environment variables
-const envSchema = z.object({
+// Create schema for env vars
+const prodS = z.object({
+	TESTING: z.literal(false).default(false),
+
 	DATABASE_URL: z.string().url(),
-
-	TESTING: z.coerce.boolean().default(false),
-	TEST_DATABASE_URL: z.string().url().optional(),
-}).superRefine((input, ctx) => {
-	if (input.TESTING && !input.TEST_DATABASE_URL) {
-		ctx.addIssue({
-			code: z.ZodIssueCode.invalid_type,
-			expected: "string",
-			received: "undefined",
-			path: ["TEST_DATABASE_URL"],
-			message: "TEST_DATABASE_URL is required when TESTING is true"
-		})
-	}
+	TEST_DATABASE_URL: z.string().url().optional()
 })
+const testS = prodS.extend({
+	TESTING: z.literal(true),
+	TEST_DATABASE_URL: z.string().url()
+})
+const schema = z.discriminatedUnion("TESTING", [testS, prodS])
 
 
-// Validate environment variables
-const { data: env, error } = envSchema.safeParse(process.env)
-if (error) {
-	console.error("Incorrect env options:", error)
-	process.exit(1)
-}
+// Load env
+const env = loadEnv(envURL, schema)
 
 
-// Merge with parent environment variables
-const mergedEnv = { ...parentEnv, ...env! }
-
-// Export environment variables
+// Export env vars
+const mergedEnv = { ...parentEnv, ...env }
 export default mergedEnv

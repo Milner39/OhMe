@@ -6,6 +6,7 @@
 			"~db-api/*": ["./apps/db-api/*"],
 			"~web-server/*": ["./apps/web-server/*"],
 			"#create-configs/*": ["./packages/create-configs/*"],
+			"#load-env/*": ["./packages/load-env/*"],
 			"#db-api-client/*": ["./packages/db-api-client/*"],
 			"#utils/*": ["./packages/utils/*"],
 			"#validation/*": ["./packages/validation/*"]
