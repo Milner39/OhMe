@@ -26,7 +26,7 @@ const getDbCredentials = () => {
 	// Get database URL from environment variables
 	const dbURLString = (!env.TESTING) ? 
 		env.DATABASE_URL : 
-		env.TEST_DATABASE_URL as string    // Is string when TESTING is true
+		env.TEST_DATABASE_URL
 
 	// Parse the database URL
 	const dbURL = new URL(dbURLString)
