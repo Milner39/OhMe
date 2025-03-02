@@ -9,7 +9,7 @@ import {
 	not, and, or, arrayContains, arrayContained, arrayOverlaps
 } from "drizzle-orm"
 import { getTableColumns, InferSelectModel } from "drizzle-orm"
-import { PgTableWithColumns } from "drizzle-orm/pg-core"
+import { PgTableWithColumns, PgColumn } from "drizzle-orm/pg-core"
 import { keepKeys,tsObjectEntries, tsObjectKeys } from "#utils/src/object-utils"
 
 // #endregion Imports
@@ -22,7 +22,7 @@ import { keepKeys,tsObjectEntries, tsObjectKeys } from "#utils/src/object-utils"
  * 
  * Get database credentials from an environment variable.
  */
-const getDbCredentials = () => {
+export const getDbCredentials = () => {
 	// Get database URL from environment variables
 	const dbURLString = (!env.TESTING) ? 
 		env.DATABASE_URL : 
@@ -43,14 +43,75 @@ const getDbCredentials = () => {
 }
 
 
+/** ExtractTableConfig
+ * 
+ * Extract the type of the `TableConfig` of a given table.
+ */
+export type ExtractTableConfig<Table> = Table extends PgTableWithColumns<
+	infer TableConfig
+> ? TableConfig : never
+
+
+/** ExtractColumnConfig
+ * 
+ * Extract the type of the: 
+ * 
+ * - `ColumnBaseConfig`
+ * - `RuntimeConfig`
+ * - `TypeConfig`
+ * 
+ * of a given column.
+ */
+export type ExtractColumnConfig<Column> = Column extends PgColumn<
+	infer ColumnBaseConfig,
+	infer RuntimeConfig,
+	infer TypeConfig
+> ? {
+	"ColumnBaseConfig": ColumnBaseConfig,
+	"RuntimeConfig": RuntimeConfig,
+	"TypeConfig": TypeConfig
+ } : never
+
+
+/** ExtractTableColumnConfigs
+ * 
+ * Extract the `ColumnBaseConfig` of each column in a given table.
+ */
+export type ExtractTableColumnConfigs<Table extends PgTableWithColumns<any>> = {
+	[Key in keyof ExtractTableConfig<Table>["columns"]]: 
+		ExtractColumnConfig<
+			ExtractTableConfig<Table>["columns"][Key]
+		>["ColumnBaseConfig"]
+}
+
+
+/** ColumnsAreUnique
+ * 
+ * Get which columns are primary or unique in a given table.
+ */
+export type ColumnsAreUnique<Table extends PgTableWithColumns<any>> = {
+	[Key in keyof ExtractTableColumnConfigs<Table>]: 
+		ExtractTableColumnConfigs<Table>[Key]["isPrimaryKey"] extends true 
+		? true 
+		// : ExtractTableColumnConfigs<Table>[Key]["isUnique"] extends true
+		// ? true
+		// WARNING: "isUnique" is not a property yet, so only PKs are included
+		: false
+}
+
+
+import tables from "./schemas/index"
+type UCs = ColumnsAreUnique<typeof tables.user>
+
+
 /** getUniqueColumns
  * 
- * Get the unique columns of `table`.
+ * Get the unique columns of a given table.
  * 
  * Unique columns are columns that are either primary keys or have a unique 
  * constraint.
  */
-const getUniqueColumns = <
+export const getUniqueColumns = <
 	Table extends PgTableWithColumns<any>
 > (
 	table: Table
@@ -109,7 +170,7 @@ const getUniqueColumns = <
  * This rule should be used with `keepKeys` to filter out non-unique columns 
  * from of `table`.
  */
-const getKeepUniqueColumnsRule = <
+export const getKeepUniqueColumnsRule = <
 	Table extends PgTableWithColumns<any>
 > (
 	table: Table
@@ -136,7 +197,7 @@ const getKeepUniqueColumnsRule = <
  * Filter out non-unique columns from `partialRow` based on the unique columns 
  * of `table`.
  */
-const filterUniqueColumns = <
+export const filterUniqueColumns = <
 	Table extends PgTableWithColumns<any>
 > (
 	partialRow: Partial<InferSelectModel<Table>>,
@@ -168,24 +229,10 @@ const filterUniqueColumns = <
  * 
  * See Drizzle documentation for more information on individual operations.
  */
-const conditionalOperators = {
+export const conditionalOperators = {
 	eq, ne, gt, gte, lt, lte, exists, notExists, isNull, isNotNull,
 	inArray, notInArray, between, notBetween, like, notLike, ilike, notIlike,
 	not, and, or, arrayContains, arrayContained, arrayOverlaps
 }
 
 // #endregion Utils
-
-
-
-// #region Exports
-
-export {
-	getDbCredentials,
-	getUniqueColumns,
-	getKeepUniqueColumnsRule,
-	filterUniqueColumns,
-	conditionalOperators
-}
-
-// #endregion Exports
