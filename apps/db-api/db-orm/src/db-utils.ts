@@ -70,7 +70,7 @@ export type ExtractColumnConfig<Column> = Column extends PgColumn<
 	"ColumnBaseConfig": ColumnBaseConfig,
 	"RuntimeConfig": RuntimeConfig,
 	"TypeConfig": TypeConfig
- } : never
+} : never
 
 
 /** ExtractTableColumnConfigs
@@ -87,7 +87,9 @@ export type ExtractTableColumnConfigs<Table extends PgTableWithColumns<any>> = {
 
 /** ColumnsAreUnique
  * 
- * Get which columns are primary or unique in a given table.
+ * Get which columns are unique in a given table.
+ * 
+ * Includes columns created with `.primaryKey()` or `.unique()`.
  */
 export type ColumnsAreUnique<Table extends PgTableWithColumns<any>> = {
 	[Key in keyof ExtractTableColumnConfigs<Table>]: 
