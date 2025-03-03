@@ -141,13 +141,13 @@ export const filterUniqueColumns = <
 	table: Table
 ) => {
 	// Remove columns with null values since they are not unique
-	const recordWithoutNull = tsObjectFromEntries(
+	const rowWithoutNull = tsObjectFromEntries(
 		tsObjectEntries(partialRow as Required<typeof partialRow>)
 			.filter((column) => column[1] !== null)
 	)
 
 	// Return only the unique columns
-	return keepKeys(recordWithoutNull, getIfColumnsUnique(table))
+	return keepKeys(rowWithoutNull, getIfColumnsUnique(table))
 }
 
 
