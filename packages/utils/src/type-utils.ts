@@ -6,7 +6,7 @@
  * individual values.
  */
 export const asLiteralArray = <
-	Targets extends any[]
+	const Targets extends any[]
 > (
 	...targets: Targets
 ): Targets => {
@@ -17,7 +17,7 @@ export const asLiteralArray = <
  * 
  * A record with any of the standard keys but unknown values.
  */
-export type UnknownRecord = Record<string | number | symbol, unknown>
+export type UnknownRecord = Record<PropertyKey, unknown>
 
 /** NotNull
  * 

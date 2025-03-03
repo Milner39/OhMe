@@ -1,5 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
-
 // #region Imports
 
 import env from "~db-api/env"
@@ -10,7 +8,9 @@ import {
 } from "drizzle-orm"
 import { getTableColumns, InferSelectModel } from "drizzle-orm"
 import { PgTableWithColumns, PgColumn } from "drizzle-orm/pg-core"
-import { keepKeys,tsObjectEntries, tsObjectKeys } from "#utils/src/object-utils"
+import { 
+	keepKeys, tsObjectEntries, tsObjectFromEntries, tsObjectKeys 
+} from "#utils/src/object-utils"
 
 // #endregion Imports
 
@@ -102,95 +102,30 @@ export type ColumnsAreUnique<Table extends PgTableWithColumns<any>> = {
 }
 
 
-import tables from "./schemas/index"
-type UCs = ColumnsAreUnique<typeof tables.user>
-
-
-/** getUniqueColumns
+/** getIfColumnsUnique
  * 
- * Get the unique columns of a given table.
+ * Get which columns are unique in a given table.
  * 
- * Unique columns are columns that are either primary keys or have a unique 
- * constraint.
+ * Includes columns created with `.primaryKey()` or `.unique()`.
  */
-export const getUniqueColumns = <
+export const getIfColumnsUnique = <
 	Table extends PgTableWithColumns<any>
 > (
 	table: Table
-) => {
-	type Columns = ReturnType<typeof getTableColumns<Table>>
+): ColumnsAreUnique<Table> => {
+	const columns = getTableColumns(table)
 
-	type UniqueColumns = {
-		[Key in keyof Columns]: Columns[Key]["isUnique"] extends true ? 
-		Columns[Key] : 
-		Columns[Key]["primary"] extends true ? 
-			Columns[Key] : 
-			never
-	}
-
-	
-	const columns: Columns = getTableColumns(table)
-
-	const uniqueColumns = Object.fromEntries(
-		// Filter columns by unique constraint or primary key
-		tsObjectEntries(columns).filter(([_, column]) => {
-			return (
-				column.isUnique || 
-				column.primary
-			)
+	const columnsAreUnique = tsObjectFromEntries(
+		tsObjectEntries(columns).map((column) => {
+			const [name, config] = column
+			return [name, Boolean(
+				config.primary ||
+				config.isUnique
+			)]
 		})
-	) as UniqueColumns
-	
-	return uniqueColumns
-
-	/* WARNING:
-		The types returned from this function are incorrect.
-		There is no way to infer the type of only the unique columns from a 
-		table type since columns are typed like this:
-			{
-				primary: boolean
-				isUnique: boolean
-				...
-			}
-
-		Rather than like this:
-			{
-				primary: true
-				isUnique: true
-				...
-			}
-
-		The subroutine works as expected, but the types are not accurate.
-	*/
-}
-
-
-/** getKeepUniqueColumnsRule
- * 
- * Get a rule to keep only the unique columns of `table`.
- * 
- * This rule should be used with `keepKeys` to filter out non-unique columns 
- * from of `table`.
- */
-export const getKeepUniqueColumnsRule = <
-	Table extends PgTableWithColumns<any>
-> (
-	table: Table
-) => {
-	const uniqueColumns = getUniqueColumns(table)
-
-	const uniqueColumnNames = tsObjectKeys(uniqueColumns)
-
-	const keepUniqueColumnsEntries = uniqueColumnNames
-		.map(columnName => [columnName, true])
-
-	// Create an object with columns names as the keys and `true` as the values
-	const keepUniqueColumnsRule = (
-		Object.fromEntries(keepUniqueColumnsEntries) as
-		{ [Key in keyof typeof uniqueColumns]: true }
 	)
 
-	return keepUniqueColumnsRule
+	return columnsAreUnique as unknown as ColumnsAreUnique<Table>
 }
 
 
@@ -205,18 +140,14 @@ export const filterUniqueColumns = <
 	partialRow: Partial<InferSelectModel<Table>>,
 	table: Table
 ) => {
-	const keepUniqueColumnsRule = getKeepUniqueColumnsRule(table)
-
 	// Remove columns with null values since they are not unique
-	const recordWithoutNull = Object.fromEntries(
-		// @ts-ignore:
-		tsObjectEntries(partialRow).filter(([_, value]) => {
-			return value !== null
-		})
+	const recordWithoutNull = tsObjectFromEntries(
+		tsObjectEntries(partialRow as Required<typeof partialRow>)
+			.filter((column) => column[1] !== null)
 	)
 
-	// Return only the unique columns of `partialRow`
-	return keepKeys(recordWithoutNull, keepUniqueColumnsRule)
+	// Return only the unique columns
+	return keepKeys(recordWithoutNull, getIfColumnsUnique(table))
 }
 
 
