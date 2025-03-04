@@ -68,7 +68,7 @@ class DynamicQuery<
 		// Create base query to reset to after execution
 		return this.connection
 			.select()
-			// NOTE: Likely a TS bug
+			// NOTE: TS bug, downgrade to drizzle-orm@0.38.0 or wait for fix
 			// Type is not assignable to parameter of type: `TableLikeHasEmptySelection...`
 			// @ts-ignore
 			.from(this.table)
@@ -100,7 +100,6 @@ class DynamicQuery<
 	) => {
 		// @ts-ignore:
 		this.query = this.query
-			// NOTE: Likely a TS bug
 			// Type is not assignable to parameter of type: `TableLikeHasEmptySelection...`
 			// @ts-ignore
 			.innerJoin(foreignTable, on(
