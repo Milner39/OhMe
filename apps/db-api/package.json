@@ -18,8 +18,8 @@
 		"test": "pnpm run orm:test"
 	},
 	"dependencies": {
-		"drizzle-orm": "npm:drizzle-orm@^0.39.3",
-		"drizzle-kit": "npm:drizzle-kit@^0.30.4",
+		"drizzle-orm": "npm:drizzle-orm@^0.40.0",
+		"drizzle-kit": "npm:drizzle-kit@^0.30.5",
 		"drizzle-zod": "npm:drizzle-zod@^0.7.0",
 
 		"pg": "npm:pg@^8.13.3",

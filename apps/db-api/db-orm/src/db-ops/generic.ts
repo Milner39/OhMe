@@ -1,10 +1,6 @@
 // #region Imports
 
-import {
-	getTableColumns,
-	InferSelectModel, InferInsertModel,
-	SQL
-} from "drizzle-orm"
+import { getTableColumns, SQL, InferSelectModel, InferInsertModel } from "drizzle-orm"
 import { PgTableWithColumns } from "drizzle-orm/pg-core"
 import db, { DBTransaction } from "../db-connection"
 import { conditionalOperators as cOps, filterUniqueColumns } from "../db-utils"
@@ -72,6 +68,9 @@ class DynamicQuery<
 		// Create base query to reset to after execution
 		return this.connection
 			.select()
+			// NOTE: Likely a TS bug
+			// Type is not assignable to parameter of type: `TableLikeHasEmptySelection...`
+			// @ts-ignore
 			.from(this.table)
 			.$dynamic()
 	}
@@ -101,6 +100,9 @@ class DynamicQuery<
 	) => {
 		// @ts-ignore:
 		this.query = this.query
+			// NOTE: Likely a TS bug
+			// Type is not assignable to parameter of type: `TableLikeHasEmptySelection...`
+			// @ts-ignore
 			.innerJoin(foreignTable, on(
 				this.columns, 
 				getTableColumns(foreignTable),
