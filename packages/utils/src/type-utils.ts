@@ -1,5 +1,13 @@
 // #region Utils
 
+/** Mutable
+ * 
+ * Removes the `readonly` modifier from every property of an object.
+ */
+export type Mutable<Type> = {
+	-readonly [Key in keyof Type]: Type[Key]
+}
+
 /** asLiteralArray
  * 
  * Convert a list of values to a literal array retaining the types of the 

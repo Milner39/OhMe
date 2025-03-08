@@ -1,12 +1,19 @@
+// #region Imports
+
 import { UnknownRecord } from "@/packages/utils/src/type-utils"
 import { ErrorCode } from "./codes"
 
-// #region KnownError
+// #endregion Imports
 
-// Base class for any error
+
+
+/** KnownError
+ * 
+ * Base class for any error.
+ */
 export class KnownError<
 	TCode extends ErrorCode,
-	TCause = null | UnknownRecord
+	TCause extends null | UnknownRecord
 > {
 	code: TCode
 	message: string
@@ -19,47 +26,63 @@ export class KnownError<
 	}
 }
 
-// #endregion KnownError
 
 
-
-////
-class DBAPIError<
-	TCode extends ErrorCode = ["db-api"],
-	TCause = null
-> extends KnownError<
-	TCode,
-	TCause
-> {
-	constructor(
-		code: TCode = ["db-api"],
-		message: string = "Error occurred in Database API",
-		cause: TCause = null
-	) {
-		super(code, message, cause)
+/** createKnownErrorClass
+ * 
+ * A class factory which generates classes that:
+ * - Extend instances of `KnownError`
+ * - Set their own properties to the provided defaults when instantiated
+ * - Set their own properties to constructor arguments if provided
+ * 
+ * This is useful because it allows long chains of inheritance to be created,
+   while maintaining type safety and without repeating lots of code.
+ *
+ * Values/Types prefixed with `D` are defaults.
+ * 
+ * Values/Types prefixed with `T` are used in the generated class.
+ */
+const createKnownErrorClass = <
+	Parent extends typeof KnownError,
+	DCode extends ErrorCode,
+	DCause extends null | UnknownRecord
+>(
+	parent: Parent,
+	dCode: DCode,
+	dMessage: string,
+	dCause: DCause
+) => {
+	return class <
+		TCode extends ErrorCode = DCode,
+		TCause extends null | UnknownRecord = DCause
+	> extends parent<
+		TCode,
+		TCause
+	> {
+		constructor(
+			code: TCode = (dCode as unknown as TCode),
+			message: string = dMessage,
+			cause: TCause = (dCause as unknown as TCause)
+		) {
+			super(code, message, cause)
+		}
 	}
 }
-////
 
 
-////
-class DBClientError<
-	TCode extends ErrorCode = ["db-api","db-client"],
-	TCause = null
-> extends DBAPIError<
-	TCode,
-	TCause
-> {
-	constructor(
-		code: TCode = ["db-api","db-client"],
-		message: string = "Error occurred in Database Client",
-		cause: TCause = null
-	) {
-		super(code, message, cause)
-	}
-}
-////
+const DBAPIError = createKnownErrorClass(
+	KnownError,
+	["db-api"],
+	"Error occurred in Database API",
+	null
+)
 
+const DBClientError = createKnownErrorClass(
+	DBAPIError,
+	["db-api","db-client"],
+	"Error occurred in Database Client",
+	null
+)
 
 const a = new DBAPIError()
 const b = new DBClientError()
