@@ -6,6 +6,8 @@ import { ErrorCode } from "./codes"
 // #endregion Imports
 
 
+type NullOrAnyRecord = null | UnknownRecord
+
 
 /** KnownError
  * 
@@ -13,7 +15,7 @@ import { ErrorCode } from "./codes"
  */
 export class KnownError<
 	TCode extends ErrorCode,
-	TCause extends null | UnknownRecord
+	TCause extends NullOrAnyRecord
 > {
 	code: TCode
 	message: string
@@ -45,16 +47,21 @@ export class KnownError<
 const createKnownErrorClass = <
 	Parent extends typeof KnownError,
 	DCode extends ErrorCode,
-	DCause extends null | UnknownRecord
+	DCause extends NullOrAnyRecord
 >(
 	parent: Parent,
 	dCode: DCode,
 	dMessage: string,
 	dCause: DCause
 ) => {
+	/*
+		A mixin class must have a constructor with a single rest parameter of 
+		type 'any[]'
+	*/
+	// @ts-ignore
 	return class <
 		TCode extends ErrorCode = DCode,
-		TCause extends null | UnknownRecord = DCause
+		TCause extends NullOrAnyRecord = DCause
 	> extends parent<
 		TCode,
 		TCause
