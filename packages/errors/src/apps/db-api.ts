@@ -27,7 +27,7 @@ export const DBORMQueryError = createKnownErrorClass(
 
 export const DBORMQueryBadExecutionError = createKnownErrorClass<
 	typeof DBAPIError,
-	["db-api", "db-orm", "query"],
+	["db-api", "db-orm", "query", "BadExecution"],
 	"Error occurred in the execution of a Database ORM query",
 	{
 		queryType: "create" | "read" | "update" | "delete",
@@ -35,7 +35,7 @@ export const DBORMQueryBadExecutionError = createKnownErrorClass<
 	}
 >(
 	DBAPIError,
-	["db-api", "db-orm", "query"],
+	["db-api", "db-orm", "query", "BadExecution"],
 	"Error occurred in the execution of a Database ORM query"
 )
 
