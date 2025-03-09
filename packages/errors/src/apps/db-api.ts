@@ -42,8 +42,15 @@ export const DBORMQueryBadExecutionError = createKnownErrorClass<
 
 // ISSUE: Should throw error but doesn't
 const a = new DBORMQueryBadExecutionError(null)
+type A = Prettify<typeof a>
 
 const b = new DBORMQueryBadExecutionError({
 	queryType: "read",
 	error: ""
 })
+type B = Prettify<typeof b>
+
+
+
+
+type Prettify<T> = { [K in keyof T]: T[K] } & {}

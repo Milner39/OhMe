@@ -61,6 +61,13 @@ export const createKnownErrorClass = <
 	*/
 	// @ts-ignore
 	return class <
+		/* ISSUE:
+			If `Cause` is null, the only value accepted for `cause` in the 
+			constructor is `null`, any record will cause an error (correct).
+
+			However, if `Cause` is a record, a record with the correct type is
+			accepted, but `null` is also accepted (incorrect).
+		*/
 		TCause extends Cause,
 		TCode extends ErrorCode = DCode,
 		TMessage extends string = DMessage,
