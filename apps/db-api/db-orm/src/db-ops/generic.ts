@@ -6,12 +6,24 @@ import db, { DBTransaction } from "../db-connection"
 import { conditionalOperators as cOps, filterUniqueColumns } from "../db-utils"
 import { tsObjectEntries, tsObjectKeys } from "#utils/src/object-utils"
 import { NotNull, MatchListLength, PartialKeysTrue } from "#utils/src/type-utils"
-import { KnownError } from "#errors/src"
-import { DBAPIError, DBORMQueryBadExecutionError } from "#errors/src/apps/db-api"
+import { AnyKnownError, KnownError } from "#errors/src"
+import { DBORMQueryBadExecutionError, QueryOneFoundManyError, 
+QueryOneFoundNoneError } from "#errors/src/apps/db-api"
 
 // #endregion Imports
 
 
+
+export type QueryType = "create" | "read" | "update" | "delete"
+
+const fallbackQueryErrorIfUnknown = (error: unknown, queryType: QueryType) => {
+	if (error instanceof KnownError) return error
+	
+	return new DBORMQueryBadExecutionError({
+		queryType: queryType,
+		error: error as NotNull
+	})
+}
 
 
 
@@ -156,7 +168,7 @@ export const gReadMany = async <
 		error: null
 	} | {
 		result: null,
-		error: KnownError<any, any, any>
+		error: AnyKnownError
 	}
 > => {
 	try {
@@ -172,10 +184,7 @@ export const gReadMany = async <
 	catch (error) {
 		return {
 			result: null,
-			error: new DBORMQueryBadExecutionError({
-				queryType: "read",
-				error: error as NotNull
-			})
+			error: fallbackQueryErrorIfUnknown(error, "read")
 		}
 	}
 }
@@ -206,7 +215,7 @@ export const gReadOne = async <
 		error: null
 	} | {
 		result: null,
-		error: NotNull
+		error: AnyKnownError
 	}
 > => {
 	try {
@@ -214,17 +223,9 @@ export const gReadOne = async <
 			.limit(2)
 			.execute()
 
-		if (rows.length === 0) {
-			throw new KnownError("No row found with query", {
-				code: "FindOneNoResult"
-			})
-		}
+		if (rows.length === 0) throw new QueryOneFoundNoneError(null)
 
-		if (rows.length > 1) {
-			throw new KnownError("Multiple rows found with query", {
-				code: "FindOneMultipleResults"
-			})
-		}
+		if (rows.length > 1) throw new QueryOneFoundManyError(null)
 
 		return {
 			result: rows[0],
@@ -235,7 +236,7 @@ export const gReadOne = async <
 	catch (error) {
 		return {
 			result: null,
-			error: error as NotNull
+			error: fallbackQueryErrorIfUnknown(error, "read")
 		}
 	}
 }
@@ -266,7 +267,7 @@ export const gCreate = async <
 		error: null
 	} | {
 		result: null,
-		error: NotNull
+		error: AnyKnownError
 	}
 > => {
 	try {
@@ -282,9 +283,11 @@ export const gCreate = async <
 	}
 
 	catch (error) {
+		// TODO: Specific error for unique collision
+
 		return {
 			result: null,
-			error: error as NotNull
+			error: fallbackQueryErrorIfUnknown(error, "create")
 		}
 	}
 }
@@ -319,7 +322,7 @@ export const gUpdateMany = async <
 		error: null
 	} | {
 		result: null,
-		error: NotNull
+		error: AnyKnownError
 	}
 > => {
 	try {
@@ -338,7 +341,7 @@ export const gUpdateMany = async <
 	catch (error) {
 		return {
 			result: null,
-			error: error as NotNull
+			error: fallbackQueryErrorIfUnknown(error, "update")
 		}
 	}
 }
@@ -372,7 +375,7 @@ export const gUpdateOne = async <
 		error: null
 	} | {
 		result: null,
-		error: NotNull
+		error: AnyKnownError
 	}
 > => {
 	try {
@@ -383,16 +386,16 @@ export const gUpdateOne = async <
 				.returning() as 
 				InferSelectModel<Table>[]
 
-			if (rows.length !== 1) {
-				throw new Error("Failed to update one row")
-			}
+			if (rows.length === 0) throw new QueryOneFoundNoneError(null)
+
+			if (rows.length > 1) throw new QueryOneFoundManyError(null)
 
 			return rows[0]
 		})
 
 		
 		return {
-			result: txResult[0],
+			result: txResult,
 			error: null
 		}
 	}
@@ -400,7 +403,7 @@ export const gUpdateOne = async <
 	catch (error) {
 		return {
 			result: null,
-			error: error as NotNull
+			error: fallbackQueryErrorIfUnknown(error, "update")
 		}
 	}
 }
@@ -433,7 +436,7 @@ export const gDeleteMany = async <
 		error: null
 	} | {
 		result: null,
-		error: NotNull
+		error: AnyKnownError
 	}
 > => {
 	try {
@@ -451,7 +454,7 @@ export const gDeleteMany = async <
 	catch (error) {
 		return {
 			result: null,
-			error: error as NotNull
+			error: fallbackQueryErrorIfUnknown(error, "delete")
 		}
 	}
 }
@@ -483,7 +486,7 @@ export const gDeleteOne = async <
 		error: null
 	} | {
 		result: null,
-		error: NotNull
+		error: AnyKnownError
 	}
 > => {
 	try {
@@ -493,16 +496,16 @@ export const gDeleteOne = async <
 				.returning() as 
 				InferSelectModel<Table>[]
 
-			if (rows.length !== 1) {
-				throw new Error("Failed to delete one row")
-			}
+			if (rows.length === 0) throw new QueryOneFoundNoneError(null)
+
+			if (rows.length > 1) throw new QueryOneFoundManyError(null)
 
 			return rows[0]
 		})
 
 		
 		return {
-			result: txResult[0],
+			result: txResult,
 			error: null
 		}
 	}
@@ -510,7 +513,7 @@ export const gDeleteOne = async <
 	catch (error) {
 		return {
 			result: null,
-			error: error as NotNull
+			error: fallbackQueryErrorIfUnknown(error, "delete")
 		}
 	}
 }
@@ -523,6 +526,7 @@ export const gDeleteOne = async <
 
 // #region MISC
 
+// TODO: Check and improve docs
 /** gFindUniqueCollisions
  * 
  * 	- Take in a record containing column names as the key and a value that 

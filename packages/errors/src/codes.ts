@@ -11,8 +11,8 @@ export type ErrorTree = {
 				BadExecution: null
 				BadArguments: null,
 				BadResult: {
-					ReadOneFoundNone: null;
-					ReadOneFoundMany: null;
+					OneFoundNone: null;
+					OneFoundMany: null;
 				}
 			}
 		}

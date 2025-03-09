@@ -28,6 +28,7 @@ export class KnownError<
 		this.cause = cause
 	}
 }
+export type AnyKnownError = KnownError<any, any, any>
 
 
 
@@ -46,10 +47,10 @@ export class KnownError<
  * Values/Types prefixed with `T` are used in the generated class.
  */
 export const createKnownErrorClass = <
+	Cause extends NullOrRecord,
 	Parent extends typeof KnownError,
 	DCode extends ErrorCode,
-	DMessage extends string,
-	Cause extends NullOrRecord = null,
+	DMessage extends string
 >(
 	parent: Parent,
 	dCode: DCode,
@@ -61,13 +62,6 @@ export const createKnownErrorClass = <
 	*/
 	// @ts-ignore
 	return class <
-		/* ISSUE:
-			If `Cause` is null, the only value accepted for `cause` in the 
-			constructor is `null`, any record will cause an error (correct).
-
-			However, if `Cause` is a record, a record with the correct type is
-			accepted, but `null` is also accepted (incorrect).
-		*/
 		TCause extends Cause,
 		TCode extends ErrorCode = DCode,
 		TMessage extends string = DMessage,
