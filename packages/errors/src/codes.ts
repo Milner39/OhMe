@@ -7,8 +7,14 @@
 export type ErrorTree = {
 	"db-api": {
 		"db-orm": {
-			ReadOneFoundNone: null;
-			ReadOneFoundMany: null;
+			"query": {
+				BadExecution: null
+				BadArguments: null,
+				BadResult: {
+					ReadOneFoundNone: null;
+					ReadOneFoundMany: null;
+				}
+			}
 		}
 		server: {
 			auth: {

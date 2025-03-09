@@ -15,13 +15,14 @@ type NullOrAnyRecord = null | UnknownRecord
  */
 export class KnownError<
 	TCode extends ErrorCode,
+	TMessage extends string,
 	TCause extends NullOrAnyRecord
 > {
 	code: TCode
-	message: string
+	message: TMessage
 	cause: TCause
 
-	constructor(code: TCode, message: string, cause: TCause) {
+	constructor(code: TCode, message: TMessage, cause: TCause) {
 		this.code = code
 		this.message = message
 		this.cause = cause
@@ -44,14 +45,15 @@ export class KnownError<
  * 
  * Values/Types prefixed with `T` are used in the generated class.
  */
-const createKnownErrorClass = <
+export const createKnownErrorClass = <
 	Parent extends typeof KnownError,
 	DCode extends ErrorCode,
+	DMessage extends string,
 	DCause extends NullOrAnyRecord
 >(
 	parent: Parent,
 	dCode: DCode,
-	dMessage: string,
+	dMessage: DMessage,
 	dCause: DCause
 ) => {
 	/*
@@ -61,32 +63,19 @@ const createKnownErrorClass = <
 	// @ts-ignore
 	return class <
 		TCode extends ErrorCode = DCode,
+		TMessage extends string = DMessage,
 		TCause extends NullOrAnyRecord = DCause
 	> extends parent<
 		TCode,
+		TMessage,
 		TCause
 	> {
 		constructor(
 			code: TCode = (dCode as unknown as TCode),
-			message: string = dMessage,
+			message: TMessage = (dMessage as unknown as TMessage),
 			cause: TCause = (dCause as unknown as TCause)
 		) {
 			super(code, message, cause)
 		}
 	}
 }
-
-
-const DBAPIError = createKnownErrorClass(
-	KnownError,
-	["db-api"],
-	"Error occurred in Database API",
-	null
-)
-
-const DBORMError = createKnownErrorClass(
-	DBAPIError,
-	["db-api","db-orm"],
-	"Error occurred in Database ORM Client",
-	null
-)
