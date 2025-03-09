@@ -6,7 +6,8 @@ import db, { DBTransaction } from "../db-connection"
 import { conditionalOperators as cOps, filterUniqueColumns } from "../db-utils"
 import { tsObjectEntries, tsObjectKeys } from "#utils/src/object-utils"
 import { NotNull, MatchListLength, PartialKeysTrue } from "#utils/src/type-utils"
-import { KnownError } from "#utils/src/error-utils"
+import { KnownError } from "#errors/src"
+import { DBAPIError, DBORMQueryBadExecutionError } from "#errors/src/apps/db-api"
 
 // #endregion Imports
 
@@ -155,7 +156,7 @@ export const gReadMany = async <
 		error: null
 	} | {
 		result: null,
-		error: NotNull
+		error: KnownError<any, any, any>
 	}
 > => {
 	try {
@@ -171,7 +172,10 @@ export const gReadMany = async <
 	catch (error) {
 		return {
 			result: null,
-			error: error as NotNull
+			error: new DBORMQueryBadExecutionError({
+				queryType: "read",
+				error: error as NotNull
+			})
 		}
 	}
 }
@@ -184,9 +188,9 @@ export const gReadMany = async <
  * 
  * Expose a callback with a `DynamicQuery` to the caller and execute the query.
  * 
- * Add a limit of 2 to end the query early if more than one row is found.
+ * Add a limit of 2 to end the query early if more than 2 rows are found.
  * 
- * Read one row in the `table` based on the query, or return an error if the 
+ * Return one row in the `table` based on the query, or return an error if the 
  * query was not specific enough and found multiple rows.
  */
 export const gReadOne = async <

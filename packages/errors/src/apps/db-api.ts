@@ -8,29 +8,42 @@ import { KnownError, createKnownErrorClass } from ".."
 
 
 export const DBAPIError = createKnownErrorClass(
-	KnownError, ["db-api"],
-	"Error occurred in Database API",
-	null
+	KnownError,
+	["db-api"],
+	"Error occurred in Database API"
 )
 
 export const DBORMError = createKnownErrorClass(
-	DBAPIError, ["db-api", "db-orm"],
-	"Error occurred in Database ORM",
-	null
+	DBAPIError,
+	["db-api", "db-orm"],
+	"Error occurred in Database ORM"
 )
 
 export const DBORMQueryError = createKnownErrorClass(
-	DBAPIError, ["db-api", "db-orm", "query"],
-	"Error occurred when Database ORM executed a query",
-	null
+	DBAPIError,
+	["db-api", "db-orm", "query"],
+	"Error occurred when Database ORM executed a query"
 )
 
-export const DBORMQueryBadExecutionError = createKnownErrorClass(
-	DBAPIError, ["db-api", "db-orm", "query"],
+export const DBORMQueryBadExecutionError = createKnownErrorClass<
+	typeof DBAPIError,
+	["db-api", "db-orm", "query"],
 	"Error occurred in the execution of a Database ORM query",
-	null
+	{
+		queryType: "create" | "read" | "update" | "delete",
+		error: NotNull
+	}
+>(
+	DBAPIError,
+	["db-api", "db-orm", "query"],
+	"Error occurred in the execution of a Database ORM query"
 )
 
 
+// ISSUE: Should throw error but doesn't
+const a = new DBORMQueryBadExecutionError(null)
 
-const a = new DBORMQueryBadExecutionError()
+const b = new DBORMQueryBadExecutionError({
+	queryType: "read",
+	error: ""
+})

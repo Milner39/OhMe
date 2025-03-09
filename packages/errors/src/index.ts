@@ -6,7 +6,7 @@ import { ErrorCode } from "./codes"
 // #endregion Imports
 
 
-type NullOrAnyRecord = null | UnknownRecord
+type NullOrRecord<Record = UnknownRecord> = null | Record
 
 
 /** KnownError
@@ -14,15 +14,15 @@ type NullOrAnyRecord = null | UnknownRecord
  * Base class for any error.
  */
 export class KnownError<
+	TCause extends NullOrRecord,
 	TCode extends ErrorCode,
 	TMessage extends string,
-	TCause extends NullOrAnyRecord
 > {
+	cause: TCause
 	code: TCode
 	message: TMessage
-	cause: TCause
 
-	constructor(code: TCode, message: TMessage, cause: TCause) {
+	constructor(cause: TCause, code: TCode, message: TMessage) {
 		this.code = code
 		this.message = message
 		this.cause = cause
@@ -49,12 +49,11 @@ export const createKnownErrorClass = <
 	Parent extends typeof KnownError,
 	DCode extends ErrorCode,
 	DMessage extends string,
-	DCause extends NullOrAnyRecord
+	Cause extends NullOrRecord = null,
 >(
 	parent: Parent,
 	dCode: DCode,
 	dMessage: DMessage,
-	dCause: DCause
 ) => {
 	/*
 		A mixin class must have a constructor with a single rest parameter of 
@@ -62,20 +61,24 @@ export const createKnownErrorClass = <
 	*/
 	// @ts-ignore
 	return class <
+		TCause extends Cause,
 		TCode extends ErrorCode = DCode,
 		TMessage extends string = DMessage,
-		TCause extends NullOrAnyRecord = DCause
 	> extends parent<
+		TCause,
 		TCode,
-		TMessage,
-		TCause
+		TMessage
 	> {
 		constructor(
+			cause: TCause,
 			code: TCode = (dCode as unknown as TCode),
-			message: TMessage = (dMessage as unknown as TMessage),
-			cause: TCause = (dCause as unknown as TCause)
+			message: TMessage = (dMessage as unknown as TMessage)
 		) {
-			super(code, message, cause)
+			super(
+				cause,
+				code,
+				message
+			)
 		}
 	}
 }
