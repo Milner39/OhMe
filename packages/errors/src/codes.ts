@@ -6,7 +6,7 @@
  */
 export type ErrorTree = {
 	"db-api": {
-		"db-client": {
+		"db-orm": {
 			ReadOneFoundNone: null;
 			ReadOneFoundMany: null;
 		}

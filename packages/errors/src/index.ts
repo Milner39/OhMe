@@ -84,17 +84,9 @@ const DBAPIError = createKnownErrorClass(
 	null
 )
 
-const DBClientError = createKnownErrorClass(
+const DBORMError = createKnownErrorClass(
 	DBAPIError,
-	["db-api","db-client"],
-	"Error occurred in Database Client",
+	["db-api","db-orm"],
+	"Error occurred in Database ORM Client",
 	null
 )
-
-const a = new DBAPIError()
-const b = new DBClientError()
-
-console.log(a instanceof DBAPIError)		// True
-console.log(a instanceof DBClientError)		// False
-console.log(b instanceof DBAPIError)		// True
-console.log(b instanceof DBClientError)		// True
