@@ -2,7 +2,7 @@
 
 import { drizzle } from "drizzle-orm/node-postgres"
 import { getDbCredentials } from "./db-utils"
-import tables from "./schemas/index"
+import tables from "./schemas"
 
 // #endregion Imports
 

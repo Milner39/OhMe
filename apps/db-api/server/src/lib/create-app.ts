@@ -1,7 +1,7 @@
 // #region Imports
 
 import { createRouter } from "./create-router"
-import router from "../routes/index"
+import router from "../routes"
 
 // #endregion Imports
 

@@ -3,7 +3,7 @@
 import { getTableColumns, SQL } from "drizzle-orm"
 import { DBTransaction } from "../db-connection"
 import { conditionalOperators as cOps } from "../db-utils"
-import tables, { zodTableSchemas } from "../schemas/index"
+import tables, { zodTableSchemas } from "../schemas"
 import { 
 	gCreate,
 	// gReadMany,
@@ -15,7 +15,7 @@ import {
 	// gFindUniqueCollisions
 } from "./generic"
 import { z } from "zod"
-import { authIdsSchema } from "#validation/src/zod-schemas/index"
+import { authIdsSchema } from "#validation/src/zod-schemas"
 import { KnownError } from "@/packages/utils/src/error-utils"
 import { NotNull, asLiteralArray } from "#utils/src/type-utils"
 

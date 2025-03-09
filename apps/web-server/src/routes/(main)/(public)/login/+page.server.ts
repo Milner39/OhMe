@@ -5,12 +5,12 @@ import { fail } from "@sveltejs/kit"
 import { getFormData } from "$lib/utils/form-action-utils"
 import { setAuthCookies } from "$lib/utils/cookie-utils"
 
-import { Validator } from "#validation/src/index"
+import { Validator } from "#validation/src"
 import { SafeKnownError } from "#utils/src/error-utils"
 
 import {
 	createApiClient as createDbApiClient
-} from "#db-api-client/src/index"
+} from "#db-api-client/src"
 
 
 // Import types

@@ -2,7 +2,7 @@
 
 import { describe, test, expect } from "vitest"
 
-import { Validator, settings } from "#validation/src/index"
+import { Validator, settings } from "#validation/src"
 
 // #endregion Imports
 

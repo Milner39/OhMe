@@ -4,7 +4,7 @@ import { describe, test, expect } from "vitest"
 import { InferSelectModel } from "drizzle-orm"
 import { PgTable } from "drizzle-orm/pg-core"
 import db from "~db-api/db-orm/src/db-connection"
-import tables from "~db-api/db-orm/src/schemas/index"
+import tables from "~db-api/db-orm/src/schemas"
 import {
 	gCreate,
 	gReadMany,

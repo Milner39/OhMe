@@ -3,7 +3,7 @@
 import { createRouter } from "~db-api/server/src/lib/create-router"
 import { zValidator } from "@hono/zod-validator"
 import { validateRequestHook } from "~db-api/server/src/lib/utils/response-utils"
-import { userRegisterSchema } from "#validation/src/zod-schemas/index"
+import { userRegisterSchema } from "#validation/src/zod-schemas"
 import { registerUser } from "~db-api/db-orm/src/db-ops/user"
 import { KnownError } from "#utils/src/error-utils"
 import { StandardResponseBody } from "#utils/src/response-utils"

@@ -2,8 +2,8 @@
 
 import { createRouter } from "../lib/create-router"
 
-import userR from "./user/index"
-import transactionR from "./transaction/index"
+import userR from "./user"
+import transactionR from "./transaction"
 
 // #endregion Imports
 

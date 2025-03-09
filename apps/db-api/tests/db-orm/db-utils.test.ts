@@ -2,7 +2,7 @@
 
 import { describe, test, expect } from "vitest"
 import { filterUniqueColumns } from "~db-api/db-orm/src/db-utils"
-import tables from "~db-api/db-orm/src/schemas/index"
+import tables from "~db-api/db-orm/src/schemas"
 
 // #endregion Imports
 

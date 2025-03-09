@@ -1,7 +1,7 @@
 // #region Imports
 
 // Validation
-import { authIdsSchema } from "@/packages/validation/src/zod-schemas/index"
+import { authIdsSchema } from "@/packages/validation/src/zod-schemas"
 import { z } from "zod"
 
 

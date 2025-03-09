@@ -9,7 +9,7 @@ import {
 } from "drizzle-zod"
 import {
 	username as usernameSchema
-} from "#validation/src/zod-schemas/index"
+} from "#validation/src/zod-schemas"
 
 import { email } from "../email/schema"
 import { password } from "../password/schema"

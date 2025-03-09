@@ -6,7 +6,7 @@ import type { Handle } from '@sveltejs/kit'
 import { getAuthCookies, deleteAuthCookies } from "$lib/utils/cookie-utils"
 import {
 	createApiClient as createDbApiClient
-} from "#db-api-client/src/index"
+} from "#db-api-client/src"
 
 // #endregion Imports
 

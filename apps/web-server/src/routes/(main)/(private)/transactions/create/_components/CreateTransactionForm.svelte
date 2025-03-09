@@ -6,7 +6,7 @@ import Form from "$lib/components/Inputs/Form/Form.svelte"
 import { applyAction } from "$app/forms"
 import { getFormData } from "$lib/utils/form-utils"
 
-import { Validator } from "#validation/src/index"
+import { Validator } from "#validation/src"
 
 
 // Import types

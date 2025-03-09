@@ -12,4 +12,4 @@ import "~web-server/env"
 
 
 // Start the server
-import "./build/index"
+import "./build"

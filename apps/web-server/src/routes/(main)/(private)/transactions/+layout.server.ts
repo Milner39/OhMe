@@ -7,7 +7,7 @@ import {
 
 import {
 	createApiClient as createDbApiClient
-} from "#db-api-client/src/index"
+} from "#db-api-client/src"
 
 
 // Import types
