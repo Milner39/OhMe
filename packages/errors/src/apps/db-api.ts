@@ -43,13 +43,29 @@ export const DBORMQueryBadExecutionError = createKnownErrorClass<
 // ISSUE: Should throw error but doesn't
 const a = new DBORMQueryBadExecutionError(null)
 type A = Prettify<typeof a>
+/*
+type A = {
+	cause: null
+	code: ["db-api"]
+	message: "Error occurred in Database API"
+}
+*/
 
 const b = new DBORMQueryBadExecutionError({
 	queryType: "read",
 	error: ""
 })
 type B = Prettify<typeof b>
-
+/*
+type B = {
+	cause: {
+		queryType: "read"
+		error: string
+	}
+	code: ["db-api", "db-orm", "query"]
+	message: "Error occurred in the execution of a Database ORM query"
+}
+*/
 
 
 
