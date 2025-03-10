@@ -1,5 +1,6 @@
 # Misc
 /ignore
+**!gitignore*
 
 # Installed dependencies
 node_modules
