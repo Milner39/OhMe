@@ -16,7 +16,10 @@ QueryOneFoundNoneError } from "#errors/src/apps/db-api"
 
 export type QueryType = "create" | "read" | "update" | "delete"
 
-const fallbackQueryErrorIfUnknown = (error: unknown, queryType: QueryType) => {
+const fallbackQueryErrorIfUnknown = (
+	error: unknown,
+	queryType: QueryType
+): AnyKnownError => {
 	if (error instanceof KnownError) return error
 	
 	return new DBORMQueryBadExecutionError({
@@ -526,22 +529,18 @@ export const gDeleteOne = async <
 
 // #region MISC
 
-// TODO: Check and improve docs
 /** gFindUniqueCollisions
  * 
- * 	- Take in a record containing column names as the key and a value that 
- * 	  is the same type of that column.
+ * 	- Take in a partial row of `table`.
  * 
- * 	- Filter the record to only the columns that are unique or are the 
- * 	  primary key.
+ * 	- Filter the row to only the columns that are unique or the primary key.
  * 
- * 	- Query the database for any rows that match one or more of the column 
- * 	  values.
+ * 	- Query the database for all rows that match any of the column values.
  * 
- * 	- Iterate through the record to check if a column with that value 
- * 	  already exists in the database.
+ * 	- Iterate through the unique columns, and check each returned row, until a
+ * 	  row with the same column value is found.
  * 
- * 	- Return an array of the column names that have been taken.
+ * 	- Return a record of the unique column names that have been taken.
  */
 export const gFindUniqueCollisions = async <
 	Table extends PgTableWithColumns<any>,
@@ -557,7 +556,7 @@ export const gFindUniqueCollisions = async <
 		error: null
 	} | {
 		result: null,
-		error: NotNull
+		error: AnyKnownError
 	}
 > => {
 	try {
@@ -576,8 +575,11 @@ export const gFindUniqueCollisions = async <
 			result: rows,
 			error: rError
 		} = await gReadMany(table, (query) => {
-			query.filter((columns, { or, eq}) => or(
-
+			/*
+				Filter starts with `or` so if any of the conditions match, the 
+				row will be returned
+			*/
+			return query.filter((columns, { or, eq }) => or(
 				// Add an equality check for each unique column
 				...(tsObjectKeys(uniqueColumnValues)
 					.map((columnName) => eq(
@@ -585,24 +587,18 @@ export const gFindUniqueCollisions = async <
 						uniqueColumnValues[columnName]
 					))
 				)
-
-				/* 
-					The row will be returned if any of the unique
-					columns match
-				*/
 			))
-
-			return query
+			/* 
+				The row will be returned if any of the unique
+				columns match
+			*/
 		}, tx)
 
-		if (rError !== null) {
-			throw new Error("Failed to find unique collisions")
-		}
+		if (rError !== null) throw rError
 
 
 		// Explicitly type rows for intellisense
-		const typedRows = rows as
-			InferSelectModel<Table>[]
+		const typedRows = rows as InferSelectModel<Table>[]
 
 
 		// Find which unique columns have been matched
@@ -633,7 +629,7 @@ export const gFindUniqueCollisions = async <
 	catch (error) {
 		return {
 			result: null,
-			error: error as NotNull
+			error: fallbackQueryErrorIfUnknown(error, "update")
 		}
 	}
 }
