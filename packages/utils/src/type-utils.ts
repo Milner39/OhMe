@@ -1,5 +1,11 @@
 // #region Utils
 
+/** Enforce
+ * 
+ * Enforces that the first type satisfies the second.
+ */
+export type Enforce<Type extends Base, Base extends unknown> = Type
+
 /** Mutable
  * 
  * Removes the `readonly` modifier from every property of an object.
@@ -7,6 +13,15 @@
 export type Mutable<Type> = {
 	-readonly [Key in keyof Type]: Type[Key]
 }
+
+/** UnstrictEnum
+ * 
+ * Allows both enum values and string literals or numbers that match them
+ */
+export type UnstrictEnum<Enum extends string | number> = 
+	Enum | Enum extends string 
+	? `${Enum}`
+	: Enum
 
 /** asLiteralArray
  * 
