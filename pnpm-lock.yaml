@@ -51,11 +51,11 @@ importers:
         specifier: npm:drizzle-kit@^0.30.5
         version: 0.30.5
       drizzle-orm:
-        specifier: npm:drizzle-orm@^0.40.0
-        version: 0.40.0(@types/pg@8.11.11)(gel@2.0.0)(pg@8.13.3)
+        specifier: npm:drizzle-orm@1.0.0-beta.1-e30ede4
+        version: 1.0.0-beta.1-e30ede4(@types/pg@8.11.11)(gel@2.0.0)(pg@8.13.3)
       drizzle-zod:
         specifier: npm:drizzle-zod@^0.7.0
-        version: 0.7.0(drizzle-orm@0.40.0(@types/pg@8.11.11)(gel@2.0.0)(pg@8.13.3))(zod@3.24.2)
+        version: 0.7.0(drizzle-orm@1.0.0-beta.1-e30ede4(@types/pg@8.11.11)(gel@2.0.0)(pg@8.13.3))(zod@3.24.2)
       pg:
         specifier: npm:pg@^8.13.3
         version: 8.13.3
@@ -87,6 +87,8 @@ importers:
   packages/create-configs: {}
 
   packages/db-api-client: {}
+
+  packages/errors: {}
 
   packages/load-env: {}
 
@@ -1101,8 +1103,8 @@ packages:
     resolution: {integrity: sha512-l6dMSE100u7sDaTbLczibrQZjA35jLsHNqIV+jmhNVO3O8jzM6kywMOmV9uOz9ZVSCMPQhAZEFjL/qDPVrqpUA==}
     hasBin: true
 
-  drizzle-orm@0.40.0:
-    resolution: {integrity: sha512-7ptk/HQiMSrEZHnAsSlBESXWj52VwgMmyTEfoNmpNN2ZXpcz13LwHfXTIghsAEud7Z5UJhDOp8U07ujcqme7wg==}
+  drizzle-orm@1.0.0-beta.1-e30ede4:
+    resolution: {integrity: sha512-A537LcvOtQEpv3P0NQvBvmd5hpOYAlMXGkal4TdC/BRcPbF7ZYvepk2wro4/eT8Nkp3GlvGGiN/V5SpcOczbCw==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -1120,7 +1122,7 @@ packages:
       '@types/sql.js': '*'
       '@vercel/postgres': '>=0.8.0'
       '@xata.io/client': '*'
-      better-sqlite3: '>=7'
+      better-sqlite3: '>=9.3.0'
       bun-types: '*'
       expo-sqlite: '>=14.0.0'
       gel: '>=2'
@@ -2402,15 +2404,15 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.40.0(@types/pg@8.11.11)(gel@2.0.0)(pg@8.13.3):
+  drizzle-orm@1.0.0-beta.1-e30ede4(@types/pg@8.11.11)(gel@2.0.0)(pg@8.13.3):
     optionalDependencies:
       '@types/pg': 8.11.11
       gel: 2.0.0
       pg: 8.13.3
 
-  drizzle-zod@0.7.0(drizzle-orm@0.40.0(@types/pg@8.11.11)(gel@2.0.0)(pg@8.13.3))(zod@3.24.2):
+  drizzle-zod@0.7.0(drizzle-orm@1.0.0-beta.1-e30ede4(@types/pg@8.11.11)(gel@2.0.0)(pg@8.13.3))(zod@3.24.2):
     dependencies:
-      drizzle-orm: 0.40.0(@types/pg@8.11.11)(gel@2.0.0)(pg@8.13.3)
+      drizzle-orm: 1.0.0-beta.1-e30ede4(@types/pg@8.11.11)(gel@2.0.0)(pg@8.13.3)
       zod: 3.24.2
 
   env-paths@3.0.0: {}
