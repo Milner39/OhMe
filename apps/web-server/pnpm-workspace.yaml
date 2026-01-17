@@ -2,3 +2,4 @@ onlyBuiltDependencies:
   - '@parcel/watcher'
   - esbuild
   - svelte-preprocess
+  - '@tailwindcss/oxide'
