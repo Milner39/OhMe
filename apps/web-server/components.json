@@ -6,8 +6,8 @@
   },
   "aliases": {
     "components": "$lib/components",
-    "utils": "$lib/utils/tailwind",
-    "ui": "$lib/components/ui/tailwind",
+    "utils": "$lib/utils/shadcn/index",
+    "ui": "$lib/components/ui/shadcn",
     "hooks": "$lib/hooks",
     "lib": "$lib"
   },
