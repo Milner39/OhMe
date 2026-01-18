@@ -1,7 +1,8 @@
 <script lang="ts">
-  import favicon from "$lib/assets/favicon.svg"
-
+  import "$lib/styles/tailwind.css"  // Load Shadcn style sheet
   import "$lib/styles/global.scss"  // Load global style sheet
+
+  import favicon from "$lib/assets/favicon.svg"
 
 
   const { children } = $props()
